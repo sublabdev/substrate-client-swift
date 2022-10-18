@@ -1,0 +1,6 @@
+framework module SubstrateClientSwift {
+  umbrella header "SubstrateClientSwift-umbrella.h"
+
+  export *
+  module * { export * }
+}
