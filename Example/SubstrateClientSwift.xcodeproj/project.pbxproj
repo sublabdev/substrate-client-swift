@@ -313,11 +313,11 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SubstrateClientSwift_Example/Pods-SubstrateClientSwift_Example-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SubstrateClientSwift/SubstrateClientSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/BigInt/BigInt.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SubstrateClientSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BigInt.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

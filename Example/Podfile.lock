@@ -1,16 +1,23 @@
 PODS:
-  - SubstrateClientSwift (1.0.0)
+  - BigInt (5.2.0)
+  - SubstrateClientSwift (1.0.0):
+    - BigInt
 
 DEPENDENCIES:
   - SubstrateClientSwift (from `../`)
+
+SPEC REPOS:
+  trunk:
+    - BigInt
 
 EXTERNAL SOURCES:
   SubstrateClientSwift:
     :path: "../"
 
 SPEC CHECKSUMS:
-  SubstrateClientSwift: 2ded003789595b98846e649245b456606acafe05
+  BigInt: f668a80089607f521586bbe29513d708491ef2f7
+  SubstrateClientSwift: 3751507b3d75ce038446e224915e2a28d5430dc1
 
-PODFILE CHECKSUM: 307e0fc1cb3454dc2fc76b5ceae4db8dcc10dd52
+PODFILE CHECKSUM: 356b1cc148014bdc3e03fd1591dbf9c61009ce12
 
 COCOAPODS: 1.11.3
