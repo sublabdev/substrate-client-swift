@@ -1,9 +1,13 @@
 PODS:
   - BigInt (5.2.0)
+  - ScaleCodecSwift (1.0.0):
+    - BigInt
   - SubstrateClientSwift (1.0.0):
     - BigInt
+    - ScaleCodecSwift
 
 DEPENDENCIES:
+  - ScaleCodecSwift (from `https://github.com/sublabdev/scale-codec-swift`, commit `95f4a4f9551001c26a501bc18cf796e7d8fc54cf`)
   - SubstrateClientSwift (from `../`)
 
 SPEC REPOS:
@@ -11,13 +15,22 @@ SPEC REPOS:
     - BigInt
 
 EXTERNAL SOURCES:
+  ScaleCodecSwift:
+    :commit: 95f4a4f9551001c26a501bc18cf796e7d8fc54cf
+    :git: https://github.com/sublabdev/scale-codec-swift
   SubstrateClientSwift:
     :path: "../"
 
+CHECKOUT OPTIONS:
+  ScaleCodecSwift:
+    :commit: 95f4a4f9551001c26a501bc18cf796e7d8fc54cf
+    :git: https://github.com/sublabdev/scale-codec-swift
+
 SPEC CHECKSUMS:
   BigInt: f668a80089607f521586bbe29513d708491ef2f7
-  SubstrateClientSwift: 3751507b3d75ce038446e224915e2a28d5430dc1
+  ScaleCodecSwift: ae066168a651a3a83099723ea6366223954c9933
+  SubstrateClientSwift: 4b9cd532d5504c49ace568581e738033f4e70b6b
 
-PODFILE CHECKSUM: 356b1cc148014bdc3e03fd1591dbf9c61009ce12
+PODFILE CHECKSUM: f16aff5da30a5e999d1ecd127025c1ac1ec23d68
 
 COCOAPODS: 1.11.3

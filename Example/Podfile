@@ -4,10 +4,10 @@ platform :ios, '13.0'
 
 target 'SubstrateClientSwift_Example' do
   pod 'SubstrateClientSwift', :path => '../'
+  pod 'ScaleCodecSwift', :git => 'https://github.com/sublabdev/scale-codec-swift', :commit => '95f4a4f9551001c26a501bc18cf796e7d8fc54cf'
 
   target 'SubstrateClientSwift_Tests' do
     inherit! :search_paths
-
     
   end
 end
