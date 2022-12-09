@@ -1,10 +1,9 @@
 import Foundation
-import Combine
 
 /// Web socket client interface
 protocol WebSocketClientProtocol {
-    typealias SubscriptionPublisher = AnyPublisher<URLSessionWebSocketTask.Message, Never>
-    typealias ErrorSubscriptionPublisher = AnyPublisher<Swift.Error, Never>
+    typealias Subscription = (URLSessionWebSocketTask.Message?) -> Void
+    typealias ErrorSubscription = (Swift.Error) -> Void
     
     /// Creates a web socket client
     /// - Parameters:
@@ -13,19 +12,22 @@ protocol WebSocketClientProtocol {
     ///     - port: The port
     ///     - settings: Web socket client settings
     init(host: URL, path: String?, port: Int?, settings: WebSocketClientSettings)
+    
     /// Sends a message
     /// - Parameters:
     ///     - message: The message to be sent
     ///     - completion: Completion containing an optional `Error`
     func sendMessage(_ message: URLSessionWebSocketTask.Message, completion: @escaping (Swift.Error?) -> Void)
-//    func subscribe() -> SubscriptionPublisher?
+    
     /// Subscribes to messages
     /// - Parameters:
-    ///     - completion: Completion with `PassthroughSubject` that contains `URLSessionWebSocketTask`'s messages
-    func subscribe(completion: @escaping (PassthroughSubject<URLSessionWebSocketTask.Message, Never>?) -> Void)
+    ///     - subscribtion: Subscription (completion) wich either contains an `URLSessionWebSocketTask`'s message or nil
+    func subscribe(subscription: @escaping Subscription)
+    
     /// Subscribes to errors
-    /// - Returns: `AnyPublisher` with `Error`
-    func subscribeToErrors() -> ErrorSubscriptionPublisher
+    /// - Parameters:
+    ///     - errorSubscription: Subscription (completion) wich either contains a `Error`'s message or nil
+    func subscribeToErrors(_ errorSubscription: @escaping ErrorSubscription)
 }
 
 /// Web socket client
@@ -35,13 +37,10 @@ final class WebSocketClient: WebSocketClientProtocol {
         case webSocketTaskError(String)
     }
     
-    typealias SubscriptionSubject = PassthroughSubject<URLSessionWebSocketTask.Message, Never>
-    typealias ErrorSubscriptionSubject = PassthroughSubject<Swift.Error, Never>
-    
     private let webSocketClientQueue = DispatchQueue(label: "WebSocketClientQueue")
     
-    private var subscriptions: [SubscriptionSubject] = []
-    private var errorSubscriptions: [ErrorSubscriptionSubject] = []
+    private var subscriptions: [Subscription] = []
+    private var errorSubscriptions: [ErrorSubscription] = []
     private var pendingMessages: [URLSessionWebSocketTask.Message] = []
     
     private var webSocketTask: URLSessionWebSocketTask?
@@ -92,12 +91,12 @@ final class WebSocketClient: WebSocketClientProtocol {
                 }
             } else {
                 subscriptions.forEach {
-                    $0.send(taskMessage)
+                    $0(taskMessage)
                 }
             }
         case .failure(let error):
             errorSubscriptions.forEach {
-                $0.send(error)
+                $0(error)
             }
         }
     }
@@ -113,20 +112,17 @@ final class WebSocketClient: WebSocketClientProtocol {
         webSocketTask?.resume()
     }
     
-    func subscribe(completion: @escaping (SubscriptionSubject?) -> Void) {
-        let subscription = SubscriptionSubject()
-//        subscription.buf
+    func subscribe(subscription: @escaping Subscription) {
         let isFirst = subscriptions.isEmpty
         subscriptions.append(subscription)
         
-        guard !subscriptions.isEmpty else { completion(nil)
+        guard !subscriptions.isEmpty else {
+            subscription(nil)
             return
         }
         
-        completion(subscription)
-        
         func sendMessages() {
-            pendingMessages.forEach { subscription.send($0) }
+            pendingMessages.forEach { subscription($0) }
         }
         
         switch policy {
@@ -141,37 +137,10 @@ final class WebSocketClient: WebSocketClientProtocol {
             break
         }
     }
-//
-//    func subscribe() -> SubscriptionPublisher? {
-//        let subscription = SubscriptionSubject()
-//        let isFirst = subscriptions.isEmpty
-//        subscriptions.append(subscription)
-//
-//        guard !subscriptions.isEmpty else { return nil }
-//
-//        func sendMessages() {
-//            pendingMessages.forEach { subscription.send($0) }
-//        }
-//
-//        switch policy {
-//        case .firstSubscriber:
-//            if isFirst {
-//                sendMessages()
-//                pendingMessages.removeAll()
-//            }
-//        case .allSubscribers:
-//            sendMessages()
-//        default:
-//            break
-//        }
-//
-//        return subscription.eraseToAnyPublisher()
-//    }
-//
-    func subscribeToErrors() -> ErrorSubscriptionPublisher {
-        let subscription = ErrorSubscriptionSubject()
-        errorSubscriptions.append(subscription)
+
+    func subscribeToErrors(_ errorSubscription: @escaping ErrorSubscription) {
+        guard policy != .none else { return }
         
-        return subscription.eraseToAnyPublisher()
+        errorSubscriptions.append(errorSubscription)
     }
 }

@@ -1,5 +1,4 @@
 import Foundation
-import Combine
 
 /// Substrate web socket client
 public final class SubstrateWebSocketClient {
@@ -21,15 +20,16 @@ public final class SubstrateWebSocketClient {
     
     /// Subscribes to client's messages
     /// - Parameters:
-    ///     - completion: Completion with `PassthroughSubject` that contains `URLSessionWebSocketTask`'s messages
-    func subscribe(completion: @escaping (PassthroughSubject<URLSessionWebSocketTask.Message, Never>?) -> Void) {
-        client.subscribe(completion: completion)
+    ///     - completion: Completion with either `URLSessionWebSocketTask.Message` or nil
+    func subscribe(completion: @escaping (URLSessionWebSocketTask.Message?) -> Void) {
+        client.subscribe(subscription: completion)
     }
     
     /// Subscribes to client's errors
-    /// - Returns: `AnyPublisher` with `Error`
-    func subscribeToErrors() -> AnyPublisher<Error, Never> {
-        client.subscribeToErrors()
+    /// - Parameters:
+    ///     - errorSubscription: Completion with `Error.Message`
+    func subscribeToErrors(_ errorSubscription: @escaping (Error) -> Void) {
+        client.subscribeToErrors(errorSubscription)
     }
     
     /// Sends an encoded request as a message of type `.data`

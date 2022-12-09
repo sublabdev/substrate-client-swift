@@ -1,10 +1,7 @@
 import XCTest
 @testable import SubstrateClientSwift
-import Combine
 
 class WebsocketTests: XCTestCase {
-    private var cancellableSubscriptions = Set<AnyCancellable>()
-    
     func testEchoClientForNone() {
         let testMessage = UUID().uuidString
         let expectationTimeOut: TimeInterval = 5
@@ -19,18 +16,12 @@ class WebsocketTests: XCTestCase {
         // Wait for 5 seconds and fulfill the expectation
         sleepFor(timeInterval: expectationTimeOut - 1)
         
-        client?.subscribe { [weak self] subject in
-            guard let `self` = self else { return }
-            
-            subject?
-                .sink { _ in
-                    // Make sure we do not recieve any messages
-                    XCTFail()
-                    expectation.fulfill()
-                }
-                .store(in: &self.cancellableSubscriptions)
+        client?.subscribe { _ in
+            // Make sure we do not recieve any messages
+            XCTFail()
+            expectation.fulfill()
         }
-        
+
         expectation.fulfill()
         wait(for: [expectation], timeout: expectationTimeOut)
     }
@@ -44,23 +35,17 @@ class WebsocketTests: XCTestCase {
             XCTAssertNil(error)
         })
         
-        client?.subscribe { [weak self] subject in
-            guard let `self` = self else { return }
+        client?.subscribe { message in
+            switch message {
+            case .string(let string):
+                XCTAssertEqual(string, testMessage)
+            default:
+                XCTFail()
+            }
             
-            subject?
-                .sink { message in
-                    switch message {
-                    case .string(let string):
-                        XCTAssertEqual(string, testMessage)
-                    default:
-                        XCTFail()
-                    }
-                    
-                    expectation.fulfill()
-                }
-                .store(in: &self.cancellableSubscriptions)
+            expectation.fulfill()
         }
-        
+
         wait(for: [expectation], timeout: Constants.singleTestTime)
     }
 
@@ -77,27 +62,21 @@ class WebsocketTests: XCTestCase {
         sleepFor(timeInterval: Constants.singleTestTime)
         
         for i in (0..<Constants.testsCount) {
-            client?.subscribe { [weak self] subject in
-                guard let `self` = self else { return }
+            client?.subscribe{ message in
+                guard i == 0 else {
+                    // Do not expect to get a message for other subscibers except the first one
+                    XCTFail()
+                    return
+                }
                 
-                subject?
-                    .sink { message in
-                        guard i == 0 else {
-                            // Do not expect to get a message for other subscibers except the first one
-                            XCTFail()
-                            return
-                        }
-                        
-                        switch message {
-                        case .string(let string):
-                            XCTAssertEqual(string, testMessage)
-                        default:
-                            XCTFail()
-                        }
-                        
-                        expectation.fulfill()
-                    }
-                    .store(in: &self.cancellableSubscriptions)
+                switch message {
+                case .string(let string):
+                    XCTAssertEqual(string, testMessage)
+                default:
+                    XCTFail()
+                }
+                
+                expectation.fulfill()
             }
         }
         
@@ -119,21 +98,15 @@ class WebsocketTests: XCTestCase {
         for i in (0..<Constants.testsCount) {
             expectations[i] = XCTestExpectation()
             
-            client?.subscribe { [weak self] subject in
-                guard let `self` = self else { return }
+            client?.subscribe { message in
+                switch message {
+                case .string(let string):
+                    XCTAssertEqual(string, testMessage)
+                default:
+                    XCTFail()
+                }
                 
-                subject?
-                    .sink { message in
-                        switch message {
-                        case .string(let string):
-                            XCTAssertEqual(string, testMessage)
-                        default:
-                            XCTFail()
-                        }
-                        
-                        expectations[i]?.fulfill()
-                    }
-                    .store(in: &self.cancellableSubscriptions)
+                expectations[i]?.fulfill()
             }
         }
         
@@ -158,34 +131,23 @@ class WebsocketTests: XCTestCase {
         // Let messages be sent and received back
         sleepFor(timeInterval: Constants.singleTestTime)
         
-        client?.subscribe { [weak self] subject in
-            guard let `self` = self else { return }
-            
-            subject?
-                .sink{ message in
-                    switch message {
-                    case .string(let string):
-                        XCTAssertTrue(testMessages.contains(string))
-                        testMessages.remove(string)
-                        expectations[string]?.fulfill()
-                    default:
-                        XCTFail()
-                    }
-                }
-                .store(in: &self.cancellableSubscriptions)
+        client?.subscribe { message in
+            switch message {
+            case .string(let string):
+                XCTAssertTrue(testMessages.contains(string))
+                testMessages.remove(string)
+                expectations[string]?.fulfill()
+            default:
+                XCTFail()
+            }
         }
         
         // Double check if all messages were received
         XCTAssertTrue(testMessages.isEmpty)
         
-        client?.subscribe { [weak self] subject in
-            guard let `self` = self else { return }
-            
-            subject?.sink { _ in
-                // Shouldn't receive anything
-                XCTFail()
-            }
-            .store(in: &self.cancellableSubscriptions)
+        client?.subscribe { _ in
+            // Shouldn't receive anything
+            XCTFail()
         }
 
         wait(for: Array(expectations.values), timeout: 1000)
