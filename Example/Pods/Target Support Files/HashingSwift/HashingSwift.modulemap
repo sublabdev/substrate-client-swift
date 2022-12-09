@@ -1,0 +1,6 @@
+framework module HashingSwift {
+  umbrella header "HashingSwift-umbrella.h"
+
+  export *
+  module * { export * }
+}

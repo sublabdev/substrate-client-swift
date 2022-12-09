@@ -1,7 +1,8 @@
 import BigInt
 import Foundation
 
-struct RuntimeModule: Codable {
+/// Runtime module
+public struct RuntimeModule: Codable {
     let name: String
     let storage: RuntimeModuleStorage?
     let callIndex: BigUInt?

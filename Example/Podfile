@@ -4,7 +4,9 @@ platform :ios, '13.0'
 
 target 'SubstrateClientSwift_Example' do
   pod 'SubstrateClientSwift', :path => '../'
-  pod 'ScaleCodecSwift', :git => 'https://github.com/sublabdev/scale-codec-swift', :commit => '95f4a4f9551001c26a501bc18cf796e7d8fc54cf'
+  pod 'ScaleCodecSwift', :git => 'https://github.com/sublabdev/scale-codec-swift', :commit => 'fbe9654d732274757b3fcd0951c04c38bf0d1b6e'
+  pod 'CommonSwift', :git => 'https://github.com/sublabdev/common-swift.git', :commit => '5bdbe0884ebbdaa8bec9b2f73133764c489d180f'
+  pod 'HashingSwift', :git => 'https://github.com/sublabdev/hashing-swift.git', :commit => '23d7e277f2ee81307818e66f49af2961fc4cbd06'
 
   target 'SubstrateClientSwift_Tests' do
     inherit! :search_paths

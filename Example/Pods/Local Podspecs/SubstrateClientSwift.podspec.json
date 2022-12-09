@@ -19,10 +19,16 @@
   },
   "source_files": "SubstrateClientSwift/Classes/**/*",
   "dependencies": {
+    "ScaleCodecSwift": [
+
+    ],
     "BigInt": [
 
     ],
-    "ScaleCodecSwift": [
+    "CommonSwift": [
+
+    ],
+    "HashingSwift": [
 
     ]
   }

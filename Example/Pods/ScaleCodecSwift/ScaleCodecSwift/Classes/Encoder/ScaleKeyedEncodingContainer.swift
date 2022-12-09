@@ -52,6 +52,7 @@ final class ScaleKeyedEncodingContainer<K: CodingKey>: KeyedEncodingContainerPro
     
     // MARK: - Encoding
     
+    // Encodes generic optional values for a specified key
     private func encodeIfPresent<T>(_ value: T?, forKey key: K, encoder: (T) throws -> Void) throws {
         if let value = value {
             try nestedSingleValueEncodingContainer(forKey: key).encodeNotNil()
@@ -61,140 +62,138 @@ final class ScaleKeyedEncodingContainer<K: CodingKey>: KeyedEncodingContainerPro
         }
     }
     
+    // Encodes nil values for a specified key
     func encodeNil(forKey key: K) throws {
         try nestedSingleValueEncodingContainer(forKey: key).encodeNil()
     }
     
+    // Encodes Bool values for a specified key
     func encode(_ value: Bool, forKey key: K) throws {
         try nestedSingleValueEncodingContainer(forKey: key).encode(value)
     }
-    
+    // Encodes optional Bool values for a specified key
     func encodeIfPresent(_ value: Bool?, forKey key: K) throws {
         try nestedSingleValueEncodingContainer(forKey: key).encode(value)
     }
-    
+    // Encodes String values for a specified key
     func encode(_ value: String, forKey key: K) throws {
         try nestedSingleValueEncodingContainer(forKey: key).encode(value)
     }
-    
+    // Encodes optional String values for a specified key
     func encodeIfPresent(_ value: String?, forKey key: K) throws {
         try encodeIfPresent(value, forKey: key) {
             try encode($0, forKey: key)
         }
     }
-    
+    // Encodes Int values for a specified key
     func encode(_ value: Int, forKey key: K) throws {
         try nestedSingleValueEncodingContainer(forKey: key).encode(value)
     }
-    
+    // Encodes optional Int values for a specified key
     func encodeIfPresent(_ value: Int?, forKey key: K) throws {
         try encodeIfPresent(value, forKey: key) {
             try encode($0, forKey: key)
         }
     }
-    
+    // Encodes Int8 values for a specified key
     func encode(_ value: Int8, forKey key: K) throws {
         try nestedSingleValueEncodingContainer(forKey: key).encode(value)
     }
-    
+    // Encodes optional Int8 values for a specified key
     func encodeIfPresent(_ value: Int8?, forKey key: K) throws {
         try encodeIfPresent(value, forKey: key) {
             try encode($0, forKey: key)
         }
     }
-    
+    // Encodes Int16 values for a specified key
     func encode(_ value: Int16, forKey key: K) throws {
         try nestedSingleValueEncodingContainer(forKey: key).encode(value)
     }
-    
+    // Encodes optional Int16 values for a specified key
     func encodeIfPresent(_ value: Int16?, forKey key: K) throws {
         try encodeIfPresent(value, forKey: key) {
             try encode($0, forKey: key)
         }
     }
-    
+    // Encodes Int32 values for a specified key
     func encode(_ value: Int32, forKey key: K) throws {
         try nestedSingleValueEncodingContainer(forKey: key).encode(value)
     }
-    
+    // Encodes optional Int32 values for a specified key
     func encodeIfPresent(_ value: Int32?, forKey key: K) throws {
         try encodeIfPresent(value, forKey: key) {
             try encode($0, forKey: key)
         }
     }
-    
+    // Encodes Int64 values for a specified key
     func encode(_ value: Int64, forKey key: K) throws {
         try nestedSingleValueEncodingContainer(forKey: key).encode(value)
     }
-    
+    // Encodes optional Int64 values for a specified key
     func encodeIfPresent(_ value: Int64?, forKey key: K) throws {
         try encodeIfPresent(value, forKey: key) {
             try encode($0, forKey: key)
         }
     }
-    
+    // Encodes UInt values for a specified key
     func encode(_ value: UInt, forKey key: K) throws {
         try nestedSingleValueEncodingContainer(forKey: key).encode(value)
     }
-    
+    // Encodes optional UInt values for a specified key
     func encodeIfPresent(_ value: UInt?, forKey key: K) throws {
         try encodeIfPresent(value, forKey: key) {
             try encode($0, forKey: key)
         }
     }
-    
+    // Encodes UInt8 values for a specified key
     func encode(_ value: UInt8, forKey key: K) throws {
         try nestedSingleValueEncodingContainer(forKey: key).encode(value)
     }
-    
+    // Encodes optional UInt8 values for a specified key
     func encodeIfPresent(_ value: UInt8?, forKey key: K) throws {
         try encodeIfPresent(value, forKey: key) {
             try encode($0, forKey: key)
         }
     }
-    
+    // Encodes UInt16 values for a specified key
     func encode(_ value: UInt16, forKey key: K) throws {
         try nestedSingleValueEncodingContainer(forKey: key).encode(value)
     }
-    
+    // Encodes optional UInt16 values for a specified key
     func encodeIfPresent(_ value: UInt16?, forKey key: K) throws {
         try encodeIfPresent(value, forKey: key) {
             try encode($0, forKey: key)
         }
     }
-    
+    // Encodes UInt32 values for a specified key
     func encode(_ value: UInt32, forKey key: K) throws {
         try nestedSingleValueEncodingContainer(forKey: key).encode(value)
     }
-    
+    // Encodes optional UInt32 values for a specified key
     func encodeIfPresent(_ value: UInt32?, forKey key: K) throws {
         try encodeIfPresent(value, forKey: key) {
             try encode($0, forKey: key)
         }
     }
-    
+    // Encodes UInt64 values for a specified key
     func encode(_ value: UInt64, forKey key: K) throws {
         try nestedSingleValueEncodingContainer(forKey: key).encode(value)
     }
-    
+    // Encodes optional UInt64 values for a specified key
     func encodeIfPresent(_ value: UInt64?, forKey key: K) throws {
         try encodeIfPresent(value, forKey: key) {
             try encode($0, forKey: key)
         }
     }
-    
+    // Encodes generic T values for a specified key
     func encode<T>(_ value: T, forKey key: K) throws where T : Encodable {
         try nestedSingleValueEncodingContainer(forKey: key).encode(value)
     }
-    
+    // Encodes optional T values for a specified key
     func encodeIfPresent<T>(_ value: T?, forKey key: K) throws where T : Encodable {
         try encodeIfPresent(value, forKey: key) {
             try encode($0, forKey: key)
         }
-    }
-    
-    func encodeConditional<T>(_ object: T, forKey key: K) throws where T : AnyObject, T : Encodable {
-        print("[encodeConditional]")
     }
     
     private func nestedCodingPath(forKey key: CodingKey? = nil) -> [CodingKey] {
@@ -205,6 +204,7 @@ final class ScaleKeyedEncodingContainer<K: CodingKey>: KeyedEncodingContainerPro
         return codingPath
     }
     
+    // Provides a nested scale single value encoding container
     private func nestedSingleValueEncodingContainer(forKey key: K? = nil, append: Bool = true) -> ScaleSingleValueEncodingContainer {
         let container = ScaleSingleValueEncodingContainer(
             encoderProvider: encoderProvider,
@@ -220,6 +220,7 @@ final class ScaleKeyedEncodingContainer<K: CodingKey>: KeyedEncodingContainerPro
         return container
     }
     
+    // Provides a nested scale keyed encoding container
     func nestedContainer<NestedKey>(
         keyedBy keyType: NestedKey.Type,
         forKey key: K
@@ -235,6 +236,7 @@ final class ScaleKeyedEncodingContainer<K: CodingKey>: KeyedEncodingContainerPro
         return KeyedEncodingContainer(container)
     }
     
+    // Provides a nested scale unkeyed encoding container
     func nestedUnkeyedContainer(forKey key: K) -> UnkeyedEncodingContainer {
         let container = ScaleUnkeyedEncodingContainer(
             encoderProvider: encoderProvider,

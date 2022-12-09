@@ -1,6 +1,7 @@
 import BigInt
 import Foundation
 
-struct RuntimeTypeDefCompact: Codable {
+/// Compact runtime type
+public struct RuntimeTypeDefCompact: Codable {
     let type: BigUInt
 }

@@ -1,14 +1,26 @@
 import Foundation
 
+/// A default interface for providing encoding functionality
 protocol ScaleEncoding {
+    /// Encodes value of type `T` to Data
+    /// - Parameters:
+    ///     - value: A value of type `T` that needs to be encoded
+    /// - Returns: An encoded Data
     func encode<T>(_ value: T) throws -> Data where T : Encodable
 }
 
+/// An interface that contains Data that needs to be encoded
 protocol ScaleEncodingContainer {
     var data: Data { get }
 }
 
+/// An interface for encoder provider
 protocol ScaleEncoderProvider {
+    /// Provides an encoder
+    /// - Parameters:
+    ///     - codingPath: An array of `CodingKey` objects
+    ///     - userInfo: A dict containing user-defined `CodingUserInfoKey` as keys
+    /// - Returns: An encoder container
     func encoder(
         codingPath: [CodingKey],
         userInfo: [CodingUserInfoKey: Any]
@@ -16,26 +28,34 @@ protocol ScaleEncoderProvider {
 }
 
 extension ScaleEncoderProvider {
+    // A default implementation of the protocol's method
     func encoder(codingPath: [CodingKey]) -> Encoder & ScaleEncodingContainer{
         encoder(codingPath: codingPath, userInfo: [:])
     }
     
+    // Encoding without coding paths
     func encoder(userInfo: [CodingUserInfoKey: Any]) -> Encoder & ScaleEncodingContainer {
         encoder(codingPath: [], userInfo: userInfo)
     }
     
+    // Encoding without coding paths and user info
     func encoder() -> Encoder & ScaleEncodingContainer {
         encoder(codingPath: [], userInfo: [:])
     }
 }
 
 // MARK: - Encoding, ScaleEncoderProvider
-
+/// Handles scale encoding
 public final class ScaleEncoder: ScaleEncoding, ScaleEncoderProvider {
     private let codingPath: [CodingKey]
     private let userInfo: [CodingUserInfoKey: Any]
     private let adapterProvider: ScaleCodecAdapterProvider
 
+    /// Creates a scale encoder
+    /// - Parameters:
+    ///     - adapterProvider: An object that provides adapters based on a type being encoded
+    ///     - codingPath: An array of `CodingKey` objects
+    ///     - userInfo: A dict containing user-defined `CodingUserInfoKey` as keys
     public init(
         adapterProvider: ScaleCodecAdapterProvider,
         codingPath: [CodingKey] = [],
@@ -46,6 +66,11 @@ public final class ScaleEncoder: ScaleEncoding, ScaleEncoderProvider {
         self.userInfo = userInfo
     }
 
+    /// Initializes `ScaleEncoderContainer` which provides a specific container (keyed, unkeyed and single value) based on a type that needs to be encoded
+    ///  - Parameters:
+    ///     - codingPath: An array of `CodingKey` objects
+    ///     - userInfo: A dict containing user-defined
+    ///  - Returns: `ScaleEncoderContainer`
     func encoder(
         codingPath: [CodingKey],
         userInfo: [CodingUserInfoKey: Any]
@@ -58,7 +83,11 @@ public final class ScaleEncoder: ScaleEncoding, ScaleEncoderProvider {
         )
     }
 
-    public func encode<T>(_ value: T) throws -> Data where T : Encodable {
+    /// Encodes a generic type `T`
+    /// - Parameters:
+    ///     - value: A value of a generic type `T`. T should conform to `Encodable` protocol
+    /// - Returns: Encoded `Data`
+    public func encode<T: Encodable>(_ value: T) throws -> Data {
         if let data = try? adapterProvider.adapter(for: T.self).write(value: value) {
             // Types like Ints, Strings etc will be resolved via their custom adapters
             // Types with custom optional adapters will be resolved here as well (the main cause of this 'if' condition)
@@ -99,6 +128,7 @@ private final class ScaleEncoderContainer: Encoder, ScaleEncodingContainer {
             self.userInfo = userInfo
         }
     
+    // Returns a keyed encoding container
     func container<Key>(keyedBy type: Key.Type) -> KeyedEncodingContainer<Key> where Key : CodingKey {
         let container = ScaleKeyedEncodingContainer<Key>(
             encoderProvider: provider,
@@ -111,6 +141,7 @@ private final class ScaleEncoderContainer: Encoder, ScaleEncodingContainer {
         return KeyedEncodingContainer(container)
     }
     
+    // Returns an unkeyed encoding container
     func unkeyedContainer() -> UnkeyedEncodingContainer {
         let container = ScaleUnkeyedEncodingContainer(
             encoderProvider: provider,
@@ -123,6 +154,7 @@ private final class ScaleEncoderContainer: Encoder, ScaleEncodingContainer {
         return container
     }
     
+    // Returns a single value encoding container
     func singleValueContainer() -> SingleValueEncodingContainer {
         let container = ScaleSingleValueEncodingContainer(
             encoderProvider: provider,

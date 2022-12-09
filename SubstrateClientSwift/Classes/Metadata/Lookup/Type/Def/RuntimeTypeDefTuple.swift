@@ -1,6 +1,7 @@
 import BigInt
 import Foundation
 
-struct RuntimeTypeDefTuple: Codable {
+/// Tuple runtime type
+public struct RuntimeTypeDefTuple: Codable {
     let types: [BigUInt]
 }

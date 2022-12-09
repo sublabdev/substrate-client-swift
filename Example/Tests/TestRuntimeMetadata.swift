@@ -1,5 +1,6 @@
 import XCTest
 import ScaleCodecSwift
+import CommonSwift
 @testable import SubstrateClientSwift
 
 class TestRuntimeMetadata: XCTestCase {
@@ -72,7 +73,7 @@ class TestRuntimeMetadata: XCTestCase {
     }
     
     private func getMetadata(from string: String) throws -> RuntimeMetadata? {
-        guard let hexData = string.data(using: .hexadecimal) else {
+        guard let hexData = string.hex.decode() else {
             XCTFail()
             return nil
         }

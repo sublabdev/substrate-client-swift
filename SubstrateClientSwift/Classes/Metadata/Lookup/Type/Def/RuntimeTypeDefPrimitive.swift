@@ -1,6 +1,7 @@
 import Foundation
 
-enum RuntimeTypeDefPrimitive: Codable {
+/// Primitive runtime type
+public enum RuntimeTypeDefPrimitive: Codable {
     enum CodingKeys: Int, CodingKey {
         case bool
         case char

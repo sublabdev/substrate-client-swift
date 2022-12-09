@@ -1,7 +1,8 @@
 import BigInt
 import Foundation
 
-struct RuntimeTypeParam: Codable {
+/// Runtime type parametr
+public struct RuntimeTypeParam: Codable {
     let name: String
     let type: BigUInt?
 }

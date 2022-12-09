@@ -1,5 +1,6 @@
 import Foundation
 
+/// An adapter to handle read and write operations for String
 class StringAdapter: ScaleCodecAdapter<String> {
     enum Error: Swift.Error {
         case readError(Data)

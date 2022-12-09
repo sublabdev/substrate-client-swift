@@ -1,5 +1,6 @@
 import Foundation
 
+/// An adapter to handle read and write operations for Data
 class DataAdapter: ScaleCodecAdapter<Data> {
     let arrayAdapter: ArrayAdapter<UInt8>
     

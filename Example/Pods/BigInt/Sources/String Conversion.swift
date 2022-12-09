@@ -36,7 +36,12 @@ extension BigUInt {
     /// - Parameter `text`: A string consisting of characters corresponding to numerals in the given radix. (0-9, a-z, A-Z)
     /// - Parameter `radix`: The base of the number system to use, or 10 if unspecified.
     /// - Returns: The integer represented by `text`, or nil if `text` contains a character that does not represent a numeral in `radix`.
-    public init?<S: StringProtocol>(_ text: S, radix: Int = 10) {
+    public init?(_ text: String, radix: Int = 10) {
+        // FIXME Remove this member when SE-0183 is done
+        self.init(Substring(text), radix: radix)
+    }
+
+    public init?(_ text: Substring, radix: Int = 10) {
         precondition(radix > 1)
         let (charsPerWord, power) = BigUInt.charsPerWord(forRadix: radix)
 
@@ -48,14 +53,16 @@ extension BigUInt {
             start = text.index(before: start)
             count += 1
             if count == charsPerWord {
-                guard let d = Word.init(text[start ..< end], radix: radix) else { return nil }
+                // FIXME Remove String conversion when SE-0183 is done
+                guard let d = Word(String(text[start ..< end]), radix: radix) else { return nil }
                 words.append(d)
                 end = start
                 count = 0
             }
         }
         if start != end {
-            guard let d = Word.init(text[start ..< end], radix: radix) else { return nil }
+            // FIXME Remove String conversion when SE-0183 is done
+            guard let d = Word(String(text[start ..< end]), radix: radix) else { return nil }
             words.append(d)
         }
 
@@ -81,22 +88,21 @@ extension BigInt {
     /// - Parameter `radix`: The base of the number system to use, or 10 if unspecified.
     /// - Returns: The integer represented by `text`, or nil if `text` contains a character that does not represent a numeral in `radix`.
     public init?<S: StringProtocol>(_ text: S, radix: Int = 10) {
-        var magnitude: BigUInt?
+        self.init(Substring(text), radix: radix)
+    }
+
+    init?(_ text: Substring, radix: Int = 10) {
+        var text = text
         var sign: Sign = .plus
         if text.first == "-" {
             sign = .minus
-            let text = text.dropFirst()
-            magnitude = BigUInt(text, radix: radix)
+            text = text.dropFirst()
         }
         else if text.first == "+" {
-            let text = text.dropFirst()
-            magnitude = BigUInt(text, radix: radix)
+            text = text.dropFirst()
         }
-        else {
-            magnitude = BigUInt(text, radix: radix)
-        }
-        guard let m = magnitude else { return nil }
-        self.magnitude = m
+        guard let magnitude = BigUInt(text, radix: radix) else { return nil }
+        self.magnitude = magnitude
         self.sign = sign
     }
 }

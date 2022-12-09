@@ -1,6 +1,7 @@
 import BigInt
 import Foundation
 
-struct RuntimeTypeDefSequence: Codable {
+/// Sequence runtime type
+public struct RuntimeTypeDefSequence: Codable {
     let type: BigUInt
 }

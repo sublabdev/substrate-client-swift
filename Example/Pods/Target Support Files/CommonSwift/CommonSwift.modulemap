@@ -1,0 +1,6 @@
+framework module CommonSwift {
+  umbrella header "CommonSwift-umbrella.h"
+
+  export *
+  module * { export * }
+}

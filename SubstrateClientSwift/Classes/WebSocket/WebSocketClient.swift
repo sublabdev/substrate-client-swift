@@ -1,53 +1,49 @@
 import Foundation
+import Combine
 
+/// Web socket client interface
 protocol WebSocketClientProtocol {
+    typealias SubscriptionPublisher = AnyPublisher<URLSessionWebSocketTask.Message, Never>
+    typealias ErrorSubscriptionPublisher = AnyPublisher<Swift.Error, Never>
+    
+    /// Creates a web socket client
+    /// - Parameters:
+    ///     - host: The host url
+    ///     - path: The path
+    ///     - port: The port
+    ///     - settings: Web socket client settings
     init(host: URL, path: String?, port: Int?, settings: WebSocketClientSettings)
+    /// Sends a message
+    /// - Parameters:
+    ///     - message: The message to be sent
+    ///     - completion: Completion containing an optional `Error`
     func sendMessage(_ message: URLSessionWebSocketTask.Message, completion: @escaping (Swift.Error?) -> Void)
-    func subscribe(_ subscription: @escaping (URLSessionWebSocketTask.Message) -> Void)
-    func subscribeToErrors(_ errorSubscription: @escaping (Swift.Error) -> Void)
+//    func subscribe() -> SubscriptionPublisher?
+    /// Subscribes to messages
+    /// - Parameters:
+    ///     - completion: Completion with `PassthroughSubject` that contains `URLSessionWebSocketTask`'s messages
+    func subscribe(completion: @escaping (PassthroughSubject<URLSessionWebSocketTask.Message, Never>?) -> Void)
+    /// Subscribes to errors
+    /// - Returns: `AnyPublisher` with `Error`
+    func subscribeToErrors() -> ErrorSubscriptionPublisher
 }
 
+/// Web socket client
 final class WebSocketClient: WebSocketClientProtocol {
     private enum Error: Swift.Error {
         case dataEncodingError
         case webSocketTaskError(String)
     }
     
-    typealias Subscription = (URLSessionWebSocketTask.Message) -> Void
-    typealias ErrorSubscription = (Swift.Error) -> Void
+    typealias SubscriptionSubject = PassthroughSubject<URLSessionWebSocketTask.Message, Never>
+    typealias ErrorSubscriptionSubject = PassthroughSubject<Swift.Error, Never>
     
-    private let threadMessageSafeQueue = DispatchQueue(label: "WebSocketMessageQueue")
-    private let threadErrorSafeQueue = DispatchQueue(label: "WebSocketErrorQueue")
+    private let webSocketClientQueue = DispatchQueue(label: "WebSocketClientQueue")
     
-    private var subscriptions: [Subscription] = []
-    private var _errorSubscriptions: [ErrorSubscription] = []
-    private var _pendingMessages: [URLSessionWebSocketTask.Message] = []
+    private var subscriptions: [SubscriptionSubject] = []
+    private var errorSubscriptions: [ErrorSubscriptionSubject] = []
+    private var pendingMessages: [URLSessionWebSocketTask.Message] = []
     
-    private var errorSubscriptions: [ErrorSubscription] {
-        get {
-            return threadErrorSafeQueue.sync {
-                _errorSubscriptions
-            }
-        } set {
-            return threadErrorSafeQueue.async(flags: .barrier) { [unowned self] in
-                self._errorSubscriptions = newValue
-            }
-        }
-    }
-    
-    private var pendingMessages: [URLSessionWebSocketTask.Message] {
-        get {
-            return threadMessageSafeQueue.sync {
-                _pendingMessages
-            }
-        } set {
-            threadMessageSafeQueue.async(flags: .barrier) { [unowned self] in
-                self._pendingMessages = newValue
-            }
-        }
-    }
-    
-    private var pendingErrors: [Swift.Error] = []
     private var webSocketTask: URLSessionWebSocketTask?
     private let settings: WebSocketClientSettings
     private var host: URL
@@ -65,6 +61,9 @@ final class WebSocketClient: WebSocketClientProtocol {
         self.settings = settings
     }
     
+    /// Creates a web socket taks.
+    /// > The task is not resumed.
+    /// - Returns: An optional `URLSessionWebSocketTask`
     private func createWebSocketTask() -> URLSessionWebSocketTask? {
         if let webSocketTask = webSocketTask {
             return webSocketTask
@@ -76,75 +75,103 @@ final class WebSocketClient: WebSocketClientProtocol {
         
         let urlRequest = URLRequest(url: url)
         let webSocketTask = URLSession(configuration: .default).webSocketTask(with: urlRequest)
-        
-        webSocketTask.receive { [weak self] result in
-            guard let self = self else {
-                return
+
+        self.webSocketTask = webSocketTask
+        return webSocketTask
+    }
+    
+    /// Handles the received `Result` which contains either a message or `Error`
+    /// - Parameters:
+    ///     - result: Result containing either a message or `Error`
+    private func receive(result: Result<URLSessionWebSocketTask.Message, Swift.Error>) {
+        switch result {
+        case .success(let taskMessage):
+            if subscriptions.isEmpty {
+                if policy != .none {
+                    pendingMessages.append(taskMessage)
+                }
+            } else {
+                subscriptions.forEach {
+                    $0.send(taskMessage)
+                }
             }
-            
-            switch result {
-            case .success(let taskMessage):
-                self.pendingMessages.append(taskMessage)
-                
-                if self.policy == .firstSubscriber, let firstSubscriber = self.subscriptions.first {
-                    firstSubscriber(taskMessage)
-//                    self.subscriptions = [firstSubscriber]
-                    self.pendingMessages.removeAll()
-                } else if self.policy == .allSubscribers {
-                    self.subscriptions.forEach {
-                        $0(taskMessage)
-                    }
-                }
-            case .failure(let error):
-                self.pendingErrors.append(error)
-                
-                if self.policy == .firstSubscriber, let firstSubscriber = self.errorSubscriptions.first {
-                    firstSubscriber(error)
-                    self.subscriptions.removeAll()
-                    self.pendingErrors.removeAll()
-                } else if self.policy == .allSubscribers {
-                    self.errorSubscriptions.forEach { $0(error) }
-                }
+        case .failure(let error):
+            errorSubscriptions.forEach {
+                $0.send(error)
             }
         }
-        
-//        self.webSocketTask = webSocketTask
-        return webSocketTask
     }
     
     func sendMessage(_ message: URLSessionWebSocketTask.Message, completion: @escaping (Swift.Error?) -> Void) {
         let webSocketTask = createWebSocketTask()
         webSocketTask?.send(message, completionHandler: completion)
+        
+        webSocketTask?.receive { [weak self] result in
+            self?.receive(result: result)
+        }
+        
         webSocketTask?.resume()
     }
     
-    func subscribe(_ subscription: @escaping Subscription) {
-        guard policy != .none else {
-            return
-        }
-        
+    func subscribe(completion: @escaping (SubscriptionSubject?) -> Void) {
+        let subscription = SubscriptionSubject()
+//        subscription.buf
+        let isFirst = subscriptions.isEmpty
         subscriptions.append(subscription)
         
-        if policy == .firstSubscriber, let firstSubscriber = subscriptions.first, !pendingMessages.isEmpty {
-            pendingMessages.forEach { firstSubscriber($0) }
-            pendingMessages.removeAll()
-        } else {
-            pendingMessages.forEach { subscription($0) }
-        }
-    }
-    
-    func subscribeToErrors(_ errorSubscription: @escaping ErrorSubscription) {
-        guard policy != .none else {
+        guard !subscriptions.isEmpty else { completion(nil)
             return
         }
         
-        errorSubscriptions.append(errorSubscription)
+        completion(subscription)
         
-        if policy == .firstSubscriber, let firstSubscriber = errorSubscriptions.first, !pendingErrors.isEmpty {
-            pendingErrors.forEach { firstSubscriber($0) }
-            pendingErrors.removeAll()
-        } else {
-            pendingErrors.forEach { errorSubscription($0) }
+        func sendMessages() {
+            pendingMessages.forEach { subscription.send($0) }
         }
+        
+        switch policy {
+        case .firstSubscriber:
+            if isFirst {
+                sendMessages()
+                pendingMessages.removeAll()
+            }
+        case .allSubscribers:
+            sendMessages()
+        default:
+            break
+        }
+    }
+//
+//    func subscribe() -> SubscriptionPublisher? {
+//        let subscription = SubscriptionSubject()
+//        let isFirst = subscriptions.isEmpty
+//        subscriptions.append(subscription)
+//
+//        guard !subscriptions.isEmpty else { return nil }
+//
+//        func sendMessages() {
+//            pendingMessages.forEach { subscription.send($0) }
+//        }
+//
+//        switch policy {
+//        case .firstSubscriber:
+//            if isFirst {
+//                sendMessages()
+//                pendingMessages.removeAll()
+//            }
+//        case .allSubscribers:
+//            sendMessages()
+//        default:
+//            break
+//        }
+//
+//        return subscription.eraseToAnyPublisher()
+//    }
+//
+    func subscribeToErrors() -> ErrorSubscriptionPublisher {
+        let subscription = ErrorSubscriptionSubject()
+        errorSubscriptions.append(subscription)
+        
+        return subscription.eraseToAnyPublisher()
     }
 }

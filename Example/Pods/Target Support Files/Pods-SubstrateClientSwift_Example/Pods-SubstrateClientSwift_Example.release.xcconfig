@@ -1,11 +1,11 @@
 ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES
 CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO
-FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/BigInt" "${PODS_CONFIGURATION_BUILD_DIR}/ScaleCodecSwift" "${PODS_CONFIGURATION_BUILD_DIR}/SubstrateClientSwift"
+FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/Base58Swift" "${PODS_CONFIGURATION_BUILD_DIR}/BigInt" "${PODS_CONFIGURATION_BUILD_DIR}/Blake2" "${PODS_CONFIGURATION_BUILD_DIR}/CommonSwift" "${PODS_CONFIGURATION_BUILD_DIR}/HashingSwift" "${PODS_CONFIGURATION_BUILD_DIR}/ScaleCodecSwift" "${PODS_CONFIGURATION_BUILD_DIR}/SipHash" "${PODS_CONFIGURATION_BUILD_DIR}/SubstrateClientSwift" "${PODS_CONFIGURATION_BUILD_DIR}/xxHash-Swift"
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-HEADER_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/BigInt/BigInt.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/ScaleCodecSwift/ScaleCodecSwift.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/SubstrateClientSwift/SubstrateClientSwift.framework/Headers"
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/Base58Swift/Base58Swift.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/BigInt/BigInt.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/Blake2/Blake2.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/CommonSwift/CommonSwift.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/HashingSwift/HashingSwift.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/ScaleCodecSwift/ScaleCodecSwift.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/SipHash/SipHash.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/SubstrateClientSwift/SubstrateClientSwift.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/xxHash-Swift/xxHash_Swift.framework/Headers"
 LD_RUNPATH_SEARCH_PATHS = $(inherited) /usr/lib/swift '@executable_path/Frameworks' '@loader_path/Frameworks'
 LIBRARY_SEARCH_PATHS = $(inherited) "${DT_TOOLCHAIN_DIR}/usr/lib/swift/${PLATFORM_NAME}" /usr/lib/swift
-OTHER_LDFLAGS = $(inherited) -framework "BigInt" -framework "ScaleCodecSwift" -framework "SubstrateClientSwift"
+OTHER_LDFLAGS = $(inherited) -framework "Base58Swift" -framework "BigInt" -framework "Blake2" -framework "CommonSwift" -framework "HashingSwift" -framework "ScaleCodecSwift" -framework "SipHash" -framework "SubstrateClientSwift" -framework "xxHash_Swift"
 OTHER_SWIFT_FLAGS = $(inherited) -D COCOAPODS
 PODS_BUILD_DIR = ${BUILD_DIR}
 PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)

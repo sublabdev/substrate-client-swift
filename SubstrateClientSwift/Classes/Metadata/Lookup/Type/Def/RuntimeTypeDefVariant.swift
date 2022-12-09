@@ -1,6 +1,7 @@
 import Foundation
 
-struct RuntimeTypeDefVariant: Codable {
+/// Variant runtime type
+public struct RuntimeTypeDefVariant: Codable {
     let variants: [Variant]
     
     struct Variant: Codable {

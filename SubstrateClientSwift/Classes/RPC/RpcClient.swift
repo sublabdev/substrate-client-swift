@@ -1,22 +1,26 @@
 import Foundation
 
+/// Possible RPC errors
 enum RpcError: Error {
     case requestBodyEncodingError(Error)
     case responseError(RpcResponseError)
 }
 
+/// RPC client that handles sending requests
 class RpcClient {
     private var url: URL
     private let urlSession: URLSession
     private var requestId: Int64 = 0
-    
-    // TODO: Try String randomly generated instead of Int64
     
     init(url: URL, session: URLSession = .shared) {
         self.url = url
         urlSession = session
     }
     
+    /// Sends a ready `RpcRequest`
+    /// - Parameters:
+    ///     - rpcRequest: `RpcRequest` that takes a generic codable params
+    ///     - completion: Completion with the request's result
     func send<Request: Codable, Response: Codable>(
         _ rpcRequest: RpcRequest<Request>,
         completion: @escaping (RpcResponse<Response>?, RpcError?) -> Void
@@ -54,6 +58,11 @@ class RpcClient {
         task.resume()
     }
     
+    /// Sending a request by creating `RpcRequest`
+    /// - Parameters:
+    ///     - rpcRequest: params for `RpcRequest`
+    ///     - method: The method to be used in `RpcRequest`
+    ///     - completion: Completion with the request's result
     func sendRequest<Request: Codable, Response: Codable>(
         _ request: Request,
         method: String,
@@ -67,6 +76,10 @@ class RpcClient {
         }
     }
     
+    /// Sending a request by only setting the method
+    /// - Parameters:
+    ///     - method: The method to be used in `RpcRequest`
+    ///     - completion: Completion with the request's result
     func sendRequest<Response: Codable>(
         method: String,
         completion: @escaping (Response?, RpcError?) -> Void

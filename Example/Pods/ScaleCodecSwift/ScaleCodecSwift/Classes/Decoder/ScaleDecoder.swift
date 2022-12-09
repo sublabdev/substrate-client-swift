@@ -1,6 +1,14 @@
 import Foundation
 
+/// An interface for encoder provider
 protocol ScaleDecoderProvider {
+    /// Provides an encoder
+    /// - Parameters:
+    ///     - dataReader: A `DataReader` that holds and reads the `Data`
+    ///     - adapterProvider: An object that provides adapters to handle read and write opertations
+    ///     - codingPath: An array of `CodingKey` objects
+    ///     - userInfo: A dict containing user-defined `CodingUserInfoKey` as keys
+    /// - Returns: A decoder container
     func decoder(
         dataReader: DataReader,
         adapterProvider: ScaleCodecAdapterProvider,
@@ -9,15 +17,23 @@ protocol ScaleDecoderProvider {
     ) -> Decoder
 }
 
+/// A default interface for providing decoding functionality
 protocol ScaleDecoding {
     func decode<T>(_ type: T.Type, from reader: DataReader) throws -> T where T : Decodable
 }
 
+// MARK: - Decoding, ScaleDecoderProvider
+/// Handles scale decoding
 public final class ScaleDecoder: ScaleDecoding, ScaleDecoderProvider {
     private let codingPath: [CodingKey]
     private let userInfo: [CodingUserInfoKey: Any]
     private let adapterProvider: ScaleCodecAdapterProvider
     
+    /// Creates a scale decoder
+    /// - Parameters:
+    ///     - adapterProvider: An object that provides adapters based on a type being decoded
+    ///     - codingPath: An array of `CodingKey` objects
+    ///     - userInfo: A dict containing user-defined `CodingUserInfoKey` as keys
     public init(
         adapterProvider: ScaleCodecAdapterProvider,
         codingPath: [CodingKey] = [],
@@ -28,11 +44,16 @@ public final class ScaleDecoder: ScaleDecoding, ScaleDecoderProvider {
         self.userInfo = userInfo
     }
 
-    public func decode<T>(_ type: T.Type, from data: Data) throws -> T where T : Decodable {
+    /// Decodes a generic type `T` from provided `Data`
+    /// - Parameters:
+    ///     - type: A type to which provided `Data` should be decoded
+    ///     - data: The data that needs to be decoded into a type
+    /// - Returns: A decoded type
+    public func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
         try decode(type, from: DataReader(data: data))
     }
     
-    func decode<T>(_ type: T.Type, from dataReader: DataReader) throws -> T where T : Decodable {
+    func decode<T: Decodable>(_ type: T.Type, from dataReader: DataReader) throws -> T {
         let currentOffset = dataReader.offset
         
         do {
@@ -60,6 +81,11 @@ public final class ScaleDecoder: ScaleDecoding, ScaleDecoderProvider {
         return try T(from: decoder)
     }
     
+    /// Initializes `ScaleDecoderContainer` which provides a specific container (keyed, unkeyed and single value) based on a type that needs to be decoded
+    ///  - Parameters:
+    ///     - codingPath: An array of `CodingKey` objects
+    ///     - userInfo: A dict containing user-defined
+    ///  - Returns: `ScaleDecoderContainer` object
     func decoder(
         dataReader: DataReader,
         adapterProvider: ScaleCodecAdapterProvider,
@@ -76,6 +102,7 @@ public final class ScaleDecoder: ScaleDecoding, ScaleDecoderProvider {
     }
 }
 
+// Handles containers for decoding
 private final class ScaleDecoderContainer: Decoder {
 
     var codingPath: [CodingKey]
@@ -99,6 +126,7 @@ private final class ScaleDecoderContainer: Decoder {
         self.userInfo = userInfo
     }
 
+    // Returns a single value decoding container
     func singleValueContainer() throws -> SingleValueDecodingContainer {
         ScaleSingleValueDecodingContainer(
             decoderProvider: decoderProvider,
@@ -109,6 +137,7 @@ private final class ScaleDecoderContainer: Decoder {
         )
     }
 
+    // Returns an unkeyed decoding container
     func unkeyedContainer() throws -> UnkeyedDecodingContainer {
         try ScaleUnkeyedDecodingContainer(
             decoderProvider: decoderProvider,
@@ -119,6 +148,7 @@ private final class ScaleDecoderContainer: Decoder {
         )
     }
 
+    // Returns a keyed decoding container
     func container<Key>(keyedBy type: Key.Type) throws -> KeyedDecodingContainer<Key> where Key : CodingKey {
         let container = ScaleKeyedDecodingContainer<Key>(
             decoderProvider: decoderProvider,

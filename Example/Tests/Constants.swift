@@ -10,5 +10,5 @@ enum Constants {
     static let webSocketUrl = "ws://echo.ws.sublab.dev"
     
     static let expectationLongTimeout: TimeInterval = 60
-    static let expectationShortTimeout: TimeInterval = 1
+    static let singleTestTime: TimeInterval = 3
 }

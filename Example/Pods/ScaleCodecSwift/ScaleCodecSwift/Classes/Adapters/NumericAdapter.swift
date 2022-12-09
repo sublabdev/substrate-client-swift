@@ -1,5 +1,6 @@
 import Foundation
 
+/// A generic numeric adapter that handles read and write operations for numeric types (conforming to `FixedWidthInteger` protocol)
 class NumericAdapter<T: FixedWidthInteger>: ScaleCodecAdapter<T> where T: Codable {
     override func read(_ type: T.Type, from reader: DataReader) throws -> T {
         let stride = MemoryLayout<T>.stride

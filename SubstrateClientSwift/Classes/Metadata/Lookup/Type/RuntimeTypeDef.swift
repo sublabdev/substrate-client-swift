@@ -1,6 +1,7 @@
 import Foundation
 
-enum RuntimeTypeDef: Codable {
+/// Runtime type definition
+public enum RuntimeTypeDef: Codable {
     enum CodingKeys: Int, CodingKey {
         case composite
         case variant

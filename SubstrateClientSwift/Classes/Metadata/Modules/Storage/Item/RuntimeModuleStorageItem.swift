@@ -1,6 +1,7 @@
 import Foundation
 
-struct RuntimeModuleStorageItem: Codable {
+/// Runtime module storage item
+public struct RuntimeModuleStorageItem: Codable {
     let name: String
     let modifier: RuntimeModuleStorageItemModifier
     let type: RuntimeModuleStorageItemType

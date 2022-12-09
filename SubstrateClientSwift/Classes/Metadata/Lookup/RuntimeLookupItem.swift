@@ -1,7 +1,8 @@
 import BigInt
 import Foundation
 
-struct RuntimeLookupItem: Codable {
+/// Runtime lookup item. Consists of an id and runtime type.
+public struct RuntimeLookupItem: Codable {
     let id: BigUInt
     let type: RuntimeType
 }

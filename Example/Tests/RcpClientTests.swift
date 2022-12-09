@@ -39,7 +39,7 @@ class RpcClientTests: XCTestCase {
         handleSuccessRequestForUrl(url)
     }
     
-    func testRpcRequestFor() {
+    func testRpcRequestForPolkadot() {
         guard let url = URL(string: Constants.polkadotUrl) else {
             XCTFail()
             return
