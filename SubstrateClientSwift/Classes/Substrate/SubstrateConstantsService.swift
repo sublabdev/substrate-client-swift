@@ -1,6 +1,5 @@
 import Foundation
 import ScaleCodecSwift
-import Combine
 
 /// Substrate constants service. Handles fetching runtime module constant
 class SubstrateConstantsService {
@@ -11,7 +10,6 @@ class SubstrateConstantsService {
     
     private let codec: ScaleCoder
     private let lookup: SubstrateLookupService
-    private var anyCancellable = Set<AnyCancellable>()
     
     /// Creates Substrate constants service
     /// - Parameters:
@@ -26,8 +24,8 @@ class SubstrateConstantsService {
     /// - Parameters:
     ///     - moduleName: Module's name in which the constant should be looked for
     ///     - constantName: Constant name by which the constant should be found
-    /// - Returns: `AnyPublisher` with an optional `RuntimeModuleConstant`
-    func find(moduleName: String, constantName: String) -> AnyPublisher<RuntimeModuleConstant?, Never> {
+    /// - Returns: An optional `RuntimeModuleConstant`
+    func find(moduleName: String, constantName: String) -> RuntimeModuleConstant? {
         lookup.findConstant(moduleName: moduleName, constantName: constantName)
     }
     
@@ -42,21 +40,16 @@ class SubstrateConstantsService {
         constantName: String,
         completion: @escaping (T?, ConstantServiceError?) -> Void
     ) {
-        find(moduleName: moduleName, constantName: constantName)
-            .sink { [weak self] result in
-                guard let result = result else {
-                    completion(nil, .noResult)
-                    return
-                }
-                
-                do {
-                    let fetchedValue = try self?.fetch(T.self, constant: result)
-                    completion(fetchedValue, nil)
-                } catch {
-                    completion(nil, .fetchingFailure)
-                }
-            }
-            .store(in: &anyCancellable)
+        guard let runtimeModuleConstant = find(moduleName: moduleName, constantName: constantName) else {
+            completion(nil, .noResult)
+            return
+        }
+        do {
+            let fetchedValue = try fetch(T.self, constant: runtimeModuleConstant)
+            completion(fetchedValue, nil)
+        } catch {
+            completion(nil, .fetchingFailure)
+        }
     }
     
     /// Decodes the value bytes of a runtime module constant into a specified type

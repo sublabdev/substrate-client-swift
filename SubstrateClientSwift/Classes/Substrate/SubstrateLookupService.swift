@@ -1,5 +1,4 @@
 import Foundation
-import Combine
 
 /// An object holding information about a module
 private struct ModulePath: Hashable {
@@ -9,7 +8,7 @@ private struct ModulePath: Hashable {
 
 /// Substrate lookup serivce
 class SubstrateLookupService {
-    private let runtimeMetadata: PassthroughSubject<RuntimeMetadata?, Never>
+    private var runtimeMetadata: RuntimeMetadata?
     private let namingPolicy: SubstrateClientNamingPolicy
     
     // MARK: - Caches
@@ -22,34 +21,35 @@ class SubstrateLookupService {
     ///     - runtimeMetadata: A `PassthroughSubject` which holds an optional `RuntimeMetadata`
     ///     - namingPolicy: Naming policy
     init(
-        runtimeMetadata: PassthroughSubject<RuntimeMetadata?, Never>,
+        runtimeMetadata: RuntimeMetadata?,
         namingPolicy: SubstrateClientNamingPolicy
     ) {
         self.runtimeMetadata = runtimeMetadata
         self.namingPolicy = namingPolicy
     }
     
+    /// Updates the runtime metadata in the lookup service
+    /// - Parameters:
+    ///     - runtimeMetadata: A runtime metadata to update with the existing one
+    func updateLookupService(with runtimeMetadata: RuntimeMetadata?) {
+        self.runtimeMetadata = runtimeMetadata
+    }
+    
     /// Finds a runtime module for a provided name
     /// - Parameters:
     ///     - name: The name to find a module for
-    /// - Returns: `AnyPublisher` that holds an optional `RuntimeModule`
-    func findModule(name: String) -> AnyPublisher<RuntimeModule?, Never> {
-        runtimeMetadata
-            .map { [weak self] metadata in
-                guard let `self` = self else { return nil }
-                
-                if let module = self.modulesCache[name] {
-                    return module
-                }
-                
-                let module = metadata?.modules.first(where: { self.equals(lhs: $0.name, rhs: name) })
-                if module != nil {
-                    self.modulesCache[name] = module
-                }
-                
-                return module
-            }
-            .eraseToAnyPublisher()
+    /// - Returns: Found runtime module
+    func findModule(name: String) -> RuntimeModule? {
+        if let module = self.modulesCache[name] {
+            return module
+        }
+        
+        let module = runtimeMetadata?.modules.first(where: { self.equals(lhs: $0.name, rhs: name) })
+        if module != nil {
+            self.modulesCache[name] = module
+        }
+        
+        return module
     }
     
     // MARK: - Finding Constant
@@ -70,17 +70,14 @@ class SubstrateLookupService {
     /// - Parameters:
     ///     - moduleName: Runtime module to search in
     ///     - constantName: The name of the constant to be searched by
+    /// - Returns: Found runtime module constant
     func findConstant(
         moduleName: String,
         constantName: String
-    ) -> AnyPublisher<RuntimeModuleConstant?, Never> {
-        findModule(name: moduleName)
-            .map { [weak self] module in
-                guard let module = module else { return nil }
-                
-                return self?.findConstant(module: module, name: constantName)
-            }
-            .eraseToAnyPublisher()
+    ) -> RuntimeModuleConstant? {
+        guard let module = findModule(name: moduleName) else { return nil }
+        
+        return findConstant(module: module, name: constantName)
     }
     
     // MARK: - Private
@@ -128,20 +125,13 @@ class SubstrateLookupService {
     /// - Parameters:
     ///     - moduleName: Module's name to fetch
     ///     - itemName: Storage item's name
-    /// - Returns: `AnyPublisher` which contains an optional storage item result
+    /// - Returns: An optional storage item result
     func findStorageItem(
         moduleName: String,
         itemName: String
-    ) -> AnyPublisher<FindStorageItemResult?, Never> {
-        findModule(name: moduleName)
-            .map { [weak self] module in
-                guard let module = module else {
-                    return nil
-                }
-                
-                return self?.findStorageItem(module: module, name: itemName)
-            }
-            .eraseToAnyPublisher()
+    ) -> FindStorageItemResult? {
+        guard let module = findModule(name: moduleName) else { return nil }
+        return findStorageItem(module: module, name: itemName)
     }
 }
 

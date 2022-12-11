@@ -1,12 +1,10 @@
 import Foundation
 import ScaleCodecSwift
-import Combine
 
 /// Substrate storage service
 class SubstrateStorageService {
     private let lookup: SubstrateLookupService
     private let stateRpc: StateRpc
-    private var anyCancellable = Set<AnyCancellable>()
     
     /// Creates a substrate storage service
     /// - Parameters:
@@ -21,8 +19,8 @@ class SubstrateStorageService {
     /// - Parameters:
     ///     - moduleName: Module's name to fetch
     ///     - itemName: Storage item's name
-    /// - Returns: `AnyPublisher` which contains an optional storage item result
-    func find(moduleName: String, itemName: String) -> AnyPublisher<FindStorageItemResult?, Never> {
+    /// - Returns: An optional storage item result
+    func find(moduleName: String, itemName: String) -> FindStorageItemResult? {
         lookup.findStorageItem(moduleName: moduleName, itemName: itemName)
     }
     
@@ -36,11 +34,8 @@ class SubstrateStorageService {
         itemName: String,
         completion: @escaping(T?, RpcError?) -> Void
     ) {
-        find(moduleName: moduleName, itemName: itemName)
-            .sink { [weak self] result in
-                self?.handleFetchingStorageItem(from: result, completion: completion)
-            }
-            .store(in: &anyCancellable)
+        let storageItemResult = find(moduleName: moduleName, itemName: itemName)
+        handleFetchingStorageItem(from: storageItemResult, completion: completion)
     }
     
     /// Fetches a storage item after getting a module first
@@ -55,11 +50,8 @@ class SubstrateStorageService {
         key: Data,
         completion: @escaping(T?, RpcError?) -> Void
     ) {
-        find(moduleName: moduleName, itemName: itemName)
-            .sink { [weak self] result in
-                self?.handleFetchingStorageItem(from: result, key: key, completion: completion)
-            }
-            .store(in: &anyCancellable)
+        let storageItemResult = find(moduleName: moduleName, itemName: itemName)
+        handleFetchingStorageItem(from: storageItemResult, key: key, completion: completion)
     }
     
     /// Fetches a storage item after getting a module first
@@ -74,11 +66,8 @@ class SubstrateStorageService {
         keys: [Data],
         completion: @escaping(T?, RpcError?) -> Void
     ) {
-        find(moduleName: moduleName, itemName: itemName)
-            .sink { [weak self] result in
-                self?.handleFetchingStorageItem(from: result, keys: keys, completion: completion)
-            }
-            .store(in: &anyCancellable)
+        let storageItemResult = find(moduleName: moduleName, itemName: itemName)
+        handleFetchingStorageItem(from: storageItemResult, keys: keys, completion: completion)
     }
     
     /// Fetches storage item from a specified storage

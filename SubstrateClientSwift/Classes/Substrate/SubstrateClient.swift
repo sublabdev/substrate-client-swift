@@ -1,6 +1,5 @@
 import Foundation
 import ScaleCodecSwift
-import Combine
 
 /// Substrate client which holds substrate lookup service; constants service and storage service.
 /// Is the entering point for using those services.
@@ -9,9 +8,25 @@ class SubstrateClient {
     private let settings: SubstrateClientSettings
     private let hashers: HashersProvider
     let module: ModuleRpcProvider
-    private let runtimeMetadata: PassthroughSubject<RuntimeMetadata?, Never>
     private var timer : DispatchSourceTimer?
     private var getRutimeDispatchWorkItem: DispatchWorkItem?
+    private var lookupService: SubstrateLookupService?
+    private lazy var runtimeMetadataUpdateJob: JobWithTimeout = {
+        JobWithTimeout(timeout: TimeInterval(settings.runtimeMetadataUpdateTimeoutMs)) { [weak self] in
+            guard let `self` = self else { return }
+            
+            self.loadRuntime { runtimeMetadata, _ in
+                if let lookupService = self.lookupService {
+                    lookupService.updateLookupService(with: runtimeMetadata)
+                } else {
+                    self.lookupService = SubstrateLookupService(
+                        runtimeMetadata: runtimeMetadata,
+                        namingPolicy: self.settings.namingPolicy
+                    )
+                }
+            }
+        }
+    } ()
     
     var codec: ScaleCoder = {
         ScaleCoder.defaultCoder()
@@ -33,7 +48,6 @@ class SubstrateClient {
     init(url: URL, settings: SubstrateClientSettings = .default()) {
         self.url = url
         self.settings = settings
-        runtimeMetadata = settings.objectStorageFactory.make()
         let hashersProvider = DefaultHashersProvider()
         hashers = hashersProvider
         
@@ -45,33 +59,73 @@ class SubstrateClient {
     }
     
     /// Creates a Substrate lookup service
-    /// - Returns: Substrate lookup service
-    func lookupService() -> SubstrateLookupService {
-        SubstrateLookupService(runtimeMetadata: getRuntime(), namingPolicy: settings.namingPolicy)
+    /// - Parameters:
+    ///     - completion: Completion with either an optional `SubstrateLookupService` or optional `RpcError`
+    func lookupService(completion: @escaping (SubstrateLookupService?, RpcError?) -> Void) {
+        getRuntime { [weak self] result, rpcError in
+            guard let `self` = self, rpcError == nil else {
+                completion(nil, rpcError)
+                return
+            }
+            
+            let lookupService = SubstrateLookupService(
+                runtimeMetadata: result,
+                namingPolicy: self.settings.namingPolicy
+            )
+            
+            self.lookupService = lookupService
+            completion(lookupService, nil)
+            
+            // Start updating the metadata
+            self.runtimeMetadataUpdateJob.performIfNeeded()
+        }
     }
     /// Creates a Substrate constants service
-    /// - Returns: Substrate constants service
-    func constantsService() -> SubstrateConstantsService {
-        SubstrateConstantsService(codec: codec, lookup: lookupService())
+    /// - Parameters:
+    ///     - completion: Completion with either an optional `SubstrateConstantsService` or optional `RpcError`
+    func constantsService(completion: @escaping (SubstrateConstantsService?, RpcError?) -> Void) {
+        lookupService { [weak self] lookupService, rpcError in
+            guard let `self` = self, rpcError == nil else {
+                completion(nil, rpcError)
+                return
+            }
+            
+            guard let lookupService = lookupService else {
+                completion(nil, .responseError(.noData))
+                return
+            }
+            
+            completion(.init(codec: self.codec, lookup: lookupService), nil)
+        }
     }
     /// Creates a Substrate storage service
-    /// - Returns: Substrate storage service
-    func storageService() -> SubstrateStorageService {
-        SubstrateStorageService(lookup: lookupService(), stateRpc: module.stateRpc())
+    /// - Parameters:
+    ///     - completion: Completion with either an optional `SubstrateStorageService` or optional `RpcError`
+    func storageService(completion: @escaping (SubstrateStorageService?, RpcError?) -> Void) {
+        lookupService { [weak self] lookupService, rpcError in
+            guard let `self` = self, rpcError == nil else {
+                completion(nil, rpcError)
+                return
+            }
+            
+            guard let lookupService = lookupService else {
+                completion(nil, .responseError(.noData))
+                return
+            }
+            
+            completion(.init(lookup: lookupService, stateRpc: self.module.stateRpc()), nil)
+        }
     }
     
     // MARK: - Private
-    /// Gets the runtime metadata, sends it to a `PassthroughSubject` and returns that subject
-    private func getRuntime() -> PassthroughSubject<RuntimeMetadata?, Never> {
-        loadRuntime { [weak self] result, error in
-            guard error == nil else { return }
-            self?.runtimeMetadata.send(result)
-        }
-        
-        return runtimeMetadata
+    // Gets runtime metadata
+    /// - Parameters:
+    ///     - completion: Completion with either an optional `RuntimeMetadata` or optional `RpcError`
+    private func getRuntime(completion: @escaping (RuntimeMetadata?, RpcError?) -> Void) {
+        loadRuntime(completion: completion)
     }
     
-    /// Gets runtime metadata
+    /// Loads runtime metadata
     /// - Parameters:
     ///     - completion: Completion with either an optional `RuntimeMetadata` or optional `RpcError`
     private func loadRuntime(completion: @escaping (RuntimeMetadata?, RpcError?) -> Void) {

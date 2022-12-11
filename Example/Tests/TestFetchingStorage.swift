@@ -1,7 +1,6 @@
 import XCTest
 @testable import SubstrateClientSwift
 import BigInt
-import Combine
 
 struct RpcStorageItem<T> {
     let module: String
@@ -22,7 +21,6 @@ struct RpcStorageItem<T> {
 }
 
 class TestFetchingStorage: XCTestCase {
-    private var anyCancellables = Set<AnyCancellable>()
     private let network: Endpoint = .kusama
     private lazy var client: SubstrateClient? = {
         guard let url = URL(string: network.endpointInfo.url) else { return nil }
@@ -57,20 +55,67 @@ class TestFetchingStorage: XCTestCase {
             XCTFail()
             return
         }
+     
+        let storageItemFetchingExpectation = XCTestExpectation()
+        let storageItemAccountFetchingExpectation = XCTestExpectation()
+        let storageItemFindingExpectation = XCTestExpectation()
+        let storageItemAccountFindingExpectation = XCTestExpectation()
         
-        testStorageItemFetching(client: client, item: storageItem)
-        testStorageItemFetching(client: client, item: storageItemAccount)
+        client.lookupService { [weak self] lookupService, rpcError in
+            XCTAssertNil(rpcError)
+            
+            guard let `self` = self, let lookupService = lookupService else {
+                XCTFail()
+                return
+            }
+
+            self.testStorageItemFetching(
+                lookupService: lookupService,
+                stateRpc: client.module.stateRpc(),
+                item: self.storageItem,
+                expectation: storageItemFetchingExpectation
+            )
+
+            self.testStorageItemFetching(
+                lookupService: lookupService,
+                stateRpc: client.module.stateRpc(),
+                item: self.storageItemAccount,
+                expectation: storageItemAccountFetchingExpectation
+            )
+            
+            self.testStorageItemFinding(
+                storageService: .init(lookup: lookupService, stateRpc: client.module.stateRpc()),
+                item: self.storageItem,
+                expectation: storageItemFindingExpectation
+            )
+            
+            self.testStorageItemFinding(
+                storageService: .init(lookup: lookupService, stateRpc: client.module.stateRpc()),
+                item: self.storageItem,
+                expectation: storageItemAccountFindingExpectation
+            )
+        }
         
-        testStorageItemFinding(client: client, item: storageItem)
-        testStorageItemFinding(client: client, item: storageItemAccount)
+        
+        let expectations = [
+            storageItemFetchingExpectation,
+            storageItemAccountFetchingExpectation,
+            storageItemFindingExpectation,
+            storageItemAccountFindingExpectation
+        ]
+        
+        wait(for: expectations, timeout: Constants.expectationLongTimeout)
     }
     
-    private func testStorageItemFetching<T: Decodable>(client:  SubstrateClient, item: RpcStorageItem<T>) {
-        let expectation = XCTestExpectation()
-        
+    private func testStorageItemFetching<T: Decodable>(
+        lookupService: SubstrateLookupService,
+        stateRpc: StateRpc,
+        item: RpcStorageItem<T>,
+        expectation: XCTestExpectation
+    ) {
         let service = SubstrateStorageService(
-            lookup: client.lookupService(),
-            stateRpc: client.module.stateRpc()
+            lookup: lookupService,
+            stateRpc: stateRpc
         )
         
         service.fetch(
@@ -79,6 +124,7 @@ class TestFetchingStorage: XCTestCase {
             keys: item.keys
         ) { (response: T?, error: RpcError?) in
             XCTAssertNotNil(response)
+            
             guard let result = response else {
                 XCTFail()
                 expectation.fulfill()
@@ -88,38 +134,26 @@ class TestFetchingStorage: XCTestCase {
             XCTAssertEqual(item.validate(value: result), true)
             expectation.fulfill()
         }
-        
-        wait(for: [expectation], timeout: Constants.expectationLongTimeout)
     }
     
     private func testStorageItemFinding<T: Codable>(
-        client:  SubstrateClient,
-        item: RpcStorageItem<T>
+        storageService: SubstrateStorageService,
+        item: RpcStorageItem<T>,
+        expectation: XCTestExpectation
     ) {
-        let expectation = XCTestExpectation()
-        let service = SubstrateStorageService(
-            lookup: client.lookupService(),
-            stateRpc: client.module.stateRpc()
-        )
+        let result = storageService.find(moduleName: item.module, itemName: item.item)
+        XCTAssertNotNil(result)
         
-        service.find(moduleName: item.module, itemName: item.item)
-            .first()
-            .sink { [weak self] result in
-                XCTAssertNotNil(result)
-                do {
-                    try self?.handleFoundItem(
-                        result,
-                        for: item,
-                        using: service,
-                        expectation: expectation
-                    )
-                } catch let error {
-                    XCTFail(error.localizedDescription)
-                }
-            }
-            .store(in: &anyCancellables)
-        
-        wait(for: [expectation], timeout: Constants.expectationLongTimeout)
+        do {
+            try handleFoundItem(
+                result,
+                for: item,
+                using: storageService,
+                expectation: expectation
+            )
+        } catch let error {
+            XCTFail(error.localizedDescription)
+        }
     }
     
     private func handleFoundItem<T: Codable>(
