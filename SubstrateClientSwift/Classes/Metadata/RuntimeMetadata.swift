@@ -2,7 +2,7 @@ import BigInt
 import Foundation
 
 /// Runtime Metadata
-public struct RuntimeMetadata: Codable {
+public class RuntimeMetadata: Codable {
     let magicNumber: UInt32
     let version: UInt8
     let lookup: RuntimeLookup

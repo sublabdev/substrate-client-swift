@@ -2,11 +2,15 @@ import BigInt
 import Foundation
 
 /// Runtime lookup. Holds an array of lookup items
-public struct RuntimeLookup: Codable {
+public class RuntimeLookup: Codable {
     let items: [RuntimeLookupItem]
-    
+
     private var itemsByIndices: [(BigUInt, RuntimeLookupItem)] {
         items.enumerated().map { (BigUInt($0), $1) }
+    }
+    
+    init(items: [RuntimeLookupItem]) {
+        self.items = items
     }
     
     /// Finds a lookup item by an index

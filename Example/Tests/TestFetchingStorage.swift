@@ -61,10 +61,8 @@ class TestFetchingStorage: XCTestCase {
         let storageItemFindingExpectation = XCTestExpectation()
         let storageItemAccountFindingExpectation = XCTestExpectation()
         
-        client.lookupService { [weak self] lookupService, rpcError in
-            XCTAssertNil(rpcError)
-            
-            guard let `self` = self, let lookupService = lookupService else {
+        client.lookupService { [weak self] lookupService in
+            guard let `self` = self else {
                 XCTFail()
                 return
             }
@@ -83,17 +81,21 @@ class TestFetchingStorage: XCTestCase {
                 expectation: storageItemAccountFetchingExpectation
             )
             
-            self.testStorageItemFinding(
-                storageService: .init(lookup: lookupService, stateRpc: client.module.stateRpc()),
-                item: self.storageItem,
-                expectation: storageItemFindingExpectation
-            )
-            
-            self.testStorageItemFinding(
-                storageService: .init(lookup: lookupService, stateRpc: client.module.stateRpc()),
-                item: self.storageItem,
-                expectation: storageItemAccountFindingExpectation
-            )
+            do {
+                try self.testStorageItemFinding(
+                    storageService: .init(lookup: lookupService, stateRpc: client.module.stateRpc()),
+                    item: self.storageItem,
+                    expectation: storageItemFindingExpectation
+                )
+
+                try self.testStorageItemFinding(
+                    storageService: .init(lookup: lookupService, stateRpc: client.module.stateRpc()),
+                    item: self.storageItem,
+                    expectation: storageItemAccountFindingExpectation
+                )
+            } catch let error {
+                XCTFail(error.localizedDescription)
+            }
         }
         
         
@@ -140,20 +142,9 @@ class TestFetchingStorage: XCTestCase {
         storageService: SubstrateStorageService,
         item: RpcStorageItem<T>,
         expectation: XCTestExpectation
-    ) {
-        let result = storageService.find(moduleName: item.module, itemName: item.item)
-        XCTAssertNotNil(result)
-        
-        do {
-            try handleFoundItem(
-                result,
-                for: item,
-                using: storageService,
-                expectation: expectation
-            )
-        } catch let error {
-            XCTFail(error.localizedDescription)
-        }
+    ) throws {
+        let result = try storageService.find(moduleName: item.module, itemName: item.item)
+        try handleFoundItem(result, for: item, using: storageService, expectation: expectation)
     }
     
     private func handleFoundItem<T: Codable>(

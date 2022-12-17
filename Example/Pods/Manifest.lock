@@ -23,9 +23,9 @@ PODS:
   - xxHash-Swift (1.1.1)
 
 DEPENDENCIES:
-  - CommonSwift (from `https://github.com/sublabdev/common-swift.git`, commit `5bdbe0884ebbdaa8bec9b2f73133764c489d180f`)
-  - HashingSwift (from `https://github.com/sublabdev/hashing-swift.git`, commit `23d7e277f2ee81307818e66f49af2961fc4cbd06`)
-  - ScaleCodecSwift (from `https://github.com/sublabdev/scale-codec-swift`, commit `fbe9654d732274757b3fcd0951c04c38bf0d1b6e`)
+  - CommonSwift (from `https://github.com/sublabdev/common-swift.git`, commit `fd97ff6ef1adc54be966e7d2e125127c979af68b`)
+  - HashingSwift (from `https://github.com/sublabdev/hashing-swift.git`, commit `2d7e4c65e7247aa8a77f1dc9ea9e43ba3a23e266`)
+  - ScaleCodecSwift (from `https://github.com/sublabdev/scale-codec-swift`, commit `a226e43d50f309b687255499464ff65adc87e466`)
   - SubstrateClientSwift (from `../`)
 
 SPEC REPOS:
@@ -38,26 +38,26 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   CommonSwift:
-    :commit: 5bdbe0884ebbdaa8bec9b2f73133764c489d180f
+    :commit: fd97ff6ef1adc54be966e7d2e125127c979af68b
     :git: https://github.com/sublabdev/common-swift.git
   HashingSwift:
-    :commit: 23d7e277f2ee81307818e66f49af2961fc4cbd06
+    :commit: 2d7e4c65e7247aa8a77f1dc9ea9e43ba3a23e266
     :git: https://github.com/sublabdev/hashing-swift.git
   ScaleCodecSwift:
-    :commit: fbe9654d732274757b3fcd0951c04c38bf0d1b6e
+    :commit: a226e43d50f309b687255499464ff65adc87e466
     :git: https://github.com/sublabdev/scale-codec-swift
   SubstrateClientSwift:
     :path: "../"
 
 CHECKOUT OPTIONS:
   CommonSwift:
-    :commit: 5bdbe0884ebbdaa8bec9b2f73133764c489d180f
+    :commit: fd97ff6ef1adc54be966e7d2e125127c979af68b
     :git: https://github.com/sublabdev/common-swift.git
   HashingSwift:
-    :commit: 23d7e277f2ee81307818e66f49af2961fc4cbd06
+    :commit: 2d7e4c65e7247aa8a77f1dc9ea9e43ba3a23e266
     :git: https://github.com/sublabdev/hashing-swift.git
   ScaleCodecSwift:
-    :commit: fbe9654d732274757b3fcd0951c04c38bf0d1b6e
+    :commit: a226e43d50f309b687255499464ff65adc87e466
     :git: https://github.com/sublabdev/scale-codec-swift
 
 SPEC CHECKSUMS:
@@ -71,6 +71,6 @@ SPEC CHECKSUMS:
   SubstrateClientSwift: b1be4a5bfad9f3fbe46b5b042efad0e8878f1fc3
   xxHash-Swift: 13ebcbfc48658a5acf3777751e64b18c0f110d25
 
-PODFILE CHECKSUM: 9d722ef5177811b384abff506ecd9c3b2beeeaa7
+PODFILE CHECKSUM: 16f5336436308fd969563232e3ca9d27c35fabd7
 
 COCOAPODS: 1.11.3

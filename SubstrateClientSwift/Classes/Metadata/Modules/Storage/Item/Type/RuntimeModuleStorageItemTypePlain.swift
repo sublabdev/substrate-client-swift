@@ -2,6 +2,10 @@ import BigInt
 import Foundation
 
 /// Runtime module storage item of plain type
-struct RuntimeModuleStorageItemTypePlain: Codable {
+class RuntimeModuleStorageItemTypePlain: Codable {
     let type: BigUInt
+    
+    init(type: BigUInt) {
+        self.type = type
+    }
 }

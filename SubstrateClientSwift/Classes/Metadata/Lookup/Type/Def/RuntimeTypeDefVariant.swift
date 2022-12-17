@@ -1,8 +1,12 @@
 import Foundation
 
 /// Variant runtime type
-public struct RuntimeTypeDefVariant: Codable {
+public class RuntimeTypeDefVariant: Codable {
     let variants: [Variant]
+    
+    init(variants: [Variant]) {
+        self.variants = variants
+    }
     
     struct Variant: Codable {
         let name: String

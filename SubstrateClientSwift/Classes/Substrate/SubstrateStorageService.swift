@@ -19,11 +19,11 @@ class SubstrateStorageService {
     /// - Parameters:
     ///     - moduleName: Module's name to fetch
     ///     - itemName: Storage item's name
-    /// - Returns: An optional storage item result
-    func find(moduleName: String, itemName: String) -> FindStorageItemResult? {
-        lookup.findStorageItem(moduleName: moduleName, itemName: itemName)
+    /// - Returns: A storage item from a module
+    func find(moduleName: String, itemName: String) throws -> FindStorageItemResult? {
+        try lookup.findStorageItem(moduleName: moduleName, itemName: itemName)
     }
-    
+
     /// Fetches a storage item after getting a module first
     /// - Parameters:
     ///     - moduleName: Module's name to fetch
@@ -34,8 +34,16 @@ class SubstrateStorageService {
         itemName: String,
         completion: @escaping(T?, RpcError?) -> Void
     ) {
-        let storageItemResult = find(moduleName: moduleName, itemName: itemName)
-        handleFetchingStorageItem(from: storageItemResult, completion: completion)
+        do {
+            guard let storageItemResult = try find(moduleName: moduleName, itemName: itemName) else {
+                completion(nil, .responseError(.noData))
+                return
+            }
+            
+            handleFetchingStorageItem(from: storageItemResult, completion: completion)
+        } catch {
+            completion(nil, .responseError(.noData))
+        }
     }
     
     /// Fetches a storage item after getting a module first
@@ -50,8 +58,16 @@ class SubstrateStorageService {
         key: Data,
         completion: @escaping(T?, RpcError?) -> Void
     ) {
-        let storageItemResult = find(moduleName: moduleName, itemName: itemName)
-        handleFetchingStorageItem(from: storageItemResult, key: key, completion: completion)
+        do {
+            guard let storageItemResult = try find(moduleName: moduleName, itemName: itemName) else {
+                completion(nil, .responseError(.noData))
+                return
+            }
+            
+            handleFetchingStorageItem(from: storageItemResult, key: key, completion: completion)
+        } catch {
+            completion(nil, .responseError(.noData))
+        }
     }
     
     /// Fetches a storage item after getting a module first
@@ -66,8 +82,16 @@ class SubstrateStorageService {
         keys: [Data],
         completion: @escaping(T?, RpcError?) -> Void
     ) {
-        let storageItemResult = find(moduleName: moduleName, itemName: itemName)
-        handleFetchingStorageItem(from: storageItemResult, keys: keys, completion: completion)
+        do {
+            guard let storageItemResult = try find(moduleName: moduleName, itemName: itemName) else {
+                completion(nil, .responseError(.noData))
+                return
+            }
+            
+            handleFetchingStorageItem(from: storageItemResult, keys: keys, completion: completion)
+        } catch {
+            completion(nil, .responseError(.noData))
+        }
     }
     
     /// Fetches storage item from a specified storage

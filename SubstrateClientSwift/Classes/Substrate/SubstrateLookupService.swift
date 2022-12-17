@@ -8,7 +8,11 @@ private struct ModulePath: Hashable {
 
 /// Substrate lookup serivce
 class SubstrateLookupService {
-    private var runtimeMetadata: RuntimeMetadata?
+    enum Error: Swift.Error {
+        case noRuntimeMetadata
+    }
+    
+    weak var runtimeMetadata: RuntimeMetadata?
     private let namingPolicy: SubstrateClientNamingPolicy
     
     // MARK: - Caches
@@ -20,31 +24,31 @@ class SubstrateLookupService {
     /// - Parameters:
     ///     - runtimeMetadata: A `PassthroughSubject` which holds an optional `RuntimeMetadata`
     ///     - namingPolicy: Naming policy
-    init(
-        runtimeMetadata: RuntimeMetadata?,
-        namingPolicy: SubstrateClientNamingPolicy
-    ) {
-        self.runtimeMetadata = runtimeMetadata
+    init(namingPolicy: SubstrateClientNamingPolicy) {
         self.namingPolicy = namingPolicy
     }
     
-    /// Updates the runtime metadata in the lookup service
-    /// - Parameters:
-    ///     - runtimeMetadata: A runtime metadata to update with the existing one
-    func updateLookupService(with runtimeMetadata: RuntimeMetadata?) {
-        self.runtimeMetadata = runtimeMetadata
+    /// Returns the currrent runtime metadata
+    /// - Returns: Found runtime module
+    private func tryRuntimeMetadata() throws -> RuntimeMetadata {
+        guard let runtimeMetadata = runtimeMetadata else {
+            throw Error.noRuntimeMetadata
+        }
+        
+        return runtimeMetadata
     }
     
-    /// Finds a runtime module for a provided name
+    // Finds a runtime module for a provided name
     /// - Parameters:
     ///     - name: The name to find a module for
+    ///     - metadata: Metadata modules of which should be searched
     /// - Returns: Found runtime module
-    func findModule(name: String) -> RuntimeModule? {
+    private func getModule(name: String, from metadata: RuntimeMetadata?) -> RuntimeModule? {
         if let module = self.modulesCache[name] {
             return module
         }
         
-        let module = runtimeMetadata?.modules.first(where: { self.equals(lhs: $0.name, rhs: name) })
+        let module = metadata?.modules.first(where: { self.equals(lhs: $0.name, rhs: name) })
         if module != nil {
             self.modulesCache[name] = module
         }
@@ -74,8 +78,12 @@ class SubstrateLookupService {
     func findConstant(
         moduleName: String,
         constantName: String
-    ) -> RuntimeModuleConstant? {
-        guard let module = findModule(name: moduleName) else { return nil }
+    ) throws -> RuntimeModuleConstant? {
+        let metadata = try tryRuntimeMetadata()
+        
+        guard let module = self.getModule(name: moduleName, from: runtimeMetadata) else {
+            return nil
+        }
         
         return findConstant(module: module, name: constantName)
     }
@@ -99,8 +107,11 @@ class SubstrateLookupService {
     /// - Parameters:
     ///     - module: The module to use for searching the storage item
     ///     - name: The module's child's name
-    /// - Returns: Found storage item or nil
-    func findStorageItem(module: RuntimeModule, name: String) -> FindStorageItemResult? {
+    /// - Returns: A storage item in a module
+    private func findStorageItem(
+        module: RuntimeModule,
+        name: String
+    ) -> FindStorageItemResult? {
         let constantPath = ModulePath(moduleName: module.name, childName: name)
         guard let storage = module.storage else { return nil }
         
@@ -129,8 +140,13 @@ class SubstrateLookupService {
     func findStorageItem(
         moduleName: String,
         itemName: String
-    ) -> FindStorageItemResult? {
-        guard let module = findModule(name: moduleName) else { return nil }
+    ) throws -> FindStorageItemResult? {
+        let runtimeMetadata = try tryRuntimeMetadata()
+        
+        guard let module = self.getModule(name: moduleName, from: runtimeMetadata) else {
+            return nil
+        }
+        
         return findStorageItem(module: module, name: itemName)
     }
 }

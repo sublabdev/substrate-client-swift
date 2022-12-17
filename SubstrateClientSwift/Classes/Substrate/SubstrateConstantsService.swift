@@ -24,32 +24,28 @@ class SubstrateConstantsService {
     /// - Parameters:
     ///     - moduleName: Module's name in which the constant should be looked for
     ///     - constantName: Constant name by which the constant should be found
-    /// - Returns: An optional `RuntimeModuleConstant`
-    func find(moduleName: String, constantName: String) -> RuntimeModuleConstant? {
-        lookup.findConstant(moduleName: moduleName, constantName: constantName)
+    /// - Returns: A runtime module constant
+    func find(
+        moduleName: String,
+        constantName: String
+    ) throws -> RuntimeModuleConstant? {
+        try lookup.findConstant(moduleName: moduleName, constantName: constantName)
     }
     
     /// Fetches a runtime module constant by the constant's name in a specified module
     /// - Parameters:
     ///     - moduleName: Module's name in which the constant should be looked for
     ///     - constantName: Constant name by which the constant should be found
-    ///     - completion: The completion with either an optional result of generic type`T` or
-    ///     optional `ConstantServiceError`
+    /// - Returns: A runtime module constant
     func fetch<T: Decodable>(
         moduleName: String,
-        constantName: String,
-        completion: @escaping (T?, ConstantServiceError?) -> Void
-    ) {
-        guard let runtimeModuleConstant = find(moduleName: moduleName, constantName: constantName) else {
-            completion(nil, .noResult)
-            return
+        constantName: String
+    ) throws -> T? {
+        guard let runtimeModuleConstant = try find(moduleName: moduleName, constantName: constantName) else {
+            return nil
         }
-        do {
-            let fetchedValue = try fetch(T.self, constant: runtimeModuleConstant)
-            completion(fetchedValue, nil)
-        } catch {
-            completion(nil, .fetchingFailure)
-        }
+        
+        return try fetch(T.self, constant: runtimeModuleConstant)
     }
     
     /// Decodes the value bytes of a runtime module constant into a specified type
