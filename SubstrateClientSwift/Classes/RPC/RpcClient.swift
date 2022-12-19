@@ -20,7 +20,7 @@ class RpcClient {
     /// Sends a ready `RpcRequest`
     /// - Parameters:
     ///     - rpcRequest: `RpcRequest` that takes a generic codable params
-    ///     - completion: Completion with the request's result
+    ///     - completion: Completion with either the request's optional result or `RpcError`
     func send<Request: Codable, Response: Codable>(
         _ rpcRequest: RpcRequest<Request>,
         completion: @escaping (RpcResponse<Response>?, RpcError?) -> Void

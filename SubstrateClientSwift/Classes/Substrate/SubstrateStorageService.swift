@@ -15,11 +15,11 @@ class SubstrateStorageService {
         self.stateRpc = stateRpc
     }
     
-    /// Finds a storage item previously fetching the module
+    /// Finds a storage item result, which is a wrapper over runtime module storage item and runtime module storage itself, by previously fetching the module
     /// - Parameters:
     ///     - moduleName: Module's name to fetch
     ///     - itemName: Storage item's name
-    /// - Returns: A storage item from a module
+    /// - Returns: A storage item result from a module
     func find(moduleName: String, itemName: String) throws -> FindStorageItemResult? {
         try lookup.findStorageItem(moduleName: moduleName, itemName: itemName)
     }

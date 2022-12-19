@@ -5,7 +5,6 @@ import CommonSwift
 
 class TestRuntimeMetadata: XCTestCase {
     private let bundle = Bundle(for: TestRuntimeMetadata.self)
-    let adapterProvider = DefaultScaleCodecAdapterProvider()
     
     func testLocalMetadataParsing() {
         Endpoint.allCases.forEach {
@@ -78,11 +77,7 @@ class TestRuntimeMetadata: XCTestCase {
             return nil
         }
         
-        let codec = ScaleCoder(
-            encoder: ScaleEncoder(adapterProvider: adapterProvider),
-            decoder: ScaleDecoder(adapterProvider: adapterProvider)
-        )
-        
+        let codec = ScaleCoder.defaultCoder()
         return try codec.decoder.decode(RuntimeMetadata.self, from: hexData)
     }
 }

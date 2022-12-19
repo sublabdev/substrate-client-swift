@@ -1,6 +1,6 @@
 import Foundation
 
-/// RpcResponse
+/// RPC response
 struct RpcResponse<T: Codable>: Codable {
     let jsonrpc: String
     let id: Int64

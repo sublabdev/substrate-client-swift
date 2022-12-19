@@ -32,7 +32,8 @@ class SubstrateConstantsService {
         try lookup.findConstant(moduleName: moduleName, constantName: constantName)
     }
     
-    /// Fetches a runtime module constant by the constant's name in a specified module
+    /// Finds a runtime module constant by the constant's name in a specified module and returns its value bytes
+    /// decoded into a specified type
     /// - Parameters:
     ///     - moduleName: Module's name in which the constant should be looked for
     ///     - constantName: Constant name by which the constant should be found

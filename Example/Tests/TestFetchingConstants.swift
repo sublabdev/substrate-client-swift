@@ -2,6 +2,7 @@ import XCTest
 @testable import SubstrateClientSwift
 import BigInt
 import ScaleCodecSwift
+import CommonSwift
 
 private struct RpcConstant<T: Equatable> {
     let module: String
@@ -11,7 +12,7 @@ private struct RpcConstant<T: Equatable> {
 
 class TestFetchingConstants: XCTestCase {
     private let network: Endpoint = .kusama
-    private var constantsService: SubstrateConstantsService?
+    
     private lazy var client: SubstrateClient? = {
         guard let url = URL(string: network.endpointInfo.url) else { return nil }
         return SubstrateClient(url: url)
@@ -51,6 +52,23 @@ class TestFetchingConstants: XCTestCase {
     
     private func testStorageItem<T: Codable>(client: SubstrateClient, constant: RpcConstant<T>) {
         let storageItemFindingExpectation = XCTestExpectation()
+        let lookupServiceStorageItemFindingExpectation = XCTestExpectation()
+        
+        client.lookupService { [weak self] lookupService in
+            guard let `self` = self else {
+                XCTFail()
+                return
+            }
+
+            let constantService = SubstrateConstantsService(codec: ScaleCoder.defaultCoder(), lookup: lookupService)
+            
+            self.testService(
+                client: client,
+                constantService: constantService,
+                constant: constant,
+                expectation: lookupServiceStorageItemFindingExpectation
+            )
+        }
         
         client.constantsService { [weak self] constantService in
             guard let `self` = self else {
@@ -58,28 +76,44 @@ class TestFetchingConstants: XCTestCase {
                 return
             }
             
-            self.constantsService = constantService
-            
-            do {
-                try self.testStorageItemFetching(
-                    constantService: constantService,
-                    stateRpc: client.module.stateRpc(),
-                    constant: constant
-                )
-                
-                try self.testStorageItemFinding(
-                    constantService: constantService,
-                    codec: client.codec,
-                    constant: constant,
-                    expectation: storageItemFindingExpectation
-                )
-            }
-            catch let error {
-                XCTFail(error.localizedDescription)
-            }
+            self.testService(
+                client: client,
+                constantService: constantService,
+                constant: constant,
+                expectation: storageItemFindingExpectation
+            )
         }
         
-        wait(for: [storageItemFindingExpectation], timeout: Constants.expectationLongTimeout)
+        wait(
+            for: [storageItemFindingExpectation, lookupServiceStorageItemFindingExpectation],
+            timeout: Constants.expectationLongTimeout
+        )
+    }
+    
+    // MARK: - Private
+    private func testService<T: Codable>(
+        client: SubstrateClient,
+        constantService: SubstrateConstantsService,
+        constant: RpcConstant<T>,
+        expectation: XCTestExpectation
+    ) {
+        do {
+            try testStorageItemFetching(
+                constantService: constantService,
+                stateRpc: client.module.stateRpc(),
+                constant: constant
+            )
+            
+            try testStorageItemFinding(
+                constantService: constantService,
+                codec: client.codec,
+                constant: constant,
+                expectation: expectation
+            )
+        }
+        catch let error {
+            XCTFail(error.localizedDescription)
+        }
     }
     
     private func rpcConstant<T: Equatable>(from constant: Any, with expectedType: T.Type) -> RpcConstant<T>? {
