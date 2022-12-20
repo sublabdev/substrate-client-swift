@@ -19,6 +19,16 @@ it, simply add the following line to your Podfile:
 pod 'SubstrateClientSwift'
 ```
 
+## Usage Examples
+
+Usage examples can be found in the bellow link:
+
+- [WebSocketClient](https://github.com/sublabdev/substrate-client-swift/blob/runtime-functions-closure/Doc/WebSocketClient.md)
+- [RpcClient](https://github.com/sublabdev/substrate-client-swift/blob/runtime-functions-closure/Doc/RpcClient.md)
+- [RuntimeMetadata](https://github.com/sublabdev/substrate-client-swift/blob/runtime-functions-closure/Doc/RuntimeMetadata.md)
+- [SubstrateStorageService](https://github.com/sublabdev/substrate-client-swift/blob/runtime-functions-closure/Doc/SubstrateStorageService.md)
+- [SubstrateConstantsService](https://github.com/sublabdev/substrate-client-swift/blob/runtime-functions-closure/Doc/SubstrateConstantsService.md)
+
 ## Author
 
 Tigran Iskandaryan, tiger@sublab.dev
