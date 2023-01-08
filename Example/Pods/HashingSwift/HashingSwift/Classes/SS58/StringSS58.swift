@@ -10,7 +10,7 @@ public struct StringSS58 {
     
     /// Public key from provided String value
     /// - Returns: The generated public key
-    public func publicKey() throws -> Data {
+    public func accountId() throws -> AccountId {
         do {
             let decodedData = try decode()
             let networkTypeLength = try networkTypeLength(data: decodedData)

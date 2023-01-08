@@ -1,4 +1,5 @@
 import BigInt
+import CommonSwift
 import Foundation
 
 /// Runtime lookup. Holds an array of lookup items
@@ -19,5 +20,9 @@ public class RuntimeLookup: Codable {
     /// - Returns: A lookup item for a specific index
     func findItemByIndex(_ index: BigUInt) -> RuntimeLookupItem? {
         itemsByIndices.first { $0.0 == index }?.1
+    }
+    
+    func findItemByIndex(_ index: Int) -> RuntimeLookupItem? {
+        findItemByIndex(index)
     }
 }

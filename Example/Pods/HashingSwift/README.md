@@ -19,6 +19,13 @@ it, simply add the following line to your Podfile:
 ```ruby
 pod 'HashingSwift'
 ```
+## Usage Examples
+
+Usage examples can be found in the bellow links:
+
+- [SS58](https://github.com/sublabdev/hashing-swift/blob/dev/Doc/SS58.md)
+- [Blake2b](https://github.com/sublabdev/hashing-swift/blob/dev/Doc/Blake2b.md)
+- [XX](https://github.com/sublabdev/hashing-swift/blob/dev/Doc/XX.md)
 
 ## Author
 

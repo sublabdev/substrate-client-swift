@@ -17,5 +17,6 @@ Pod::Spec.new do |s|
   s.dependency 'BigInt'
   s.dependency 'CommonSwift'
   s.dependency 'HashingSwift'
+  s.dependency 'EncryptingSwift'
   
 end

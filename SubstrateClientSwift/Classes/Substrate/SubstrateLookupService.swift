@@ -1,4 +1,5 @@
 import Foundation
+import BigInt
 
 /// An object holding information about a module
 private struct ModulePath: Hashable {
@@ -28,6 +29,53 @@ class SubstrateLookupService {
         self.namingPolicy = namingPolicy
     }
     
+    // MARK: - Finding Constant
+    /// Finds constant with the provided name either in cache or in a runtime module
+    /// - Parameters:
+    ///     - module: Runtime module to search in if in the constants' cache the constant can not be found
+    ///     - name: The name of the constant to be searched by
+    /// - Returns: Found runtime module constant
+    private func findConstant(module: RuntimeModule, name: String) -> RuntimeModuleConstant? {
+        let constantPath = ModulePath(moduleName: module.name, childName: name)
+        let constant = constantsCache[constantPath] ?? module.constants.first(where: { $0.name == name })
+        constantsCache[constantPath] = constant
+        
+        return constant
+    }
+    
+    /// Finds constant with the provided name either in a runtime module after finding the module first
+    /// - Parameters:
+    ///     - moduleName: Runtime module to search in
+    ///     - constantName: The name of the constant to be searched by
+    /// - Returns: Found runtime module constant
+    func findConstant(
+        moduleName: String,
+        constantName: String
+    ) throws -> RuntimeModuleConstant? {
+        guard let module = self.getModule(name: moduleName, from: runtimeMetadata) else {
+            return nil
+        }
+        
+        return findConstant(module: module, name: constantName)
+    }
+    
+    /// Finds a runtime lookup item for a provided index
+    /// - Parameters:
+    ///     - index: Index for which a runtime lookup item should be found
+    /// - Returns: An optional runtime lookup item
+    func findRuntimeItem(index: BigUInt) -> RuntimeLookupItem? {
+        findRuntimeType(index: index)
+    }
+    
+    /// Finds a runtime module for a provided name using the existing runtime metadata
+    /// - Parameters:
+    ///     - name: The name under which a runtime module should be found
+    /// - Returns: An optional runtime module for a specific name
+    func findModule(name: String) -> RuntimeModule? {
+        getModule(name: name, from: runtimeMetadata)
+    }
+    
+    // MARK: - Private
     /// Returns the currrent runtime metadata
     /// - Returns: Found runtime module
     private func tryRuntimeMetadata() throws -> RuntimeMetadata {
@@ -56,39 +104,6 @@ class SubstrateLookupService {
         return module
     }
     
-    // MARK: - Finding Constant
-    /// Finds constant with the provided name either in cache or in a runtime module
-    /// - Parameters:
-    ///     - module: Runtime module to search in if in the constants' cache the constant can not be found
-    ///     - name: The name of the constant to be searched by
-    /// - Returns: Found runtime module constant
-    private func findConstant(module: RuntimeModule, name: String) -> RuntimeModuleConstant? {
-        let constantPath = ModulePath(moduleName: module.name, childName: name)
-        let constant = constantsCache[constantPath] ?? module.constants.first(where: { $0.name == name })
-        constantsCache[constantPath] = constant
-        
-        return constant
-    }
-    
-    /// Finds constant with the provided name either in a runtime module after finding the module first
-    /// - Parameters:
-    ///     - moduleName: Runtime module to search in
-    ///     - constantName: The name of the constant to be searched by
-    /// - Returns: Found runtime module constant
-    func findConstant(
-        moduleName: String,
-        constantName: String
-    ) throws -> RuntimeModuleConstant? {
-        let metadata = try tryRuntimeMetadata()
-        
-        guard let module = self.getModule(name: moduleName, from: runtimeMetadata) else {
-            return nil
-        }
-        
-        return findConstant(module: module, name: constantName)
-    }
-    
-    // MARK: - Private
     /// Compares Strings either lowercasing them or not based on a naming policy
     /// - Parameters:
     ///     - lhs: The first string
@@ -148,6 +163,14 @@ class SubstrateLookupService {
         }
         
         return findStorageItem(module: module, name: itemName)
+    }
+    
+    /// Finds a runtime lookup item for a provided index
+    /// - Parameters:
+    ///     - index: Index for which a runtime lookup item should be found
+    /// - Returns: An optional runtime lookup item
+    private func findRuntimeType(index: BigUInt) -> RuntimeLookupItem? {
+        runtimeMetadata?.lookup.findItemByIndex(index)
     }
 }
 

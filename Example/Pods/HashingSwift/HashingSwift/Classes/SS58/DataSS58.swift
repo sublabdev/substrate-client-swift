@@ -8,6 +8,22 @@ public struct DataSS58 {
         self.data = data
     }
     
+    /// Return `AccountId` hashed using blake2b for 256 bits if the provided data is
+    /// bigger then `SS58`'s public key's size. Otherwise return a plain `AccountId`.
+    /// The method might throw an error.
+    ///  - Returns: `AccountId` either hashed or plain.
+    public func accountId() throws -> AccountId {
+        if data.count > SS58.publicKeySize {
+            do {
+                return try data.hashing.blake2b_256()
+            } catch {
+                throw SS58.Error.invalidPublicKey
+            }
+        } else {
+            return data
+        }
+    }
+    
     /// Address for a specific network type
     ///  - Returns: An address based on the provided network type
     public func address(type: UInt) throws -> String {
@@ -15,17 +31,7 @@ public struct DataSS58 {
             throw SS58.Error.internal
         }
         
-        var publicKey: Data?
-        
-        if data.count > SS58.publicKeySize {
-            publicKey = try data.hashing.blake2b_256()
-        } else {
-            publicKey = data
-        }
-        
-        guard let publicKey = publicKey else {
-            throw SS58.Error.invalidPublicKey
-        }
+        let accountId = try accountId()
         
         let single = type & 0x3fff
         var networkType: [UInt8?]
@@ -54,8 +60,8 @@ public struct DataSS58 {
             throw SS58.Error.internal
         }
         
-        let checksum = try (prefix + networkTypeData + publicKey).hashing.blake2b_512()[0..<SS58.prefixSize]
-        return (networkTypeData + publicKey + checksum).base58.encode()
+        let checksum = try (prefix + networkTypeData + accountId).hashing.blake2b_512()[0..<SS58.prefixSize]
+        return (networkTypeData + accountId + checksum).base58.encode()
     }
 }
 

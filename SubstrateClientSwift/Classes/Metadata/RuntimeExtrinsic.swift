@@ -1,5 +1,5 @@
 import Foundation
 
 /// Runtime extrinsic
-public struct RuntimeExtrinsic: Codable {
+public class RuntimeExtrinsic: Codable {
 }

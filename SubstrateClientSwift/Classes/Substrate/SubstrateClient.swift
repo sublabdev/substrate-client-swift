@@ -26,19 +26,9 @@ class SubstrateClient {
             }
     }
     
-    private lazy var _lookupService = {
-        let lookupService = SubstrateLookupService(
-            namingPolicy: settings.namingPolicy
-        )
-        
-        self.runtime { [weak self] in
-            lookupService.runtimeMetadata = $0
-        }
-        
-        return lookupService
-    }()
+    private lazy var _lookupService = SubstrateLookupService(namingPolicy: settings.namingPolicy)
     
-    let codec: ScaleCoder = ScaleCoder.defaultCoder()
+    let codec: ScaleCoder = ScaleCoder.default()
     
     private lazy var webSocketClient: WebSocketClient = {
         WebSocketClient(
@@ -71,7 +61,8 @@ class SubstrateClient {
     ///     - onUpdate: Completion with a `SubstrateLookupService` containing an updated `RuntimeMetadata`
     public func lookupService(_ onUpdate: @escaping (SubstrateLookupService) -> Void) {
         runtime { [weak self] runtimeMetadata in
-            guard let self = self, self._lookupService.runtimeMetadata != nil else { return }
+            guard let self = self, let runtimeMetadata = runtimeMetadata else { return }
+            self._lookupService.runtimeMetadata = runtimeMetadata
             onUpdate(self._lookupService)
         }
     }
@@ -90,7 +81,7 @@ class SubstrateClient {
     }
     /// Creates a Substrate storage service
     /// - Parameters:
-    ///     - completion: Completion with either an optional `SubstrateStorageService`
+    ///     - completion: Completion with `SubstrateStorageService`
     func storageService(completion: @escaping (SubstrateStorageService) -> Void) {
         lookupService { [weak self] lookupService in
             guard let self = self else {
@@ -101,24 +92,26 @@ class SubstrateClient {
         }
     }
     
+    /// Creates a Substrate extrinsics servce
+    /// - Parameters:
+    ///     - completion: Completion with `SubstrateExtrinsicsService`
+    func extrinsicService(completion: @escaping (SubstrateExtrinsicsService) -> Void) {
+        lookupService { [weak self] lookupService in
+            guard let self = self else {
+                return
+            }
+            
+            completion(.init(codec: self.codec, lookup: lookupService, namingPolicy: self.settings.namingPolicy))
+        }
+    }
+    
     /// Subscribes for metadata updates and starts a job for update it from time to time
     /// - Parameters:
     ///     - completion: Completion with an optional and updated `RuntimeMetadata`
     public func runtime(_ updates: @escaping (RuntimeMetadata?) -> Void) {
-        getRuntime { [weak self] runtimeMetadata, error in
-            self?._lookupService.runtimeMetadata = runtimeMetadata
-            self?.subscribers.append(updates)
-            self?.runtimeMetadataUpdateJob.performIfNeeded()
-            updates(runtimeMetadata)
-        }
-    }
-    
-    // MARK: - Private
-    // Gets runtime metadata
-    /// - Parameters:
-    ///     - completion: Completion with either an optional `RuntimeMetadata` or optional `RpcError`
-    private func getRuntime(completion: @escaping (RuntimeMetadata?, RpcError?) -> Void) {
-        loadRuntime(completion: completion)
+        subscribers.append(updates)
+        runtimeMetadataUpdateJob.performIfNeeded()
+        updates(runtimeMetadata)
     }
     
     /// Loads runtime metadata

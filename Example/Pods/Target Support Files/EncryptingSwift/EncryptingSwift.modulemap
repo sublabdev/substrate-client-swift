@@ -1,0 +1,6 @@
+framework module EncryptingSwift {
+  umbrella header "EncryptingSwift-umbrella.h"
+
+  export *
+  module * { export * }
+}

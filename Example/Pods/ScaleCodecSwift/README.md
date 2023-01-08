@@ -19,6 +19,12 @@ it, simply add the following line to your Podfile:
 pod 'ScaleCodecSwift'
 ```
 
+## Usage Examples
+
+Usage examples can be found in the bellow link:
+
+- [ScaleCoder](https://github.com/sublabdev/scale-codec-swift/blob/dev/Doc/ScaleCoder.md)
+
 ## Author
 
 Tigran Iskandaryan, tiger@sublab.dev

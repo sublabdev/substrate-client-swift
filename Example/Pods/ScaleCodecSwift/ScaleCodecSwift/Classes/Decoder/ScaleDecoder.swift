@@ -53,7 +53,10 @@ public final class ScaleDecoder: ScaleDecoding, ScaleDecoderProvider {
         try decode(type, from: DataReader(data: data))
     }
     
+    private var testTuples = [(AnyClass, Date)]()
+    
     func decode<T: Decodable>(_ type: T.Type, from dataReader: DataReader) throws -> T {
+        let currentTime = Date()
         let currentOffset = dataReader.offset
         
         do {
@@ -62,7 +65,17 @@ public final class ScaleDecoder: ScaleDecoding, ScaleDecoderProvider {
             // Other types will be resolved via GenericAdapter though types like array and all other optionals will be resolved
             // via their custom adapters
             // Struct, Enums will throw 'No adapter found' error thus should be resolved via basic containers
-            return try adapterProvider.adapter(for: type).read(type, from: dataReader)
+            let result = try adapterProvider.adapter(for: type).read(type, from: dataReader)
+            let dif = Date().timeIntervalSince1970 - currentTime.timeIntervalSince1970
+            
+            if dif > 0.1 {
+//                if dif > 3 {
+//                    print("result: \(result)")
+//                }
+                print("[ScaleDecoder][0][\(type)] Decoded within: \(dif)")
+            }
+    
+            return result
         } catch ScaleCodecAdapterProvider.Error.noAdapterFound {
             // No adapter found hence resolving via the default way
         } catch let error {
@@ -78,7 +91,14 @@ public final class ScaleDecoder: ScaleDecoding, ScaleDecoderProvider {
             userInfo: userInfo
         )
         
-        return try T(from: decoder)
+        let result = try T(from: decoder)
+        let dif = Date().timeIntervalSince1970 - currentTime.timeIntervalSince1970
+        
+        if dif > 0.1 {
+            print("[ScaleDecoder][1][\(type)] Decoded within: \(dif)")
+        }
+    
+        return result
     }
     
     /// Initializes `ScaleDecoderContainer` which provides a specific container (keyed, unkeyed and single value) based on a type that needs to be decoded

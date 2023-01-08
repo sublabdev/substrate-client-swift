@@ -1,6 +1,8 @@
 import Foundation
 import CommonSwift
 
+typealias Balance = UInt128
+
 /// Account information
 struct Account: Codable {
     let nonce: UInt32
@@ -10,9 +12,9 @@ struct Account: Codable {
     let data: AccountData
     
     struct AccountData: Codable {
-        let free: UInt128
-        let reserved: UInt128
-        let miscFrozen: UInt128
-        let feeFrozen: UInt128
+        let free: Balance
+        let reserved: Balance
+        let miscFrozen: Balance
+        let feeFrozen: Balance
     }
 }

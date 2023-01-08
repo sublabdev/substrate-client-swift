@@ -1,0 +1,6 @@
+framework module ed25519swift {
+  umbrella header "ed25519swift-umbrella.h"
+
+  export *
+  module * { export * }
+}

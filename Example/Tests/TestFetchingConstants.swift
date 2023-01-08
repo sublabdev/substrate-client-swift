@@ -60,7 +60,7 @@ class TestFetchingConstants: XCTestCase {
                 return
             }
 
-            let constantService = SubstrateConstantsService(codec: ScaleCoder.defaultCoder(), lookup: lookupService)
+            let constantService = SubstrateConstantsService(codec: ScaleCoder.default(), lookup: lookupService)
             
             self.testService(
                 client: client,
