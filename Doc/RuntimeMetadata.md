@@ -19,9 +19,10 @@ let client = RpcClient(url: url)
 
 ## Usage
 
-After client the client, we can send requests. For that we will use the `client`'s `sendRequest` method. It receives two
-parameters. The first one is the method for which we want to get a response, and the second one
-is the completion with a generic optional `Result`, conforming to `Codable` or optional `RpcError`. If we have a response, we try to get a metadata from it.
+After getting the client, we can send requests. For that we will use the `client`'s `sendRequest` method.
+It receives two parameters. The first one is the method for which we want to get a response, and the second one
+is the completion with a generic optional `Result`, conforming to `Codable` or optional `RpcError`.
+If we have a response, we try to get a metadata from it.
 
 ```Swift
 client.sendRequest(method: method) { [weak self] (response: String?, error: RpcError?) in

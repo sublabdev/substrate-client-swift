@@ -10,7 +10,6 @@ class SubstrateClient {
     let module: ModuleRpcProvider
     private var timer : DispatchSourceTimer?
     private var getRutimeDispatchWorkItem: DispatchWorkItem?
-    private var lookupService: SubstrateLookupService?
     private var subscribers: [(RuntimeMetadata?) -> Void] = []
     
     private weak var runtimeMetadata: RuntimeMetadata? = nil {
@@ -27,7 +26,6 @@ class SubstrateClient {
     }
     
     private lazy var _lookupService = SubstrateLookupService(namingPolicy: settings.namingPolicy)
-    
     let codec: ScaleCoder = ScaleCoder.default()
     
     private lazy var webSocketClient: WebSocketClient = {
@@ -52,14 +50,16 @@ class SubstrateClient {
         module = DefaultModuleRpcProvider(
             codec: codec,
             rpcClient: RpcClient(url: url),
-            hashersProvider: hashersProvider
+            hashersProvider: hashersProvider,
+            clientQueue: settings.clientQueue,
+            innerQueue: settings.innerQueue
         )
     }
     
-    // Creates a Substrate lookup service
+    /// Creates a Substrate lookup service
     /// - Parameters:
     ///     - onUpdate: Completion with a `SubstrateLookupService` containing an updated `RuntimeMetadata`
-    public func lookupService(_ onUpdate: @escaping (SubstrateLookupService) -> Void) {
+    private func lookupService(_ onUpdate: @escaping (SubstrateLookupService) -> Void) {
         runtime { [weak self] runtimeMetadata in
             guard let self = self, let runtimeMetadata = runtimeMetadata else { return }
             self._lookupService.runtimeMetadata = runtimeMetadata
@@ -76,9 +76,10 @@ class SubstrateClient {
                 return
             }
             
-            completion(.init(codec: self.codec, lookup: lookupService))
+            completion(.init(codec: self.codec, lookup: lookupService, clientQueue: self.settings.clientQueue))
         }
     }
+    
     /// Creates a Substrate storage service
     /// - Parameters:
     ///     - completion: Completion with `SubstrateStorageService`
@@ -88,26 +89,40 @@ class SubstrateClient {
                 return
             }
             
-            completion(.init(lookup: lookupService, stateRpc: self.module.stateRpc()))
+            let storageService = SubstrateStorageService(
+                lookup: lookupService,
+                stateRpc: self.module.stateRpc(),
+                clientQueue: self.settings.clientQueue,
+                innerQueue: self.settings.innerQueue
+            )
+            
+            completion(storageService)
         }
     }
     
     /// Creates a Substrate extrinsics servce
     /// - Parameters:
     ///     - completion: Completion with `SubstrateExtrinsicsService`
-    func extrinsicService(completion: @escaping (SubstrateExtrinsicsService) -> Void) {
+    func extrinsicsService(completion: @escaping (SubstrateExtrinsicsService) -> Void) {
         lookupService { [weak self] lookupService in
             guard let self = self else {
                 return
             }
             
-            completion(.init(codec: self.codec, lookup: lookupService, namingPolicy: self.settings.namingPolicy))
+            let extrinsicsService = SubstrateExtrinsicsService(
+                codec: self.codec,
+                lookup: lookupService,
+                namingPolicy: self.settings.namingPolicy,
+                clientQueue: self.settings.clientQueue
+            )
+            
+            completion(extrinsicsService)
         }
     }
     
     /// Subscribes for metadata updates and starts a job for update it from time to time
     /// - Parameters:
-    ///     - completion: Completion with an optional and updated `RuntimeMetadata`
+    ///     - updates: Completion with an optional and updated `RuntimeMetadata`
     public func runtime(_ updates: @escaping (RuntimeMetadata?) -> Void) {
         subscribers.append(updates)
         runtimeMetadataUpdateJob.performIfNeeded()

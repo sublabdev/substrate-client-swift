@@ -89,29 +89,30 @@ class TestExtrinsics: XCTestCase {
         let expectation = XCTestExpectation()
         expectations.append(expectation)
         
-        client.extrinsicService { [weak self] extrinsicsService in
-            let unsigned = extrinsicsService.makeUnsigned(
+        client.extrinsicsService { [weak self] extrinsicsService in
+            extrinsicsService.makeUnsigned(
                 moduleName: testCase.moduleName,
                 callName: testCase.callName,
                 callValue: testCase.callValue
-            )
-            
-            XCTAssertNotNil(unsigned)
-            
-            do {
-                let decodedUnsignedHex = testCase.unsignedHex.hex.decode()
-                let encodedUnsigned = try self?.coder.encoder.encode(unsigned)
+            ) { unsigned in
+                XCTAssertNotNil(unsigned)
                 
-                if decodedUnsignedHex != encodedUnsigned {
-                    let expectedValue = testCase.unsignedHex
-                    let recievedValue = encodedUnsigned?.hex.encode(includePrefix: true)
+                do {
+                    let decodedUnsignedHex = testCase.unsignedHex.hex.decode()
+                    let encodedUnsigned = try self?.coder.encoder.encode(unsigned)
+                    
+                    if decodedUnsignedHex != encodedUnsigned {
+                        let expectedValue = testCase.unsignedHex
+                        let recievedValue = encodedUnsigned?.hex.encode(includePrefix: true)
+                        print("Expected to get \(expectedValue), but recieved: \(recievedValue)")
+                    }
+                    
+                    XCTAssertEqual(decodedUnsignedHex, encodedUnsigned)
+                    expectation.fulfill()
+                } catch let error {
+                    XCTFail(error.localizedDescription)
+                    expectation.fulfill()
                 }
-                
-                XCTAssertEqual(decodedUnsignedHex, encodedUnsigned)
-                expectation.fulfill()
-            } catch let error {
-                XCTFail(error.localizedDescription)
-                expectation.fulfill()
             }
         }
     }

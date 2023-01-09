@@ -5,10 +5,11 @@ Bellow is provided an example of how `SubstrateStorageService` can be used to ge
 ## Initialization
 
 First of all, we need to create the client. `SubstrateClient`'s initializer takes two parameters.
-The first one is the required `URL`, and the second one is settings. It helps to define how the
-data should be fetched and how it should be handled after that. It has a static func `default()`
-which provides the settings with a default configuration. The settings parameter in
-`SubstrateClient`'s initializer is predefined and set to default.
+The first one is the required `URL`, and the second one is settings. It has a static func `default()`
+which provides the settings with a default configuration. In this case the main
+thread is used. There is another method called `default(clientQueue:)` where a custom
+queue can be created. The settings parameter in`SubstrateClient`'s
+initializer is predefined and set to default.
 
 Here is how one could create a client:
 
@@ -17,23 +18,22 @@ guard let url = URL(string: network.endpointInfo.url) else { return nil }
 let client = SubstrateClient(url: url)
 ```
 
+or
+
+```Swift
+let client = SubstrateClient(url: url, settings: SubstrateClientSettings.default(clientQueue: DispatchQueue(label: "Some queue"))
+```
+
 The client has a property called `module` from where we can get access to an interface for getting
 `RuntimeMetadata` and fetching `StorageItems`.
 
-After the client is created, we need to create a substrate lookup service. It can be done
-by calling `lookupService(_ onUpdate:)` method on the client. It takes one parameter
-which is a closure with `SubstrateLookupService` object.
+After the client is created, we need to create a substrate storage service. It can be done
+by calling `storageService(completion:)` method on the client. It's completion closure has
+one parameter which ia `SubstrateStorageService` object.
 
 ```Swift
-client.lookupService { lookupService in
+client.storageService { storageService in
 }
-```
-
-When we have a `SubstrateLookupService` object, `SubstrateStorageService` can be created which
-is used to fetch storage items:
-
-```Swift
-let service = SubstrateStorageService(lookup: lookupService, stateRpc: client.module.stateRpc())
 ```
 
 ## Usage

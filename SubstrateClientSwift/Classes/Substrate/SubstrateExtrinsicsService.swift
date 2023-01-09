@@ -17,16 +17,19 @@ class SubstrateExtrinsicsService {
     let codec: ScaleCoder
     let lookup: SubstrateLookupService
     let namingPolicy: SubstrateClientNamingPolicy
+    let clientQueue: DispatchQueue
     
     init(
         codec: ScaleCoder,
         lookup: SubstrateLookupService,
-        namingPolicy: SubstrateClientNamingPolicy
+        namingPolicy: SubstrateClientNamingPolicy,
+        clientQueue: DispatchQueue
     ) {
         self.codec = codec
         self.lookup = lookup
         self.namingPolicy = namingPolicy
         self.runtimeMetadata = lookup.runtimeMetadata
+        self.clientQueue = clientQueue
     }
     
     /// Makes an unsigned payload
@@ -34,24 +37,30 @@ class SubstrateExtrinsicsService {
     ///     - moduleName: A runtime module name used to find the call
     ///     - callName: Name of a call
     ///     - callValue: A generic call value
-    /// - Returns: An unsigned payload
+    ///     - completion: Completion with an unsigned payload
     func makeUnsigned<T: Codable>(
         moduleName: String,
         callName: String,
-        callValue: T
-    ) -> Payload? {
-        makePayload(moduleName: moduleName, callName: callName, callValue: callValue)
+        callValue: T,
+        completion: @escaping (Payload?) -> Void
+    ) {
+        let payload = makePayload(moduleName: moduleName, callName: callName, callValue: callValue)
+        
+        clientQueue.async {
+            completion(payload)
+        }
     }
     
     /// Makes an unsigned payload from a call
     /// - Parameters:
     ///     - call: A generic call
-    /// - Returns: An unsigned payload
-    func makeUnsigned<T: Codable>(call: Call<T>) -> Payload? {
+    ///     - completion: Completion with an unsigned payload
+    func makeUnsigned<T: Codable>(call: Call<T>, completion: @escaping (Payload?) -> Void) {
         makeUnsigned(
             moduleName: call.moduleName,
             callName: call.name,
-            callValue: call.value
+            callValue: call.value,
+            completion: completion
         )
     }
     

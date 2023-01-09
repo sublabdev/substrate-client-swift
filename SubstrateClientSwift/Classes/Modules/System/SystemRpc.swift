@@ -1,7 +1,7 @@
 import Foundation
 
 protocol SystemRpc {
-    func runtimeVersion() throws -> RuntimeVersion?
+    func runtimeVersion(completion: @escaping (RuntimeVersion?) -> Void) throws
 }
 
 class SystemRpcClient: SystemRpc {
@@ -11,7 +11,9 @@ class SystemRpcClient: SystemRpc {
         self.constantsService = constantsService
     }
     
-    func runtimeVersion() throws -> RuntimeVersion? {
-        try constantsService.fetch(moduleName: "system", constantName: "version")
+    func runtimeVersion(completion: @escaping (RuntimeVersion?) -> Void) throws {
+        try constantsService.fetch(moduleName: "system", constantName: "version") { runtimeVersion in
+            completion(runtimeVersion)
+        }
     }
 }

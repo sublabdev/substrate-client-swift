@@ -12,6 +12,7 @@ private struct RpcConstant<T: Equatable> {
 
 class TestFetchingConstants: XCTestCase {
     private let network: Endpoint = .kusama
+    private var expectations = [XCTestExpectation]()
     
     private lazy var client: SubstrateClient? = {
         guard let url = URL(string: network.endpointInfo.url) else { return nil }
@@ -48,27 +49,13 @@ class TestFetchingConstants: XCTestCase {
                 XCTFail()
             }
         }
+        
+        wait(for: expectations, timeout: Constants.expectationLongTimeout)
     }
     
     private func testStorageItem<T: Codable>(client: SubstrateClient, constant: RpcConstant<T>) {
         let storageItemFindingExpectation = XCTestExpectation()
-        let lookupServiceStorageItemFindingExpectation = XCTestExpectation()
-        
-        client.lookupService { [weak self] lookupService in
-            guard let `self` = self else {
-                XCTFail()
-                return
-            }
-
-            let constantService = SubstrateConstantsService(codec: ScaleCoder.default(), lookup: lookupService)
-            
-            self.testService(
-                client: client,
-                constantService: constantService,
-                constant: constant,
-                expectation: lookupServiceStorageItemFindingExpectation
-            )
-        }
+        expectations.append(storageItemFindingExpectation)
         
         client.constantsService { [weak self] constantService in
             guard let `self` = self else {
@@ -83,11 +70,6 @@ class TestFetchingConstants: XCTestCase {
                 expectation: storageItemFindingExpectation
             )
         }
-        
-        wait(
-            for: [storageItemFindingExpectation, lookupServiceStorageItemFindingExpectation],
-            timeout: Constants.expectationLongTimeout
-        )
     }
     
     // MARK: - Private
@@ -125,12 +107,12 @@ class TestFetchingConstants: XCTestCase {
         stateRpc: StateRpc,
         constant: RpcConstant<T>
     ) throws {
-        let storageItem: T? = try constantService.fetch(
+        try constantService.fetch(
             moduleName: constant.module,
             constantName: constant.constant
-        )
-       
-        XCTAssertEqual(storageItem, constant.expectedValue)
+        ) { (storageItem: T?) in
+            XCTAssertEqual(storageItem, constant.expectedValue)
+        }
     }
     
     private func testStorageItemFinding<T: Codable>(
@@ -139,17 +121,17 @@ class TestFetchingConstants: XCTestCase {
         constant: RpcConstant<T>,
         expectation: XCTestExpectation
     ) throws {
-        let runtimeModuleConstant = try constantService.find(
+        try constantService.find(
             moduleName: constant.module,
             constantName: constant.constant
-        )
-        
-        fetchExpectedValueForModuleConstant(
-            runtimeModuleConstant: runtimeModuleConstant,
-            for: constant,
-            using: constantService,
-            expectation: expectation
-        )
+        ) { [weak self] runtimeModuleConstant in
+            self?.fetchExpectedValueForModuleConstant(
+                runtimeModuleConstant: runtimeModuleConstant,
+                for: constant,
+                using: constantService,
+                expectation: expectation
+            )
+        }
     }
     
     private func fetchExpectedValueForModuleConstant<T: Codable>(

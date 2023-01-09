@@ -32,6 +32,8 @@ class TestFetchingStorage: XCTestCase {
         return SubstrateClient(url: url)
     }()
     
+    private var storageService: SubstrateStorageService?
+    
     private var storageItem: RpcStorageItem<UInt64> {
         .init(module: "timestamp", item: "now") {
             // Difference should be within one minute, let's assume some big lag
@@ -67,16 +69,8 @@ class TestFetchingStorage: XCTestCase {
                 return
             }
             
+            self.storageService = storageService
             self.testStorageItem(storageService: storageService)
-        }
-        
-        client.lookupService { [weak self] lookupService in
-            guard let `self` = self else {
-                XCTFail()
-                return
-            }
-            
-            self.testStorageItem(storageService: .init(lookup: lookupService, stateRpc: client.module.stateRpc()))
         }
 
         let expectations = [

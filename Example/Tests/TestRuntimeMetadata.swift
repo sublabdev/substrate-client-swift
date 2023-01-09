@@ -7,13 +7,9 @@ class TestRuntimeMetadata: XCTestCase {
     private let bundle = Bundle(for: TestRuntimeMetadata.self)
     
     func testLocalMetadataParsing() {
-        let endpoint: Endpoint = .kusama
-        parseLocalMetadata(for: endpoint.endpointInfo.localURL, magicNumber: endpoint.endpointInfo.magicNumber)
-        
-// TODO: Return back
-//        Endpoint.allCases.forEach {
-//            parseLocalMetadata(for: $0.endpointInfo.localURL, magicNumber: $0.endpointInfo.magicNumber)
-//        }
+        Endpoint.allCases.forEach {
+            parseLocalMetadata(for: $0.endpointInfo.localURL, magicNumber: $0.endpointInfo.magicNumber)
+        }
     }
     
     func testMetadataVersion() {

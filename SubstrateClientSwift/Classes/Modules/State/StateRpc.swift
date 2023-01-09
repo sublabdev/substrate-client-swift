@@ -49,6 +49,8 @@ struct StateRpcClient: StateRpc {
     let codec: ScaleCoder
     let rpcClient: RpcClient
     let hashersProvider: HashersProvider
+    let clientQueue: DispatchQueue
+    let innerQueue: DispatchQueue
     
     func getRuntimeMetadata(completion: @escaping (RuntimeMetadata?, RpcError?) -> Void) {
         rpcClient.sendRequest(method: "state_getMetadata") { (response: String?, error: RpcError?) in
@@ -104,7 +106,10 @@ struct StateRpcClient: StateRpc {
         
         rpcClient.send(request) { (response: RpcResponse<String>?, error: RpcError?) in
             guard let result = response?.result?.hex.decode() else {
-                completion(nil, error)
+                clientQueue.async {
+                    completion(nil, error)
+                }
+                
                 return
             }
             
@@ -117,11 +122,18 @@ struct StateRpcClient: StateRpc {
     ///     - data: `Data` to be decoded
     ///     - completion: The result of decoding the data. Can contain either a generic type of `T` or `RpcError`
     private func decode<T: Decodable>(from data: Data, completion: @escaping (T?, RpcError?) -> Void) {
-        do {
-            let result = try codec.decoder.decode(T.self, from: data)
-            completion(result, nil)
-        } catch let error {
-            completion(nil, .requestBodyEncodingError(error))
+        innerQueue.async {
+            do {
+                let result = try codec.decoder.decode(T.self, from: data)
+                
+                clientQueue.async {
+                    completion(result, nil)
+                }
+            } catch let error {
+                clientQueue.async {
+                    completion(nil, .requestBodyEncodingError(error))
+                }
+            }
         }
     }
 }

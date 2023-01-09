@@ -5,17 +5,29 @@ import ScaleCodecSwift
 class SubstrateStorageService {
     private let lookup: SubstrateLookupService
     private let stateRpc: StateRpc
+    private let clientQueue: DispatchQueue
+    private let innerQueue: DispatchQueue
     
     /// Creates a substrate storage service
     /// - Parameters:
     ///     - lookup: Substrate lookup serivce
     ///     - stateRpc: An interface for getting Runtime metadata and fetching Storage Items
-    init(lookup: SubstrateLookupService, stateRpc: StateRpc) {
+    ///     - clientQueue: A client-specified queue on which fetched data will be returned. The default one is `main`
+    ///     - innerQueue: An inner queue on which the logic takes place
+    init(
+        lookup: SubstrateLookupService,
+        stateRpc: StateRpc,
+        clientQueue: DispatchQueue,
+        innerQueue: DispatchQueue
+    ) {
         self.lookup = lookup
         self.stateRpc = stateRpc
+        self.clientQueue = clientQueue
+        self.innerQueue = innerQueue
     }
     
-    /// Finds a storage item result, which is a wrapper over runtime module storage item and runtime module storage itself, by previously fetching the module
+    /// Finds a storage item result, which is a wrapper over runtime module storage item and runtime module storage itself,
+    /// by previously fetching the module
     /// - Parameters:
     ///     - moduleName: Module's name to fetch
     ///     - itemName: Storage item's name
@@ -36,13 +48,18 @@ class SubstrateStorageService {
     ) {
         do {
             guard let storageItemResult = try find(moduleName: moduleName, itemName: itemName) else {
-                completion(nil, .responseError(.noData))
+                clientQueue.async {
+                    completion(nil, .responseError(.noData))
+                }
+                
                 return
             }
             
             handleFetchingStorageItem(from: storageItemResult, completion: completion)
         } catch {
-            completion(nil, .responseError(.noData))
+            clientQueue.async {
+                completion(nil, .responseError(.noData))
+            }
         }
     }
     
@@ -60,13 +77,18 @@ class SubstrateStorageService {
     ) {
         do {
             guard let storageItemResult = try find(moduleName: moduleName, itemName: itemName) else {
-                completion(nil, .responseError(.noData))
+                clientQueue.async {
+                    completion(nil, .responseError(.noData))
+                }
+                
                 return
             }
             
             handleFetchingStorageItem(from: storageItemResult, key: key, completion: completion)
         } catch {
-            completion(nil, .responseError(.noData))
+            clientQueue.async {
+                completion(nil, .responseError(.noData))
+            }
         }
     }
     
@@ -84,13 +106,18 @@ class SubstrateStorageService {
     ) {
         do {
             guard let storageItemResult = try find(moduleName: moduleName, itemName: itemName) else {
-                completion(nil, .responseError(.noData))
+                clientQueue.async {
+                    completion(nil, .responseError(.noData))
+                }
+                
                 return
             }
             
             handleFetchingStorageItem(from: storageItemResult, keys: keys, completion: completion)
         } catch {
-            completion(nil, .responseError(.noData))
+            clientQueue.async {
+                completion(nil, .responseError(.noData))
+            }
         }
     }
     
@@ -152,7 +179,10 @@ class SubstrateStorageService {
         completion: @escaping(T?, RpcError?) -> Void
     ) {
         guard let result = findStorageItemResult, let item = result.item else {
-            completion(nil, .responseError(.noData))
+            clientQueue.async {
+                completion(nil, .responseError(.noData))
+            }
+            
             return
         }
         
@@ -165,7 +195,9 @@ class SubstrateStorageService {
                 try stateRpc.fetchStorageItem(item: item, storage: result.storage, completion: completion)
             }
         } catch {
-            completion(nil, .responseError(.noData))
+            clientQueue.async {
+                completion(nil, .responseError(.noData))
+            }
         }
     }
 }
