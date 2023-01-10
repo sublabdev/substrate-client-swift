@@ -34,9 +34,15 @@ class DefaultModuleRpcProvider: ModuleRpcProvider {
     }
     
     func systemRpc(completion: @escaping (SystemRpc) -> Void) {
-        client?.constantsService {
-            completion(SystemRpcClient(constantsService: $0))
+        client?.constantsService { [weak self] constantsService in
+            self?.client?.storageService { storageService in
+                completion(SystemRpcClient(constantsService: constantsService, storageService: storageService))
+            }
         }
+    }
+    
+    func chainRpc(completion: @escaping (ChainRpc) -> Void) {
+        completion(ChainRpcClient(rpcClient: rpcClient, encoder: codec.encoder))
     }
 }
 

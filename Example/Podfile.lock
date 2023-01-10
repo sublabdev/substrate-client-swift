@@ -43,7 +43,7 @@ PODS:
   - xxHash-Swift (1.1.1)
 
 DEPENDENCIES:
-  - CommonSwift (from `https://github.com/sublabdev/common-swift.git`, commit `8186f9973bc43039ddd531c839fd718e81e3b243`)
+  - CommonSwift (from `https://github.com/sublabdev/common-swift.git`, commit `ea8aa91b748a28241f77edced1a4b53b4a21b54f`)
   - EncryptingSwift (from `https://github.com/sublabdev/encrypting-swift.git`, commit `8de35216011a8abc8b945c7268b295285be02ac3`)
   - HashingSwift (from `https://github.com/sublabdev/hashing-swift.git`, commit `53a32a19c822b5c89ccec81ed440df1ea5e339fa`)
   - ScaleCodecSwift (from `https://github.com/sublabdev/scale-codec-swift`, commit `5aa1053695db6c743e65a6148a4cdc1074f2c661`)
@@ -64,7 +64,7 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   CommonSwift:
-    :commit: 8186f9973bc43039ddd531c839fd718e81e3b243
+    :commit: ea8aa91b748a28241f77edced1a4b53b4a21b54f
     :git: https://github.com/sublabdev/common-swift.git
   EncryptingSwift:
     :commit: 8de35216011a8abc8b945c7268b295285be02ac3
@@ -80,7 +80,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   CommonSwift:
-    :commit: 8186f9973bc43039ddd531c839fd718e81e3b243
+    :commit: ea8aa91b748a28241f77edced1a4b53b4a21b54f
     :git: https://github.com/sublabdev/common-swift.git
   EncryptingSwift:
     :commit: 8de35216011a8abc8b945c7268b295285be02ac3
@@ -109,6 +109,6 @@ SPEC CHECKSUMS:
   UncommonCrypto: 8e6276bd3def28cdbd55966926c38c37ea1c9af5
   xxHash-Swift: 13ebcbfc48658a5acf3777751e64b18c0f110d25
 
-PODFILE CHECKSUM: e241df9fb5d7a559aabc58b710b18918dd6da356
+PODFILE CHECKSUM: 8b23ecce876c953ac095651aa57feea4cc740b2a
 
 COCOAPODS: 1.11.3

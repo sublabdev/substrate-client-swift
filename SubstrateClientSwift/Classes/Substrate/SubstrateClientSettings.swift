@@ -2,8 +2,12 @@ import Foundation
 
 /// Substrate client settings
 struct SubstrateClientSettings {
+    var rpcPath: String?
+    var rpcParams: [String: Any]
     var webSocketPath: String?
     var webSocketPort: Int?
+    var webSocketParams: [String: Any]
+    var webSocketSecure: Bool
     let runtimeMetadataUpdateTimeoutMs: Int64
     let namingPolicy: SubstrateClientNamingPolicy
     let clientQueue: DispatchQueue
@@ -25,6 +29,9 @@ struct SubstrateClientSettings {
     /// - Returns: Settings for `SubstrateClient`
     static func `default`(clientQueue: DispatchQueue) -> SubstrateClientSettings {
         .init(
+            rpcParams: [:],
+            webSocketParams: [:],
+            webSocketSecure: false,
             runtimeMetadataUpdateTimeoutMs: 3600 * 1000,
             namingPolicy: .caseInsensitive,
             clientQueue: clientQueue

@@ -10,6 +10,11 @@ protocol ModuleRpcProvider {
     /// - Parameters:
     ///     completion: A completion with system RPC
     func systemRpc(completion: @escaping (SystemRpc) -> Void)
+    
+    /// Provides an interface for chain `RPC` client
+    /// - Parameters:
+    ///     completion: A completion with system chain `RPC`
+    func chainRpc(completion: @escaping (ChainRpc) -> Void)
 }
 
 /// An internal interface for working with cliend

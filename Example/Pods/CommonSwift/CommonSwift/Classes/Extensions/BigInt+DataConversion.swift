@@ -3,8 +3,10 @@ import BigInt
 
 extension BigInt {
     
-    /// Initialize a BigInt from bytes accessed from an UnsafeRawBufferPointer,
+    /// Initialize a BigInt from bytes accessed from an `UnsafeRawBufferPointer`,
     /// where the first byte indicates sign (0 for positive, 1 for negative)
+    /// /// - Parameters:
+    ///     - buffer: Аn `UnsafeRawBufferPointer` from where bytes are accessed
     public init(_ buffer: UnsafeRawBufferPointer) {
         // This assumes Word is binary.
         precondition(Word.bitWidth % 8 == 0)
@@ -29,6 +31,8 @@ extension BigInt {
     /// Initializes an integer from the bits stored inside a piece of `Data`.
     /// The data is assumed to be in network (big-endian) byte order with a first
     /// byte to represent the sign (0 for positive, 1 for negative)
+    /// - Parameters:
+    ///     - data: In network (big-endian) byte order `Data` inside of which the bits for an integer initialization are stored
     public init(_ data: Data) {
         // This assumes Word is binary.
         // This is the same assumption made when initializing BigUInt from Data
@@ -51,6 +55,7 @@ extension BigInt {
     }
     
     /// Return a `Data` value that contains the base-256 representation of this integer, in network (big-endian) byte order and a prepended byte to indicate the sign (0 for positive, 1 for negative)
+    /// - Returns: A `Data` value that contains the base-256 representation of this integer
     public func serialize() -> Data {
         // Create a data object for the magnitude portion of the BigInt
         let magnitudeData = self.magnitude.serialize()
