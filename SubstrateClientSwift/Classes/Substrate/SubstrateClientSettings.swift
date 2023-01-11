@@ -1,17 +1,17 @@
 import Foundation
 
 /// Substrate client settings
-struct SubstrateClientSettings {
-    var rpcPath: String?
-    var rpcParams: [String: Any]
-    var webSocketPath: String?
-    var webSocketPort: Int?
-    var webSocketParams: [String: Any]
-    var webSocketSecure: Bool
-    let runtimeMetadataUpdateTimeoutMs: Int64
-    let namingPolicy: SubstrateClientNamingPolicy
-    let clientQueue: DispatchQueue
-    let innerQueue = DispatchQueue(
+public struct SubstrateClientSettings {
+    public var rpcPath: String?
+    public var rpcParams: [String: Any]
+    public var webSocketPath: String?
+    public var webSocketPort: Int?
+    public var webSocketParams: [String: Any]
+    public var webSocketSecure: Bool
+    public let runtimeMetadataUpdateTimeoutMs: Int64
+    public let namingPolicy: SubstrateClientNamingPolicy
+    public let clientQueue: DispatchQueue
+    public let innerQueue = DispatchQueue(
         label: "substrate-client-inner-queue",
         qos: .userInitiated,
         attributes: .concurrent
@@ -19,7 +19,7 @@ struct SubstrateClientSettings {
     
     /// The default settings for substrate client
     /// - Returns: Settings for `SubstrateClient`
-    static func `default`() -> SubstrateClientSettings {
+    public static func `default`() -> SubstrateClientSettings {
         self.default(clientQueue: .main)
     }
     
@@ -27,7 +27,7 @@ struct SubstrateClientSettings {
     /// - Parameters:
     ///     - clientQueue: A custom client queue on which the results will be returned
     /// - Returns: Settings for `SubstrateClient`
-    static func `default`(clientQueue: DispatchQueue) -> SubstrateClientSettings {
+    public static func `default`(clientQueue: DispatchQueue) -> SubstrateClientSettings {
         .init(
             rpcParams: [:],
             webSocketParams: [:],

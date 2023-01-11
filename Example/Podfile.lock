@@ -43,10 +43,10 @@ PODS:
   - xxHash-Swift (1.1.1)
 
 DEPENDENCIES:
-  - CommonSwift (from `https://github.com/sublabdev/common-swift.git`, commit `ea8aa91b748a28241f77edced1a4b53b4a21b54f`)
+  - CommonSwift (from `https://github.com/sublabdev/common-swift.git`, branch `dev`)
   - EncryptingSwift (from `https://github.com/sublabdev/encrypting-swift.git`, commit `8de35216011a8abc8b945c7268b295285be02ac3`)
   - HashingSwift (from `https://github.com/sublabdev/hashing-swift.git`, commit `53a32a19c822b5c89ccec81ed440df1ea5e339fa`)
-  - ScaleCodecSwift (from `https://github.com/sublabdev/scale-codec-swift`, commit `5aa1053695db6c743e65a6148a4cdc1074f2c661`)
+  - ScaleCodecSwift (from `https://github.com/sublabdev/scale-codec-swift`, branch `dev`)
   - SubstrateClientSwift (from `../`)
 
 SPEC REPOS:
@@ -64,7 +64,7 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   CommonSwift:
-    :commit: ea8aa91b748a28241f77edced1a4b53b4a21b54f
+    :branch: dev
     :git: https://github.com/sublabdev/common-swift.git
   EncryptingSwift:
     :commit: 8de35216011a8abc8b945c7268b295285be02ac3
@@ -73,14 +73,14 @@ EXTERNAL SOURCES:
     :commit: 53a32a19c822b5c89ccec81ed440df1ea5e339fa
     :git: https://github.com/sublabdev/hashing-swift.git
   ScaleCodecSwift:
-    :commit: 5aa1053695db6c743e65a6148a4cdc1074f2c661
+    :branch: dev
     :git: https://github.com/sublabdev/scale-codec-swift
   SubstrateClientSwift:
     :path: "../"
 
 CHECKOUT OPTIONS:
   CommonSwift:
-    :commit: ea8aa91b748a28241f77edced1a4b53b4a21b54f
+    :commit: dbdcdd6ea02350ccb10b5cb8e5be0c16a709da39
     :git: https://github.com/sublabdev/common-swift.git
   EncryptingSwift:
     :commit: 8de35216011a8abc8b945c7268b295285be02ac3
@@ -89,7 +89,7 @@ CHECKOUT OPTIONS:
     :commit: 53a32a19c822b5c89ccec81ed440df1ea5e339fa
     :git: https://github.com/sublabdev/hashing-swift.git
   ScaleCodecSwift:
-    :commit: 5aa1053695db6c743e65a6148a4cdc1074f2c661
+    :commit: e0514ad7446789545c33138de527c76a153cced0
     :git: https://github.com/sublabdev/scale-codec-swift
 
 SPEC CHECKSUMS:
@@ -109,6 +109,6 @@ SPEC CHECKSUMS:
   UncommonCrypto: 8e6276bd3def28cdbd55966926c38c37ea1c9af5
   xxHash-Swift: 13ebcbfc48658a5acf3777751e64b18c0f110d25
 
-PODFILE CHECKSUM: 8b23ecce876c953ac095651aa57feea4cc740b2a
+PODFILE CHECKSUM: 80d71d887ad588164f94c2d619e00e621de53413
 
 COCOAPODS: 1.11.3

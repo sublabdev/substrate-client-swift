@@ -1,7 +1,7 @@
 import Foundation
 
 /// Naming police for substrate client
-enum SubstrateClientNamingPolicy {
+public enum SubstrateClientNamingPolicy {
     case none
     case caseInsensitive
     

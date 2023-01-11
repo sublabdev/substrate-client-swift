@@ -3,15 +3,15 @@ import Foundation
 
 /// Runtime module
 public class RuntimeModule: Codable {
-    let name: String
-    let storage: RuntimeModuleStorage?
-    let callIndex: BigUInt?
-    let eventsIndex: BigUInt?
-    let constants: [RuntimeModuleConstant]
-    let errorsIndex: BigUInt?
-    let index: UInt8
+    public let name: String
+    public let storage: RuntimeModuleStorage?
+    public let callIndex: BigUInt?
+    public let eventsIndex: BigUInt?
+    public let constants: [RuntimeModuleConstant]
+    public let errorsIndex: BigUInt?
+    public let index: UInt8
     
-    init(
+    public init(
         name: String,
         storage: RuntimeModuleStorage?,
         callIndex: BigUInt?,

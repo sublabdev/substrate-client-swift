@@ -82,7 +82,7 @@ class TestFetchingConstants: XCTestCase {
         do {
             try testStorageItemFetching(
                 constantService: constantService,
-                stateRpc: client.module.stateRpc(),
+                stateRpc: client.modules.stateRpc(),
                 constant: constant
             )
             

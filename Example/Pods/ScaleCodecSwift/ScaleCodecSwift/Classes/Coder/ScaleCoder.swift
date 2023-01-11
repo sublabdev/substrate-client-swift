@@ -7,19 +7,18 @@ public final class ScaleCoder {
     /// Decoder used to decode (read) data to a specified type
     public let decoder: ScaleDecoder
     
-    public init(encoder: ScaleEncoder, decoder: ScaleDecoder) {
-        self.encoder = encoder
-        self.decoder = decoder
+    public let adapterProvider: ScaleCodecAdapterProvider
+    
+    public init(adapterProvider: ScaleCodecAdapterProvider) {
+        self.adapterProvider = adapterProvider
+        self.encoder = ScaleEncoder(adapterProvider: adapterProvider)
+        self.decoder = ScaleDecoder(adapterProvider: adapterProvider)
     }
     
     /// Creates a default coder that handles all the standard types
     /// - Returns: A default `ScaleCoder` created using the default adapter provider
     public static func `default`() -> ScaleCoder {
-        let defaultAdpaterProvider = DefaultScaleCodecAdapterProvider()
-        return .init(
-            encoder: ScaleEncoder(adapterProvider: defaultAdpaterProvider),
-            decoder: ScaleDecoder(adapterProvider: defaultAdpaterProvider)
-        )
+        .init(adapterProvider: DefaultScaleCodecAdapterProvider())
     }
     
     /// A transaction object for scale coded

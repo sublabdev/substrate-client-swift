@@ -63,7 +63,7 @@ class SubstrateLookupService {
     /// - Parameters:
     ///     - index: Index for which a runtime lookup item should be found
     /// - Returns: An optional runtime lookup item
-    func findRuntimeItem(index: BigUInt) -> RuntimeLookupItem? {
+    func findRuntimeItem(index: BigUInt) -> RuntimeType? {
         findRuntimeType(index: index)
     }
     
@@ -169,7 +169,7 @@ class SubstrateLookupService {
     /// - Parameters:
     ///     - index: Index for which a runtime lookup item should be found
     /// - Returns: An optional runtime lookup item
-    private func findRuntimeType(index: BigUInt) -> RuntimeLookupItem? {
+    private func findRuntimeType(index: BigUInt) -> RuntimeType? {
         runtimeMetadata?.lookup.findItemByIndex(index)
     }
 }

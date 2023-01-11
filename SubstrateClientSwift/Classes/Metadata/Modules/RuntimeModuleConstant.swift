@@ -3,12 +3,12 @@ import Foundation
 
 /// Runtime module constant
 public class RuntimeModuleConstant: Codable {
-    let name: String
-    let type: BigUInt
-    let valueBytes: [UInt8]
-    let docs: [String]
+    public let name: String
+    public let type: BigUInt
+    public let valueBytes: [UInt8]
+    public let docs: [String]
     
-    init(name: String, type: BigUInt, valueBytes: [UInt8], docs: [String]) {
+    public init(name: String, type: BigUInt, valueBytes: [UInt8], docs: [String]) {
         self.name = name
         self.type = type
         self.valueBytes = valueBytes

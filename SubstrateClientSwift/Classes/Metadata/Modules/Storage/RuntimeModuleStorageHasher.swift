@@ -1,7 +1,7 @@
 import Foundation
 
 /// Runtime module storage hasher types
-enum RuntimeModuleStorageHasher: Codable {
+public enum RuntimeModuleStorageHasher: Codable {
     enum CodingKeys: Int, CodingKey {
         case blake128
         case blake256

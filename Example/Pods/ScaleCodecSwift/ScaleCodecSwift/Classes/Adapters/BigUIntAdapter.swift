@@ -8,14 +8,14 @@ fileprivate enum BigUIntCompressingError: Swift.Error {
 }
 
 /// Adapter for BigUInt
-final class BigUIntAdapter: ScaleCodecAdapter<BigUInt> {
+public final class BigUIntAdapter: ScaleCodecAdapter<BigUInt> {
     private let coder: ScaleCoder
     
-    init(coder: ScaleCoder) {
+    public init(coder: ScaleCoder) {
         self.coder = coder
     }
 
-    override func read(_ type: BigUInt.Type, from reader: DataReader) throws -> BigUInt {
+    public override func read(_ type: BigUInt.Type, from reader: DataReader) throws -> BigUInt {
         let first = try coder.decoder.decode(UInt8.self, from: reader)
         let mode = first & 0b11
         let value = first | 0b11
@@ -34,7 +34,7 @@ final class BigUIntAdapter: ScaleCodecAdapter<BigUInt> {
         }
     }
 
-    override func write(value: BigUInt) throws -> Data {
+    public override func write(value: BigUInt) throws -> Data {
         switch value {
         case (0..<1 << (UInt8.bitWidth - 2)): return try coder.encoder.encode((UInt8(value) << 2))
         case (0..<1 << (UInt16.bitWidth - 2)): return try coder.encoder.encode((UInt16(value) << 2 | 0b01))

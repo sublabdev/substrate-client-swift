@@ -1,7 +1,7 @@
 import Foundation
 
 /// An adapter to handle read and write operations for String
-class StringAdapter: ScaleCodecAdapter<String> {
+public class StringAdapter: ScaleCodecAdapter<String> {
     enum Error: Swift.Error {
         case readError(Data)
         case writeError(String)
@@ -9,11 +9,11 @@ class StringAdapter: ScaleCodecAdapter<String> {
     
     let dataAdapter: DataAdapter
     
-    init(coder: ScaleCoder) {
+    public init(coder: ScaleCoder) {
         dataAdapter = .init(coder: coder)
     }
     
-    override func read(_ type: String.Type, from reader: DataReader) throws -> String {
+    public override func read(_ type: String.Type, from reader: DataReader) throws -> String {
         let data = try dataAdapter.read(Data.self, from: reader)
         
         guard let result = String(data: .init(data), encoding: .utf8) else {
@@ -23,7 +23,7 @@ class StringAdapter: ScaleCodecAdapter<String> {
         return result
     }
     
-    override func write(value: String) throws -> Data {
+    public override func write(value: String) throws -> Data {
         guard let data = value.data(using: .utf8) else {
             throw Error.writeError(value)
         }

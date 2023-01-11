@@ -1,12 +1,24 @@
 import Foundation
 import ScaleCodecSwift
 
-struct ScaleCodecProvider {
-    let data: Data
-    let hex: String
+extension ScaleCoder {
+    func provideDynamicAdapter(runtimeMetadataProvider: RuntimeMetadataProvider) {
+        adapterProvider.addGenericAdapter(
+            DynamicAdapterFactory(coder: self, runtimeMetadataProvider: runtimeMetadataProvider)
+        )
+    }
+}
+
+private final class DynamicAdapterFactory: ScaleCodecAdapterFactory {
+    private let coder: ScaleCoder
+    private let runtimeMetadataProvider: RuntimeMetadataProvider
     
-    // TODO: Ask about ScaleCoderSettings, specifically, about data containers
-//    static func defaultCodec() -> ScaleCodecProvider {
-//        ScaleCodecProvider(data: ScaleCoder., hex: <#T##String#>)
-//    }
+    init(coder: ScaleCoder, runtimeMetadataProvider: RuntimeMetadataProvider) {
+        self.coder = coder
+        self.runtimeMetadataProvider = runtimeMetadataProvider
+    }
+    
+    func make<T>() -> ScaleCodecAdapter<T> {
+        DynamicAdapter(provider: .init(coder: coder, runtimeMetadataProvider: runtimeMetadataProvider))
+    }
 }

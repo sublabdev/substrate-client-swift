@@ -4,13 +4,13 @@ import Foundation
 
 /// Runtime lookup. Holds an array of lookup items
 public class RuntimeLookup: Codable {
-    let items: [RuntimeLookupItem]
+    public let items: [RuntimeLookupItem]
 
-    private var itemsByIndices: [(BigUInt, RuntimeLookupItem)] {
-        items.enumerated().map { (BigUInt($0), $1) }
+    private var itemsByIndices: [(BigUInt, RuntimeType)] {
+        items.enumerated().map { (BigUInt($0), $1.type) }
     }
     
-    init(items: [RuntimeLookupItem]) {
+    public init(items: [RuntimeLookupItem]) {
         self.items = items
     }
     
@@ -18,11 +18,11 @@ public class RuntimeLookup: Codable {
     /// - Parameters:
     ///     - index: Index to find a lookup item
     /// - Returns: A lookup item for a specific index
-    func findItemByIndex(_ index: BigUInt) -> RuntimeLookupItem? {
+    public func findItemByIndex(_ index: BigUInt) -> RuntimeType? {
         itemsByIndices.first { $0.0 == index }?.1
     }
     
-    func findItemByIndex(_ index: Int) -> RuntimeLookupItem? {
+    public func findItemByIndex(_ index: Int) -> RuntimeType? {
         findItemByIndex(index)
     }
 }

@@ -1,13 +1,13 @@
 import Foundation
 
 /// Possible RPC errors
-enum RpcError: Error {
+public enum RpcError: Error {
     case requestBodyEncodingError(Error)
     case responseError(RpcResponseError)
 }
 
 /// RPC client that handles sending requests
-class RpcClient {
+public class RpcClient {
     private var url: URL
     private let urlSession: URLSession
     private var requestId: Int64 = 0

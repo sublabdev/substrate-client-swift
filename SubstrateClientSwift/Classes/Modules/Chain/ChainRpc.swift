@@ -2,7 +2,7 @@ import Foundation
 import ScaleCodecSwift
 
 /// An interface for chain RPC client
-protocol ChainRpc {
+public protocol ChainRpc {
     /// Gets block hash using the provided number as a parameter for `RPC` request
     /// - Parameters:
     ///     - number: Number for which block hash should be fetched.
@@ -11,7 +11,7 @@ protocol ChainRpc {
 }
 
 /// Handles chain block hash fetching
-public class ChainRpcClient: ChainRpc {
+class ChainRpcClient: ChainRpc {
     private let rpcClient: RpcClient
     private let encoder: ScaleEncoder
     

@@ -99,7 +99,7 @@ class SubstrateExtrinsicsService {
         
         let runtimeItem = lookup.findRuntimeItem(index: callIndex)
         
-        guard let variant = findCall(typeDef: runtimeItem?.type.def, callName: callName) else {
+        guard let variant = findCall(typeDef: runtimeItem?.def, callName: callName) else {
             return nil
         }
         

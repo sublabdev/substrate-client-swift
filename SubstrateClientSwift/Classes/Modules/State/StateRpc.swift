@@ -3,7 +3,7 @@ import ScaleCodecSwift
 import CommonSwift
 
 /// Interface for getting Runtime metadata and fetching Storage Items
-protocol StateRpc {
+public protocol StateRpc {
     /// Gets runtime metadata
     /// - Parameters:
     ///     - completion: A completion that returns either `RuntimeMetadata` or `RpcError`

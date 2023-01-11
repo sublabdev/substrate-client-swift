@@ -1,3 +1,4 @@
+import BigInt
 import Foundation
 
 /// A hex-encoded String to Data converter object
@@ -14,24 +15,29 @@ public class StringHex {
     /// Converts hex-encoded String into Data
     /// - Returns: Optional Data converted from hex-encoded String
     public func decode() -> Data? {
-        let hexStr = string.dropFirst(string.hasPrefix("0x") ? 2 : 0)
+        let hexString = string.dropFirst(string.hasPrefix("0x") ? 2 : 0)
         
-        guard hexStr.count % 2 == 0 else {
+        guard hexString.count % 2 == 0 else {
             return nil
         }
         
-        var newData = Data(capacity: hexStr.count/2)
+        var newData = Data(capacity: hexString.count/2)
         
         var indexIsEven = true
-        for i in hexStr.indices {
+        for i in hexString.indices {
             if indexIsEven {
-                let byteRange = i...hexStr.index(after: i)
-                guard let byte = UInt8(hexStr[byteRange], radix: 16) else { return nil }
+                let byteRange = i...hexString.index(after: i)
+                guard let byte = UInt8(hexString[byteRange], radix: 16) else { return nil }
                 newData.append(byte)
             }
             indexIsEven.toggle()
         }
         return newData
+    }
+    
+    public func toBigUInt() -> BigUInt? {
+        let hexString = string.dropFirst(string.hasPrefix("0x") ? 2 : 0)
+        return BigUInt(hexString, radix: 16)
     }
 }
 

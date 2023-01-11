@@ -1,7 +1,7 @@
 import Foundation
 
 /// An interface for fetching runtime version and account
-protocol SystemRpc {
+public protocol SystemRpc {
     /// Gets runtime version
     /// - Parameters:
     ///     - completion: Completion with an optiional runtime version
@@ -12,7 +12,7 @@ protocol SystemRpc {
     func account(completion: @escaping (Account?, RpcError?) -> Void)
 }
 
-public class SystemRpcClient: SystemRpc {
+class SystemRpcClient: SystemRpc {
     private let constantsService: SubstrateConstantsService
     private let storageService: SubstrateStorageService
     

@@ -1,7 +1,7 @@
 import Foundation
 
 /// An interface for getting RPCs
-protocol ModuleRpcProvider {
+public protocol ModuleRpcProvider {
     /// Provides an interface for getting `RuntimeMetadata` and fetching `StorageItems`
     /// - Returns: And interface which defines methods for getting `RuntimeMetadata` and `StorageItems`
     func stateRpc() -> StateRpc

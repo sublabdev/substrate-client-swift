@@ -2,11 +2,11 @@ import Foundation
 
 /// Runtime module storage item
 public class RuntimeModuleStorageItem: Codable {
-    let name: String
-    let modifier: RuntimeModuleStorageItemModifier
-    let type: RuntimeModuleStorageItemType
-    var fallbackBytes: [UInt8]
-    let docs: [String]
+    public let name: String
+    public let modifier: RuntimeModuleStorageItemModifier
+    public let type: RuntimeModuleStorageItemType
+    public var fallbackBytes: [UInt8]
+    public let docs: [String]
     
     init(
         name: String,

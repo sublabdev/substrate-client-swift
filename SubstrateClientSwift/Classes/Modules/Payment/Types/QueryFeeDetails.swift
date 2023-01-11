@@ -24,17 +24,17 @@ class QueryFeeDetailsResponse: Codable {
     
     func toFinal() -> QueryFeeDetails? {
         guard
-            let baseFeeValue = inclusionFee.baseFee.uInt128(),
-            let lenFeeValue = inclusionFee.lenFee.uInt128(),
-            let adjustedWeightFeeValue = inclusionFee.adjustedWeightFee.uInt128()
+            let baseFeeValue = inclusionFee.baseFee.hex.toBigUInt(),
+            let lenFeeValue = inclusionFee.lenFee.hex.toBigUInt(),
+            let adjustedWeightFeeValue = inclusionFee.adjustedWeightFee.hex.toBigUInt()
         else {
             return nil
         }
         
         return QueryFeeDetails(
-            baseFee: baseFeeValue,
-            lenFee: lenFeeValue,
-            adjustedWeightFee: adjustedWeightFeeValue
+            baseFee: .init(value: baseFeeValue),
+            lenFee: .init(value: lenFeeValue),
+            adjustedWeightFee: .init(value: adjustedWeightFeeValue)
         )
     }
 }
