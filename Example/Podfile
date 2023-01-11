@@ -6,8 +6,9 @@ target 'SubstrateClientSwift_Example' do
   pod 'SubstrateClientSwift', :path => '../'
   pod 'ScaleCodecSwift', :git => 'https://github.com/sublabdev/scale-codec-swift', :branch => 'dev'
   pod 'CommonSwift', :git => 'https://github.com/sublabdev/common-swift.git', :branch => 'dev'
-  pod 'HashingSwift', :git => 'https://github.com/sublabdev/hashing-swift.git', :commit => '53a32a19c822b5c89ccec81ed440df1ea5e339fa'
-  pod 'EncryptingSwift', :git => 'https://github.com/sublabdev/encrypting-swift.git', :commit => '8de35216011a8abc8b945c7268b295285be02ac3'
+  pod 'HashingSwift', :git => 'https://github.com/sublabdev/hashing-swift.git', :branch => 'dev'
+  pod 'EncryptingSwift', :git => 'https://github.com/sublabdev/encrypting-swift.git', :branch => 'dev'
+  pod 'BigInt', '~> 3.1'
 
   target 'SubstrateClientSwift_Tests' do
     inherit! :search_paths
