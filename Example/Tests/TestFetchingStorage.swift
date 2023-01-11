@@ -15,8 +15,8 @@ struct RpcStorageItem<T> {
         self.validation = validation
     }
     
-    func validate(value: T) -> Bool? {
-        validation?(value)
+    func validate(value: T) -> Bool {
+        validation?(value) ?? true
     }
 }
 
@@ -133,7 +133,13 @@ class TestFetchingStorage: XCTestCase {
                 return
             }
             
-            XCTAssertEqual(item.validate(value: result), true)
+            let isValid = item.validate(value: result)
+            
+            if !isValid {
+                print("not valid result: \(result)")
+            }
+            
+            XCTAssertTrue(isValid)
             expectation.fulfill()
         }
     }
@@ -169,7 +175,13 @@ class TestFetchingStorage: XCTestCase {
                 return
             }
             
-            XCTAssertEqual(item.validate(value: result), true)
+            let isValid = item.validate(value: result)
+            
+            if !isValid {
+                print("not valid result: \(result)")
+            }
+            
+            XCTAssertTrue(isValid)
             expectation.fulfill()
         }
     }

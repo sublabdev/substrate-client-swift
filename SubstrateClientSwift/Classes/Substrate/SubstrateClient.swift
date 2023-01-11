@@ -19,7 +19,7 @@ public class SubstrateClient: RuntimeMetadataProvider {
     private var getRutimeDispatchWorkItem: DispatchWorkItem?
     private var subscribers: [(RuntimeMetadata) -> Void] = []
     
-    private weak var runtimeMetadata: RuntimeMetadata? = nil {
+    private var runtimeMetadata: RuntimeMetadata? = nil {
         didSet {
             print("received runtimeMetadata: \(runtimeMetadata != nil)")
             if let runtimeMetadata = runtimeMetadata {
@@ -29,11 +29,13 @@ public class SubstrateClient: RuntimeMetadataProvider {
         }
     }
     
-    private lazy var runtimeMetadataUpdateJob: JobWithTimeout
-        = JobWithTimeout(timeout: TimeInterval(settings.runtimeMetadataUpdateTimeoutMs)) { [weak self] in
-            self?.loadRuntime { runtimeMetadata, _ in
-                self?.runtimeMetadata = runtimeMetadata
-            }
+    private lazy var runtimeMetadataUpdateJob = JobWithTimeout(
+        timeout: TimeInterval(settings.runtimeMetadataUpdateTimeoutMs)
+    ) { [weak self] in
+        self?.loadRuntime { runtimeMetadata, _ in
+            print("Metadata is fetched: \(runtimeMetadata)")
+            self?.runtimeMetadata = runtimeMetadata
+        }
     }
     
     private lazy var _lookupService = SubstrateLookupService(namingPolicy: settings.namingPolicy)

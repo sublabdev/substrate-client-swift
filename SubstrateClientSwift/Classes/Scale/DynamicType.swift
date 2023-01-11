@@ -7,13 +7,3 @@ public protocol DynamicType: Codable {
     init(data: Data)
     func toData() -> Data
 }
-
-extension DynamicType {
-    public func encode(to encoder: Encoder) throws {
-        fatalError("shouldn't be called")
-    }
-    
-    public init(from decoder: Decoder) throws {
-        fatalError("shouldn't be called")
-    }
-}

@@ -18,11 +18,11 @@ public class RuntimeLookup: Codable {
     /// - Parameters:
     ///     - index: Index to find a lookup item
     /// - Returns: A lookup item for a specific index
-    public func findItemByIndex(_ index: BigUInt) -> RuntimeType? {
+    public func findItem(by index: BigUInt) -> RuntimeType? {
         itemsByIndices.first { $0.0 == index }?.1
     }
     
     public func findItemByIndex(_ index: Int) -> RuntimeType? {
-        findItemByIndex(index)
+        findItem(by: BigUInt(index))
     }
 }
