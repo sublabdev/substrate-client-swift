@@ -34,7 +34,7 @@ PODS:
     - Sr25519/CSr25519
     - Sr25519/Helpers
   - SubstrateClientSwift (1.0.0):
-    - BigInt
+    - BigInt (~> 3.1)
     - CommonSwift
     - EncryptingSwift
     - HashingSwift
@@ -43,7 +43,7 @@ PODS:
   - xxHash-Swift (1.1.1)
 
 DEPENDENCIES:
-  - BigInt (~> 3.1)
+  - BigInt
   - CommonSwift (from `https://github.com/sublabdev/common-swift.git`, branch `dev`)
   - EncryptingSwift (from `https://github.com/sublabdev/encrypting-swift.git`, branch `dev`)
   - HashingSwift (from `https://github.com/sublabdev/hashing-swift.git`, branch `dev`)
@@ -106,10 +106,10 @@ SPEC CHECKSUMS:
   secp256k1.swift: a7e7a214f6db6ce5db32cc6b2b45e5c4dd633634
   SipHash: fad90a4683e420c52ef28063063dbbce248ea6d4
   Sr25519: 87a974e2d714113af55e1d7e5cef1b82864a57bd
-  SubstrateClientSwift: 9d3d3fa88e9700e61a01e73689fab8cc49a5eaa7
+  SubstrateClientSwift: 75eadb6ddd1ced9240c1073c9b139299c81b5387
   UncommonCrypto: 8e6276bd3def28cdbd55966926c38c37ea1c9af5
   xxHash-Swift: 13ebcbfc48658a5acf3777751e64b18c0f110d25
 
-PODFILE CHECKSUM: 02ffffb5002b09650f3bd7fc912768d0c84adc7f
+PODFILE CHECKSUM: d310bb1702686e171f710a34c73db16dc8901246
 
 COCOAPODS: 1.11.3

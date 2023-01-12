@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '13.0'
   s.source_files = 'SubstrateClientSwift/Classes/**/*'
   s.dependency 'ScaleCodecSwift'
-  s.dependency 'BigInt'
+  s.dependency 'BigInt', '~> 3.1'
   s.dependency 'CommonSwift'
   s.dependency 'HashingSwift'
   s.dependency 'EncryptingSwift'
