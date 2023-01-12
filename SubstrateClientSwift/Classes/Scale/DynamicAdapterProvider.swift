@@ -50,7 +50,7 @@ final class DynamicAdapterProvider {
     // MARK: -
     
     func adapterProvider(for type: DynamicType.Type) throws -> AdapterProtocol {
-        guard let runtimeMetadata = runtimeMetadataProvider?.runtimeSingle() else {
+        guard let runtimeMetadata = runtimeMetadataProvider?.runtimeSync() else {
             // In fact, this should only happen upon the substrate client deallocation, so it's safe
             throw DynamicAdapterError.internalFailure
         }

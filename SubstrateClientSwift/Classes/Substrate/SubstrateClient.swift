@@ -6,7 +6,7 @@ typealias RuntimeMetadataSingleUpdate = () -> RuntimeMetadata?
 
 public protocol RuntimeMetadataProvider: AnyObject {
     func runtime(_ updates: @escaping (RuntimeMetadata) -> Void, single: Bool)
-    func runtimeSingle() -> RuntimeMetadata
+    func runtimeSync() -> RuntimeMetadata
 }
 
 /// Substrate client which holds substrate lookup service; constants service and storage service.
@@ -21,9 +21,7 @@ public class SubstrateClient: RuntimeMetadataProvider {
     
     private var runtimeMetadata: RuntimeMetadata? = nil {
         didSet {
-            print("received runtimeMetadata: \(runtimeMetadata != nil)")
             if let runtimeMetadata = runtimeMetadata {
-                print("send to subs count: \(subscribers.count)")
                 subscribers.forEach { $0(runtimeMetadata) }
             }
         }
@@ -33,7 +31,6 @@ public class SubstrateClient: RuntimeMetadataProvider {
         timeout: TimeInterval(settings.runtimeMetadataUpdateTimeoutMs)
     ) { [weak self] in
         self?.loadRuntime { runtimeMetadata, _ in
-            print("Metadata is fetched: \(runtimeMetadata)")
             self?.runtimeMetadata = runtimeMetadata
         }
     }
@@ -139,30 +136,26 @@ public class SubstrateClient: RuntimeMetadataProvider {
     /// - Parameters:
     ///     - updates: Completion with an optional and updated `RuntimeMetadata`
     public func runtime(_ updates: @escaping (RuntimeMetadata) -> Void, single: Bool = false) {
-        print("subscribe to runtime updates, single mode: \(single), runtime is here? \(runtimeMetadata != nil)")
         if single, let runtimeMetadata = runtimeMetadata {
             updates(runtimeMetadata)
             return
         }
         
+        
         subscribers.append(updates)
         runtimeMetadataUpdateJob.performIfNeeded()
         
-        print("right after subscription runtime metadata exists? \(runtimeMetadata != nil)")
         if let runtimeMetadata = runtimeMetadata {
             updates(runtimeMetadata)
         }
     }
     
     /// Get RuntimeMetadata blocking thread
-    public func runtimeSingle() -> RuntimeMetadata {
+    public func runtimeSync() -> RuntimeMetadata {
         let semaphore = DispatchSemaphore(value: 0)
         var runtimeMetadata: RuntimeMetadata? = nil
-        print("prepare to get single runtime update")
         DispatchQueue.global(qos: .background).async {
-            print("subscribing to runtime updates within background queue")
             self.runtime({ metadata in
-                print("runtimeSingle received metadata!")
                 runtimeMetadata = metadata
                 semaphore.signal()
             }, single: true)

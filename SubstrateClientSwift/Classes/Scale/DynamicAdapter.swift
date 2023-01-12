@@ -12,24 +12,37 @@ final class DynamicAdapter<T>: ScaleCodecAdapter<T> {
     
     // MARK: - ScaleCodecAdapter
     
-    override func read(_ type: T.Type, from reader: DataReader) throws -> T {
+    override func read(_ type: T.Type?, from reader: DataReader) throws -> T {
         guard let dynamicType = type as? DynamicType.Type else {
             throw DynamicAdapterError.dynamicAdapterGivenInvalidType
         }
         
         let adapter = try provider.adapterProvider(for: dynamicType)
+        print("[dynamic][\(type)] adapter = \(adapter)")
         // We read this as Any
-        let readValue = try adapter.scaleAdapter.tryRead(Any.self, from: reader)
-        if let data = adapter.toData(value: readValue) {
-            if let value = adapter.fromData(data) as? T {
+        do {
+            let readValue = try adapter.scaleAdapter.tryRead(from: reader)
+            print("[dynamic][\(type)] read value = \(readValue)")
+            if let data = adapter.toData(value: readValue) {
+                print("[dynamic][\(type)] converted to data = \(data)")
+                if let value = dynamicType.init(data: data) as? T {
+                    print("[dynamic][\(type)] read from data = \(value)")
+                    return value
+                } else {
+                    // shouldn't happen in fact as T = DynamicType
+                    print("[dynamic][\(type)] couldn't read from data")
+                    throw DynamicAdapterError.internalFailure
+                }
+            } else if let value = readValue as? T {
+                print("[dynamic][\(type)] pass \(value)")
                 return value
             } else {
+                print("[dynamic][\(type)] couldn't read dynamic type")
                 throw DynamicAdapterError.internalFailure
             }
-        } else if let value = readValue as? T {
-            return value
-        } else {
-            throw DynamicAdapterError.internalFailure
+        } catch let error {
+            print("[dynamic][\(type)] caught error = \(error)")
+            throw error
         }
     }
     

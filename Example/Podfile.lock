@@ -81,7 +81,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   CommonSwift:
-    :commit: dbdcdd6ea02350ccb10b5cb8e5be0c16a709da39
+    :commit: 64f253d4f9383d57a8006defdac8bfc093ff12e7
     :git: https://github.com/sublabdev/common-swift.git
   EncryptingSwift:
     :commit: ca3833314ec745c7698ae7748e4c8a28c8c4d121
@@ -90,7 +90,7 @@ CHECKOUT OPTIONS:
     :commit: 47077fba2a68a6ddc0dc3614526f410f40c509b4
     :git: https://github.com/sublabdev/hashing-swift.git
   ScaleCodecSwift:
-    :commit: e0514ad7446789545c33138de527c76a153cced0
+    :commit: b931857e431878d278f2eba3c622e5caf02f1317
     :git: https://github.com/sublabdev/scale-codec-swift
 
 SPEC CHECKSUMS:
