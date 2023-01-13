@@ -3,33 +3,26 @@ import XCTest
 import EncryptingSwift
 
 class TestRandomAccount: XCTestCase {
-    private let network: Endpoint = .kusama
+    private let network: Network = .kusama
+    private lazy var client = network.makeClient()
+    
     private let factories: [KeyPairFactory] = [
-        .ecdsa,
+        .ecdsa(kind: .substrate),
+        .ecdsa(kind: .ethereum),
         .ed25519,
         .sr25519
     ]
     
-    private lazy var client: SubstrateClient? = {
-        guard let url = URL(string: network.endpointInfo.url) else {
-            XCTFail()
-            return nil
-        }
-        
-        return SubstrateClient(url: url)
-    }()
-    
-    func noRecordsAboutAccount() throws {
+    func testNoRecordsAboutAccount() throws {
         var expectations: [XCTestExpectation] = []
         
         for factory in factories {
-            // TODO: Figure out what should be here as a seed
-            let keyPair = try factory.load(seed: Data())
+            let keyPair = try factory.generate()
             let accountId = try keyPair.publicKey.ss58.accountId()
             let expectation = XCTestExpectation()
             expectations.append(expectation)
             
-            client?.storageService { storage in
+            client.storageService { storage in
                 storage.fetch(moduleName: "system", itemName: "account") { (response: Account?, error: RpcError?) in
                     XCTAssertNil(response)
                     expectation.fulfill()

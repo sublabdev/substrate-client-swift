@@ -153,16 +153,11 @@ class WebsocketTests: XCTestCase {
         wait(for: Array(expectations.values), timeout: 1000)
     }
     
-    private func webSocketClientWithPolicy(_ policy: WebSocketClientSettings.Policy) -> WebSocketClientProtocol? {
-        guard let host = URL(string: Constants.webSocketUrl) else {
-            XCTFail()
-            return nil
-        }
-        
-        return WebSocketClient(
-            host: host,
+    private func webSocketClientWithPolicy(_ policy: WebSocketClientSubscriptionPolicy) -> WebSocketClientProtocol? {
+        WebSocketClient(
+            host: Constants.webSocketUrl,
             port: Constants.webSocketPort,
-            settings: .init(policy: policy)
+            policy: policy
         )
     }
     

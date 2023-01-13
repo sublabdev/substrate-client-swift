@@ -11,13 +11,9 @@ private struct RpcConstant<T: Equatable> {
 }
 
 class TestFetchingConstants: XCTestCase {
-    private let network: Endpoint = .kusama
+    private let network: Network = .kusama
+    private lazy var client = network.makeClient()
     private var expectations = [XCTestExpectation]()
-    
-    private lazy var client: SubstrateClient? = {
-        guard let url = URL(string: network.endpointInfo.url) else { return nil }
-        return SubstrateClient(url: url)
-    }()
     
     private let constants: [Any] = [
         RpcConstant<UInt64>(module: "babe", constant: "EpochDuration", expectedValue: 600),
@@ -33,11 +29,6 @@ class TestFetchingConstants: XCTestCase {
     ]
     
     func testService() {
-        guard let client = client else {
-            XCTFail()
-            return
-        }
-
         for constant in constants {
             if let rpcConstant = rpcConstant(from: constant, with: UInt16.self) {
                 testStorageItem(client: client, constant: rpcConstant)

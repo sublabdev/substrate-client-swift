@@ -7,25 +7,21 @@ class TestRuntimeMetadata: XCTestCase {
     private let bundle = Bundle(for: TestRuntimeMetadata.self)
     
     func testLocalMetadataParsing() {
-        Endpoint.allCases.forEach {
-            parseLocalMetadata(for: $0.endpointInfo.localURL, magicNumber: $0.endpointInfo.magicNumber)
+        Network.allCases.forEach {
+            parseLocalMetadata(
+                for: $0.localRuntimeMetadataSnapshot.localURL,
+                magicNumber: $0.localRuntimeMetadataSnapshot.magicNumber
+            )
         }
     }
     
     func testMetadataVersion() {
-        Endpoint.allCases.forEach {
-            testMetadataVersion(for: URL(string: $0.endpointInfo.url))
+        Network.allCases.forEach {
+            testMetadataVersion(using: $0.makeRpcClient())
         }
     }
     
-    private func testMetadataVersion(for url: URL?) {
-        guard let url = url else {
-            XCTFail()
-            return
-        }
-        
-        let client = RpcClient(url: url)
-        
+    private func testMetadataVersion(using client: RpcClient) {
         client.sendRequest(method: "state_getMetadata") { [weak self] (response: String?, error: RpcError?) in
             if let error = error {
                 XCTFail(error.localizedDescription)

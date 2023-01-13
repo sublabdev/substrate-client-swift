@@ -2,20 +2,31 @@ import Foundation
 
 /// Possible RPC errors
 public enum RpcError: Error {
-    case requestBodyEncodingError(Error)
+    case failedToPrepareRequest
+    case bodyEncodingFailed(Error)
     case responseError(RpcResponseError)
 }
 
 /// RPC client that handles sending requests
 public class RpcClient {
-    private var url: URL
-    private let urlSession: URLSession
-    private var requestId: Int64 = 0
+    private let host: String
+    private let path: String?
+    private let params: [String: String?]
     
-    init(url: URL, session: URLSession = .shared) {
-        self.url = url
-        urlSession = session
+    public init(
+        host: String,
+        path: String? = nil,
+        params: [String: String?] = [:],
+        urlSession: URLSession = .shared
+    ) {
+        self.host = host
+        self.path = path
+        self.params = params
+        self.urlSession = urlSession
     }
+    
+    private let urlSession: URLSession
+    private var requestId: Int32 = 0
     
     /// Sends a ready `RpcRequest`
     /// - Parameters:
@@ -25,6 +36,16 @@ public class RpcClient {
         _ rpcRequest: RpcRequest<Request>,
         completion: @escaping (RpcResponse<Response>?, RpcError?) -> Void
     ) {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https" // TODO: move to constants
+        urlComponents.host = host
+        urlComponents.path = "/\(path ?? "")"
+        urlComponents.queryItems = params.map { .init(name: $0, value: $1) }
+        guard let url = urlComponents.url else {
+            completion(nil, .failedToPrepareRequest)
+            return
+        }
+        
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "POST"
@@ -33,7 +54,7 @@ public class RpcClient {
             let encodedData = try JSONEncoder().encode(rpcRequest)
             request.httpBody = encodedData
         } catch let error {
-            completion(nil, .requestBodyEncodingError(error))
+            completion(nil, .bodyEncodingFailed(error))
             return
         }
         
@@ -49,7 +70,11 @@ public class RpcClient {
             
             do {
                 let response = try JSONDecoder().decode(RpcResponse<Response>.self, from: data)
-                completion(response, nil)
+                if let error = response.error {
+                    completion(nil, .responseError(.requestFailed(error.message)))
+                } else {
+                    completion(response, nil)
+                }
             } catch let error {
                 completion(nil, .responseError(.responseParsingFailure(data, error.localizedDescription)))
             }

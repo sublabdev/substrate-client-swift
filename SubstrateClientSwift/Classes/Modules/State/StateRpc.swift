@@ -131,7 +131,7 @@ struct StateRpcClient: StateRpc {
                 }
             } catch let error {
                 clientQueue.async {
-                    completion(nil, .requestBodyEncodingError(error))
+                    completion(nil, .bodyEncodingFailed(error))
                 }
             }
         }

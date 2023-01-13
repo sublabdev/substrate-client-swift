@@ -11,7 +11,14 @@ protocol WebSocketClientProtocol {
     ///     - path: The path
     ///     - port: The port
     ///     - settings: Web socket client settings
-    init(host: URL, path: String?, port: Int?, settings: WebSocketClientSettings)
+    init(
+        secure: Bool,
+        host: String,
+        path: String?,
+        params: [String: String?],
+        port: Int?,
+        policy: WebSocketClientSubscriptionPolicy
+    )
     
     /// Sends a message
     /// - Parameters:
@@ -44,20 +51,28 @@ final class WebSocketClient: WebSocketClientProtocol {
     private var pendingMessages: [URLSessionWebSocketTask.Message] = []
     
     private var webSocketTask: URLSessionWebSocketTask?
-    private let settings: WebSocketClientSettings
-    private var host: URL
-    private var path: String?
-    private var port: Int?
     
-    private var policy: WebSocketClientSettings.Policy {
-        settings.policy
-    }
+    private let secure: Bool
+    private let host: String
+    private let path: String?
+    private let params: [String: String?]
+    private let port: Int?
+    private let policy: WebSocketClientSubscriptionPolicy
     
-    init(host: URL, path: String? = nil, port: Int? = nil, settings: WebSocketClientSettings) {
+    init(
+        secure: Bool = false,
+        host: String,
+        path: String? = nil,
+        params: [String: String?] = [:],
+        port: Int? = nil,
+        policy: WebSocketClientSubscriptionPolicy = .none
+    ) {
+        self.secure = secure
         self.host = host
         self.path = path
+        self.params = params
         self.port = port
-        self.settings = settings
+        self.policy = policy
     }
     
     /// Creates a web socket taks.
@@ -68,7 +83,14 @@ final class WebSocketClient: WebSocketClientProtocol {
             return webSocketTask
         }
         
-        guard let port = port, let url = URL(string: "\(host):\(port)") else {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = secure ? "wss" : "ws"
+        urlComponents.host = host
+        urlComponents.path = "/\(path ?? "")"
+        urlComponents.port = port
+        urlComponents.queryItems = params.map { .init(name: $0, value: $1) }
+        guard let url = urlComponents.url else {
+            assertionFailure()
             return nil
         }
         

@@ -9,10 +9,12 @@ protocol WebSocketClientBuilder {
 
 /// Web socket client factory
 struct WebSocketClientFactory: WebSocketClientBuilder {
-    private let host: URL
-    private var path: String?
-    private var port: Int?
-    private let settings: WebSocketClientSettings
+    private let secure: Bool
+    private let host: String
+    private let path: String?
+    private let params: [String: String?]
+    private let port: Int?
+    private let policy: WebSocketClientSubscriptionPolicy
 
     /// Creates a web socket client factory
     /// - Parameters:
@@ -20,14 +22,30 @@ struct WebSocketClientFactory: WebSocketClientBuilder {
     ///     - path: The path
     ///     - port: The port
     ///     - settings: Web socket client settings
-    init(host: URL, path: String? = nil, port: Int? = nil, settings: WebSocketClientSettings) {
+    init(
+        secure: Bool = false,
+        host: String,
+        path: String? = nil,
+        params: [String: String?] = [:],
+        port: Int? = nil,
+        policy: WebSocketClientSubscriptionPolicy = .none
+    ) {
+        self.secure = secure
         self.host = host
         self.path = path
+        self.params = params
         self.port = port
-        self.settings = settings
+        self.policy = policy
     }
 
     func webSocketClient() -> WebSocketClientProtocol {
-        WebSocketClient(host: host, path: path, port: port, settings: settings)
+        WebSocketClient(
+            secure: secure,
+            host: host,
+            path: path,
+            params: params,
+            port: port,
+            policy: policy
+        )
     }
 }

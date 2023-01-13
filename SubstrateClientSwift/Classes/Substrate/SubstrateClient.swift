@@ -12,7 +12,7 @@ public protocol RuntimeMetadataProvider: AnyObject {
 /// Substrate client which holds substrate lookup service; constants service and storage service.
 /// Is the entering point for using those services.
 public class SubstrateClient: RuntimeMetadataProvider {
-    private let url: URL
+    private let host: String
     private let settings: SubstrateClientSettings
     private let hashers: HashersProvider
     public let modules: ModuleRpcProvider
@@ -40,26 +40,27 @@ public class SubstrateClient: RuntimeMetadataProvider {
     
     private lazy var webSocketClient: WebSocketClient = {
         WebSocketClient(
-            host: url,
+            secure: settings.webSocketSecure,
+            host: host,
             path: settings.webSocketPath,
-            port: settings.webSocketPort,
-            settings: .init(policy: .none)
+            params: settings.webSocketParams,
+            port: settings.webSocketPort
         )
     }()
     
     /// Creates a `SubstrateClient`
     /// - Parameters:
-    ///     - url: URL to get data from
+    ///     - host: host to connect to
     ///     - settings: Substrate client settings. By default is set to `default`
-    public init(url: URL, settings: SubstrateClientSettings = .default()) {
-        self.url = url
+    public init(host: String, settings: SubstrateClientSettings = .default()) {
+        self.host = host
         self.settings = settings
         let hashersProvider = DefaultHashersProvider()
         hashers = hashersProvider
         
         modules = DefaultModuleRpcProvider(
             codec: codec,
-            rpcClient: RpcClient(url: url),
+            rpcClient: RpcClient(host: host),
             hashersProvider: hashersProvider,
             clientQueue: settings.clientQueue,
             innerQueue: settings.innerQueue

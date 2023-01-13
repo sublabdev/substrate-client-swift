@@ -7,12 +7,8 @@ import Foundation
 /// `.firstSubscriber`: Only the first subscriber recieves data
 ///
 /// `.allSubscribers`: All subscribers recieve data
-struct WebSocketClientSettings {
-    enum Policy {
-        case none
-        case firstSubscriber
-        case allSubscribers
-    }
-    
-    var policy: Policy = .none
+enum WebSocketClientSubscriptionPolicy {
+    case none
+    case firstSubscriber
+    case allSubscribers
 }

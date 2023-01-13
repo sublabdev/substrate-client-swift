@@ -19,7 +19,7 @@
 		115A20EB291BD1FE009AE14E /* westend-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 115A20EA291BD1EA009AE14E /* westend-metadata */; };
 		116C231A293CB1A700FB07F2 /* TestFetchingStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116C2319293CB1A700FB07F2 /* TestFetchingStorage.swift */; };
 		11920B90291FF304006C4E36 /* EndpointInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11920B8E291FF2FF006C4E36 /* EndpointInfo.swift */; };
-		11920B92291FF336006C4E36 /* Endpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11920B91291FF336006C4E36 /* Endpoint.swift */; };
+		11920B92291FF336006C4E36 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11920B91291FF336006C4E36 /* Network.swift */; };
 		11A80E772913DA4400435BC6 /* RcpClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A80E762913DA4400435BC6 /* RcpClientTests.swift */; };
 		11DA197129084DC500D42279 /* WebsocketTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DA197029084DC500D42279 /* WebsocketTests.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
@@ -54,7 +54,7 @@
 		115A20EA291BD1EA009AE14E /* westend-metadata */ = {isa = PBXFileReference; lastKnownFileType = text; path = "westend-metadata"; sourceTree = "<group>"; };
 		116C2319293CB1A700FB07F2 /* TestFetchingStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFetchingStorage.swift; sourceTree = "<group>"; };
 		11920B8E291FF2FF006C4E36 /* EndpointInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointInfo.swift; sourceTree = "<group>"; };
-		11920B91291FF336006C4E36 /* Endpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoint.swift; sourceTree = "<group>"; };
+		11920B91291FF336006C4E36 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		11A80E762913DA4400435BC6 /* RcpClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RcpClientTests.swift; sourceTree = "<group>"; };
 		11DA197029084DC500D42279 /* WebsocketTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebsocketTests.swift; sourceTree = "<group>"; };
 		318606AB835D5A5FF3030756 /* SubstrateClientSwift.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = SubstrateClientSwift.podspec; path = ../SubstrateClientSwift.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -119,7 +119,7 @@
 			isa = PBXGroup;
 			children = (
 				11920B8E291FF2FF006C4E36 /* EndpointInfo.swift */,
-				11920B91291FF336006C4E36 /* Endpoint.swift */,
+				11920B91291FF336006C4E36 /* Network.swift */,
 			);
 			name = Endpoints;
 			sourceTree = "<group>";
@@ -442,7 +442,7 @@
 				11A80E772913DA4400435BC6 /* RcpClientTests.swift in Sources */,
 				116C231A293CB1A700FB07F2 /* TestFetchingStorage.swift in Sources */,
 				1107FEB7290F1C06000B3BD8 /* RpcClientMockTests.swift in Sources */,
-				11920B92291FF336006C4E36 /* Endpoint.swift in Sources */,
+				11920B92291FF336006C4E36 /* Network.swift in Sources */,
 				1107FEB5290EB687000B3BD8 /* TestRuntimeMetadata.swift in Sources */,
 				11DA197129084DC500D42279 /* WebsocketTests.swift in Sources */,
 				11920B90291FF304006C4E36 /* EndpointInfo.swift in Sources */,

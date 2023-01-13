@@ -1,13 +1,10 @@
 import Foundation
 
 enum Constants {
-    static let kusamaUrl = "https://kusama-rpc.polkadot.io"
-    static let polkadotUrl = "https://rpc.polkadot.io"
-    static let westendUrl = "https://westend-rpc.polkadot.io"
-    
     static let testsCount = 1000
     static let webSocketPort = 8023
-    static let webSocketUrl = "ws://echo.ws.sublab.dev"
+    static let webSocketUrl = "echo.ws.sublab.dev"
+    static let onFinalityKey = "4d709852-8a96-4e7e-962d-0efe46d5a44c"
     
     static let expectationLongTimeout: TimeInterval = 60
     static let singleTestTime: TimeInterval = 3

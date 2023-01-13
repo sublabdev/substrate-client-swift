@@ -10,18 +10,10 @@ private struct ExtrinsicTestCase<T: Codable> {
 }
 
 class TestExtrinsics: XCTestCase {
-    private let network: Endpoint = .kusama
+    private let network: Network = .kusama
+    private lazy var client = network.makeClient()
     private let coder = ScaleCoder.default()
     private var expectations: [XCTestExpectation] = []
-    
-    private lazy var client: SubstrateClient? = {
-        guard let url = URL(string: network.endpointInfo.url) else {
-            XCTFail()
-            return nil
-        }
-        
-        return SubstrateClient(url: url)
-    }()
     
     private func generatedAddMemoCases() throws -> [ExtrinsicTestCase<AddMemo>] {
         return try (0..<Constants.testsCount).compactMap { _ -> ExtrinsicTestCase<AddMemo>? in
@@ -81,11 +73,6 @@ class TestExtrinsics: XCTestCase {
     }
     
     private func testCase<T: Codable>(_ testCase: ExtrinsicTestCase<T>) throws {
-        guard let client = client else {
-            XCTFail()
-            return
-        }
-        
         let expectation = XCTestExpectation()
         expectations.append(expectation)
         

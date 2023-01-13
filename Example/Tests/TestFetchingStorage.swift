@@ -21,16 +21,13 @@ struct RpcStorageItem<T> {
 }
 
 class TestFetchingStorage: XCTestCase {
-    private let network: Endpoint = .kusama
+    private let network: Network = .kusama
+    private lazy var client = network.makeClient()
+    
     private let storageItemFetchingExpectation = XCTestExpectation()
     private let storageItemAccountFetchingExpectation = XCTestExpectation()
     private let storageItemFindingExpectation = XCTestExpectation()
     private let storageItemAccountFindingExpectation = XCTestExpectation()
-    
-    private lazy var client: SubstrateClient? = {
-        guard let url = URL(string: network.endpointInfo.url) else { return nil }
-        return SubstrateClient(url: url)
-    }()
     
     private var storageService: SubstrateStorageService?
     
@@ -58,11 +55,6 @@ class TestFetchingStorage: XCTestCase {
     }
     
     func testService() {
-        guard let client = client else {
-            XCTFail()
-            return
-        }
-
         client.storageService { [weak self] storageService in
             guard let `self` = self else {
                 XCTFail()
@@ -86,28 +78,28 @@ class TestFetchingStorage: XCTestCase {
     // MARK: - Private
     
     private func testStorageItem(storageService: SubstrateStorageService) {
-        self.testStorageItemFetching(
+        testStorageItemFetching(
             storageService: storageService,
-            item: self.storageItem,
+            item: storageItem,
             expectation: storageItemFetchingExpectation
         )
 
-        self.testStorageItemFetching(
+        testStorageItemFetching(
             storageService: storageService,
-            item: self.storageItemAccount,
+            item: storageItemAccount,
             expectation: storageItemAccountFetchingExpectation
         )
         
         do {
-            try self.testStorageItemFinding(
+            try testStorageItemFinding(
                 storageService: storageService,
-                item: self.storageItem,
+                item: storageItem,
                 expectation: storageItemFindingExpectation
             )
 
             try self.testStorageItemFinding(
                 storageService: storageService,
-                item: self.storageItem,
+                item: storageItem,
                 expectation: storageItemAccountFindingExpectation
             )
         } catch let error {
