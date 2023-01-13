@@ -60,7 +60,7 @@ public class SubstrateClient: RuntimeMetadataProvider {
         
         modules = DefaultModuleRpcProvider(
             codec: codec,
-            rpcClient: RpcClient(host: host),
+            rpcClient: RpcClient(host: host, path: settings.rpcPath, params: settings.rpcParams),
             hashersProvider: hashersProvider,
             clientQueue: settings.clientQueue,
             innerQueue: settings.innerQueue

@@ -23,8 +23,11 @@ class TestRandomAccount: XCTestCase {
             expectations.append(expectation)
             
             client.storageService { storage in
-                storage.fetch(moduleName: "system", itemName: "account") { (response: Account?, error: RpcError?) in
-                    XCTAssertNil(response)
+                storage.fetch(moduleName: "system", itemName: "account", key: keyPair.publicKey) {
+                    (response: Account?, error: RpcError?) in
+                    
+                    XCTAssertNil(response) // as this is random account, no info should be present here
+                    XCTAssertNil(error) // should be no error, no failing request
                     expectation.fulfill()
                 }
             }
