@@ -1,5 +1,6 @@
 import Foundation
 
+/// Additional information for extrinsics
 class ExtrinsicAdditional {
     let specVersion: UInt32
     let txVersion: UInt32

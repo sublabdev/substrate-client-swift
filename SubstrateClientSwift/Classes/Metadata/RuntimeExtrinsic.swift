@@ -13,6 +13,7 @@ public class RuntimeExtrinsic: Codable {
         self.signedExtensions = signedExtensions
     }
     
+    /// Signed extension for a runtime extrinsic
     public class SignedExtension: Codable {
         public let identifier: String
         public let type: BigUInt

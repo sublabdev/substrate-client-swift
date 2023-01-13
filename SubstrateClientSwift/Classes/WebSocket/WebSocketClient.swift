@@ -123,6 +123,10 @@ final class WebSocketClient: WebSocketClientProtocol {
         }
     }
     
+    /// Sends the provided message
+    /// - Parameters:
+    ///     - message: Message to send
+    ///     - completion: Completion with optional error
     func sendMessage(_ message: URLSessionWebSocketTask.Message, completion: @escaping (Swift.Error?) -> Void) {
         let webSocketTask = createWebSocketTask()
         webSocketTask?.send(message, completionHandler: completion)
@@ -134,6 +138,9 @@ final class WebSocketClient: WebSocketClientProtocol {
         webSocketTask?.resume()
     }
     
+    /// Subscribes for updates upon recieving messages
+    /// - Parameters:
+    ///     - subscription: Subscription that wants to subscribe
     func subscribe(subscription: @escaping Subscription) {
         let isFirst = subscriptions.isEmpty
         subscriptions.append(subscription)

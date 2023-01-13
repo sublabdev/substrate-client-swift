@@ -2,6 +2,9 @@ import Foundation
 import ScaleCodecSwift
 
 extension ScaleCoder {
+    /// Ads a dynamic adapter to generic adapters
+    /// - Parameters:
+    ///     - runtimeMetadataProvider: Runtime metadata provider to generate a dynamic adapter
     func provideDynamicAdapter(runtimeMetadataProvider: RuntimeMetadataProvider) {
         adapterProvider.addGenericAdapter(
             DynamicAdapterFactory(coder: self, runtimeMetadataProvider: runtimeMetadataProvider)

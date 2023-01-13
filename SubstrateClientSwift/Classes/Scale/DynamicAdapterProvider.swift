@@ -4,12 +4,25 @@ import ScaleCodecSwift
 
 // MARK: - Adapter
 
+/// An interface for providing a scale codec adapter as well as methods for decoding and encoding
 protocol AdapterProtocol {
     var scaleAdapter: ScaleCodecAdaptable { get }
+    
+    /// Converts value to `Data`
+    /// - Parameters:
+    ///     - value: Value of type `Any` to be converted into `Data`
+    /// - Returns: An optional `Data` from the provided value
     func toData(value: Any) -> Data?
+    
+    ///Converts provided data into `Any`
+    /// - Parameters:
+    ///     - data: `Data` to convert to `Any`
+    /// - Returns: An optional `Any` from the provided `Data`
     func fromData(_ data: Data) -> Any?
 }
 
+/// An adapter that takes a generic type `T` and attempts to convert value of that typo
+/// a `Data` or convert `Data` to the type
 final class Adapter<T>: AdapterProtocol {
     let scaleAdapter: ScaleCodecAdaptable
     let toDataClosure: ((T) -> Data)?
@@ -36,6 +49,7 @@ final class Adapter<T>: AdapterProtocol {
     }
 }
 
+/// A dynamic adapter provider that provides an adapter based on the provided dynamic type
 final class DynamicAdapterProvider {
     // MARK: - Dependencies
     
@@ -48,7 +62,10 @@ final class DynamicAdapterProvider {
     }
     
     // MARK: -
-    
+    /// Provides an adapter based on the provided dynamic type
+    /// - Parameters:
+    ///     - type: Dynamic type based on which an adapter is provided
+    /// - Returns: An adapter based on the provided dynamic type
     func adapterProvider(for type: DynamicType.Type) throws -> AdapterProtocol {
         guard let runtimeMetadata = runtimeMetadataProvider?.runtimeSync() else {
             // In fact, this should only happen upon the substrate client deallocation, so it's safe
@@ -83,6 +100,10 @@ final class DynamicAdapterProvider {
         }
     }
     
+    /// Finds an adapter based on the provided runtime primitive;
+    /// - Parameters:
+    ///     - primitive: A runtime primitive based on which an adapter will be provided
+    /// -  Returns: An adapter for the primitive
     private func findAdapter(primitive: RuntimeTypeDefPrimitive) throws -> AdapterProtocol {
         switch primitive {
         case .bool:

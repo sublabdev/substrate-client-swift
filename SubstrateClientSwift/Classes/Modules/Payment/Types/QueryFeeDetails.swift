@@ -22,6 +22,8 @@ class QueryFeeDetailsResponse: Codable {
         let adjustedWeightFee: String
     }
     
+    /// Creates a query fee details from inclusion fee
+    /// - Returns: Generated query fee details
     func toFinal() -> QueryFeeDetails? {
         guard
             let baseFeeValue = inclusionFee.baseFee.hex.toBigUInt(),

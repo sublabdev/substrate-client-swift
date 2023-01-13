@@ -1,7 +1,7 @@
 import BigInt
 import Foundation
 
-/// Runtime type parametr
+/// Runtime type parameter
 public class RuntimeTypeParam: Codable {
     public let name: String
     public let type: BigUInt?

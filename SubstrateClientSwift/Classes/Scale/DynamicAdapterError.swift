@@ -1,5 +1,6 @@
 import Foundation
 
+/// Dynamic adapter errors
 enum DynamicAdapterError: Error {
     case dynamicAdapterGivenInvalidType
     case typeIsNotDynamicException

@@ -9,6 +9,10 @@ public enum RpcError: Error {
 
 /// RPC client that handles sending requests
 public class RpcClient {
+    private enum Constants {
+        static let scheme = "https"
+    }
+    
     private let host: String
     private let path: String?
     private let params: [String: String?]
@@ -37,7 +41,7 @@ public class RpcClient {
         completion: @escaping (RpcResponse<Response>?, RpcError?) -> Void
     ) {
         var urlComponents = URLComponents()
-        urlComponents.scheme = "https" // TODO: move to constants
+        urlComponents.scheme = Constants.scheme
         urlComponents.host = host
         urlComponents.path = "/\(path ?? "")"
         urlComponents.queryItems = params.map { .init(name: $0, value: $1) }

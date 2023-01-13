@@ -1,6 +1,7 @@
 import Foundation
 import ScaleCodecSwift
 
+/// Unsigned payload object. Subclass of `Payload`
 class UnsignedPayload<T: Codable>: Payload {
     let module: RuntimeModule
     let callVariant: RuntimeTypeDefVariant.Variant

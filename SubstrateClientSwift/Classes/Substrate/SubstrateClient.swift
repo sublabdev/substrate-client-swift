@@ -151,7 +151,8 @@ public class SubstrateClient: RuntimeMetadataProvider {
         }
     }
     
-    /// Get RuntimeMetadata blocking thread
+    /// Get RuntimeMetadata blocking the current thread
+    /// - Returns: A runtime metadata
     public func runtimeSync() -> RuntimeMetadata {
         let semaphore = DispatchSemaphore(value: 0)
         var runtimeMetadata: RuntimeMetadata? = nil

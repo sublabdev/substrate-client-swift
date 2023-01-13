@@ -1,6 +1,7 @@
 import Foundation
 import ScaleCodecSwift
 
+/// An adapter that decodes data dynamically. A subclass of `ScaleCodecAdapter`
 final class DynamicAdapter<T>: ScaleCodecAdapter<T> {
     // MARK: - DynamicAdapter
     
@@ -11,7 +12,11 @@ final class DynamicAdapter<T>: ScaleCodecAdapter<T> {
     }
     
     // MARK: - ScaleCodecAdapter
-    
+    /// Decodes data dynamically to a specified generic type `T` using the provided `DataReader`
+    /// - Parameters:
+    ///     - type: Generic type `T` to which the data should be decoded
+    ///     - reader: Reader used to decode data
+    /// - Returns: A decoded data of a provided generic type `T`
     override func read(_ type: T.Type?, from reader: DataReader) throws -> T {
         guard let dynamicType = type as? DynamicType.Type else {
             throw DynamicAdapterError.dynamicAdapterGivenInvalidType
@@ -46,6 +51,10 @@ final class DynamicAdapter<T>: ScaleCodecAdapter<T> {
         }
     }
     
+    /// Encodes provided value to `Data`
+    /// - Parameters:
+    ///     - value: Value to be encoded
+    /// - Returns: An encoded `Data`
     override func write(value: T) throws -> Data {
         guard let value = value as? DynamicType else {
             throw DynamicAdapterError.dynamicAdapterGivenInvalidType

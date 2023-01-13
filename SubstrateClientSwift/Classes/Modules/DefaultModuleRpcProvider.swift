@@ -1,6 +1,7 @@
 import Foundation
 import ScaleCodecSwift
 
+/// Default module rpc provider
 class DefaultModuleRpcProvider: ModuleRpcProvider {
     let codec: ScaleCoder
     let rpcClient: RpcClient
@@ -48,6 +49,10 @@ class DefaultModuleRpcProvider: ModuleRpcProvider {
 
 extension DefaultModuleRpcProvider: InternalModuleRpcProvider {
     // Supply dependencies
+    
+    /// Sets substrate client to be used
+    /// - Parameters:
+    ///     - client: A substrate client to be used
     func workingWithClient(client: SubstrateClient) {
         self.client = client
     }

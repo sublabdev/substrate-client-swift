@@ -38,6 +38,8 @@ struct WebSocketClientFactory: WebSocketClientBuilder {
         self.policy = policy
     }
 
+    /// Creates a web socket client
+    ///  -Returns: A web socket client
     func webSocketClient() -> WebSocketClientProtocol {
         WebSocketClient(
             secure: secure,

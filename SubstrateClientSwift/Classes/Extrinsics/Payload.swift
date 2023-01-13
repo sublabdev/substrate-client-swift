@@ -1,5 +1,6 @@
 import Foundation
 
+/// Payload object
 class Payload: Encodable {
     var moduleName: String
     var callName: String
