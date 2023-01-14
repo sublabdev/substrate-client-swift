@@ -11,6 +11,8 @@ public protocol ModuleRpcProvider: AnyObject {
     
     /// Provides an interface for chain `RPC` client
     var chainRpc: ChainRpc { get }
+    
+    var paymentRpc: PaymentRpc { get }
 }
 
 /// An internal interface for working with cliend

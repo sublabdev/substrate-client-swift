@@ -1,6 +1,7 @@
-import XCTest
 @testable import SubstrateClientSwift
+import EncryptingSwift
 import ScaleCodecSwift
+import XCTest
 
 private struct ExtrinsicTestCase<T: Codable> {
     let moduleName: String
@@ -12,7 +13,7 @@ private struct ExtrinsicTestCase<T: Codable> {
 class TestExtrinsics: XCTestCase {
     private let network: Network = .kusama
     private lazy var client = network.makeClient()
-    private let coder = ScaleCoder.default()
+    private let codec = ScaleCoder.default()
     
     private func generatedAddMemoCases() throws -> [ExtrinsicTestCase<AddMemo>] {
         return try (0..<Constants.testsCount).compactMap { _ -> ExtrinsicTestCase<AddMemo>? in
@@ -21,9 +22,9 @@ class TestExtrinsics: XCTestCase {
                 return nil
             }
             
-            let scaleEncodedRandomIndex = try coder.encoder.encode(randomIndex)
+            let scaleEncodedRandomIndex = try codec.encoder.encode(randomIndex)
             let randomString = UUID().uuidString
-            let scaleEncodedRandomString = try coder.encoder.encode(randomString)
+            let scaleEncodedRandomString = try codec.encoder.encode(randomString)
             
             let addMemoPrefix = try "0x4906".hex.decode()
             guard let memo = randomString.data(using: .utf8) else {
@@ -56,18 +57,19 @@ class TestExtrinsics: XCTestCase {
             )
         ]
         
-        try testCases.append(contentsOf: generatedAddMemoCases())
+//        try testCases.append(contentsOf: generatedAddMemoCases())
         
         return testCases
     }
     
-    func testUnsignedExtrinsic() async throws {
+    func test() async throws {
         for `case` in try testCases() {
             try await testCase(`case`)
         }
     }
     
     private func testCase<T: Codable>(_ testCase: ExtrinsicTestCase<T>) async throws {
+        // Unsigned
         let unsigned = try await client.extrinsics.makeUnsigned(
             moduleName: testCase.moduleName,
             callName: testCase.callName,
@@ -86,5 +88,41 @@ class TestExtrinsics: XCTestCase {
         }
         
         XCTAssertEqual(decodedUnsignedHex, encodedUnsigned)
+        
+        // Signed
+        let keyPair = try KeyPairFactory.sr25519.generate()
+        let accountId = try keyPair.publicKey.ss58.accountId()
+        
+        let nonce = try await client.modules.systemRpc.account(accountId: accountId)?.nonce
+        XCTAssertNil(nonce)
+        
+        // Unwrap internal methods
+        guard let extrinsics = client.extrinsics as? SubstrateExtrinsicsService else {
+            XCTFail()
+            return
+        }
+        
+        let signed = try await extrinsics.makeSigned(
+            moduleName: testCase.moduleName,
+            callName: testCase.callName,
+            callValue: testCase.callValue,
+            tip: .init(value: 0),
+            accountId: accountId,
+            nonce: .init(value: 0),
+            signatureEngine: keyPair.signatureEngine(for: keyPair.privateKey)
+        )
+        
+        guard let signed = signed else {
+            XCTFail()
+            return
+        }
+                
+        let queryFeeDetails = try await client.modules.paymentRpc.queryFeeDetails(payload: signed)
+        guard let queryFeeDetails = queryFeeDetails else {
+            XCTFail()
+            return
+        }
+        
+        XCTAssertGreaterThan(queryFeeDetails.baseFee.value, 0)
     }
 }

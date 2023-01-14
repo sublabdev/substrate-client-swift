@@ -27,30 +27,22 @@ final class DynamicAdapter<T>: ScaleCodecAdapter<T> {
             try await provider.adapterProvider(for: dynamicType)
         }
         
-//        print("[dynamic][\(type)] adapter = \(adapter)")
         // We read this as Any
         do {
             let readValue = try adapter.scaleAdapter.tryRead(from: reader)
-//            print("[dynamic][\(type)] read value = \(readValue)")
             if let data = adapter.toData(value: readValue) {
-//                print("[dynamic][\(type)] converted to data = \(data)")
                 if let value = dynamicType.init(data: data) as? T {
-//                    print("[dynamic][\(type)] read from data = \(value)")
                     return value
                 } else {
                     // shouldn't happen in fact as T = DynamicType
-//                    print("[dynamic][\(type)] couldn't read from data")
                     throw DynamicAdapterError.internalFailure
                 }
             } else if let value = readValue as? T {
-//                print("[dynamic][\(type)] pass \(value)")
                 return value
             } else {
-//                print("[dynamic][\(type)] couldn't read dynamic type")
                 throw DynamicAdapterError.internalFailure
             }
         } catch let error {
-//            print("[dynamic][\(type)] caught error = \(error)")
             throw error
         }
     }
@@ -68,7 +60,14 @@ final class DynamicAdapter<T>: ScaleCodecAdapter<T> {
             try await provider.adapterProvider(for: type(of: value))
         }
         
-        if let value = adapter.fromData(value.toData()) {
+        var data = value.toData()
+        if let bytesLength = adapter.bytesLength, data.count != bytesLength, bytesLength > data.count {
+            // Prepend '0' bytes if not enough size to prevent Numeric.fromData failure
+            let diff = bytesLength - data.count
+            data = (0..<diff).map { _ in UInt8(0) }.toData() + data
+        }
+        
+        if let value = adapter.fromData(data) {
             // for conversions like Index <> UInt32(64, whatever)
             return try adapter.scaleAdapter.tryWrite(value: value)
         } else {

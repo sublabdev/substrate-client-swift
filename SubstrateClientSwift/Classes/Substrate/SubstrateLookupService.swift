@@ -94,7 +94,7 @@ extension SubstrateLookupService {
             return module
         }
         
-        let module = try await runtimeMetadata().modules.first(where: { namingPolicy.equals(lhs: $0.name, rhs: name) })
+        let module = try await runtimeMetadata().modules.first(where: { namingPolicy.equals($0.name, name) })
         if module != nil {
             self.modulesCache[name] = module
         }
@@ -114,7 +114,7 @@ extension SubstrateLookupService {
     /// - Returns: Found runtime module constant
     private func findConstant(module: RuntimeModule, name: String) -> RuntimeModuleConstant? {
         let constantPath = ModulePath(moduleName: module.name, childName: name)
-        let constant = constantsCache[constantPath] ?? module.constants.first(where: { $0.name == name })
+        let constant = constantsCache[constantPath] ?? module.constants.first(where: { namingPolicy.equals($0.name, name) })
         constantsCache[constantPath] = constant
         
         return constant
@@ -163,7 +163,7 @@ extension SubstrateLookupService {
             storageItem = cachedItem
         } else {
             storageItem = module.storage?.items.first {
-                namingPolicy.equals(lhs: $0.name, rhs: name)
+                namingPolicy.equals($0.name, name)
             }
         }
         

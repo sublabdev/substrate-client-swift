@@ -15,5 +15,5 @@ public struct RuntimeVersion: Codable {
 
 public struct RuntimeVersionApi: Codable {
     @Array8 public var id: [UInt8]
-    public let index: Int
+    public let index: Index
 }

@@ -56,4 +56,21 @@ class TestRuntimeMetadata: XCTestCase {
         let encoded = try string.hex.decode()
         return try ScaleCoder.default().decoder.decode(RuntimeMetadata.self, from: encoded)
     }
+    
+    func testRuntimeVersion() async throws {
+        for network in Network.allCases {
+            let client = network.makeClient()
+            let runtimeVersion = try await client.modules.systemRpc.runtimeVersion()
+            XCTAssertNotNil(runtimeVersion)
+        }
+    }
+    
+    func testGenesisHash() async throws {
+        for network in Network.allCases {
+            let client = network.makeClient()
+            let genesisHash = try await client.modules.chainRpc.blockHash(number: 0)
+            XCTAssertNotNil(genesisHash)
+            XCTAssertEqual(network.genesisHash, genesisHash)
+        }
+    }
 }

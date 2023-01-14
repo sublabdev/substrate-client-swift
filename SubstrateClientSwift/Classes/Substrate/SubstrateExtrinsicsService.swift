@@ -71,7 +71,7 @@ extension SubstrateExtrinsicsService {
     ///     - callName: The name by which the call should be found
     /// - Returns: The call with a given name for a variant
     private func findCall(variant: RuntimeTypeDefVariant, callName: String) ->  RuntimeTypeDefVariant.Variant? {
-        variant.variants.first(where: { namingPolicy.equals(lhs: callName, rhs: $0.name) })
+        variant.variants.first(where: { namingPolicy.equals(callName, $0.name) })
     }
     
     /// Finds a call for a given runtime type defenition
@@ -171,36 +171,39 @@ extension SubstrateExtrinsicsService {
         accountId: AccountId,
         signatureEngine: SignatureEngine
     ) async throws -> Payload? {
-        let payload = try await makePayload(moduleName: moduleName, callName: callName, callValue: callValue)
-        return nil
-//        try modules.systemRpc { systemRpc in
-//            try systemRpc.runtimeVersion { runtimeVersion in
-//                guard let runtimeVersion = runtimeVersion else {
-//                    completion(nil, ExtrinsicError.runtimeVersionNotLoaded)
-//                    return
-//                }
-//
-//                try modules.chainRpc(completion: { chainRpc in
-//                    chainRpc.getBlockHash(number: 0) { genesisHash, error in
-//                        guard let genesisHash = genesisHash else {
-//                            completion(nil, ExtrinsicError.genesisHashNotLoaded(error))
-//                            return
-//                        }
-//
-//                        completion(SignedPayload(
-//                            runtimeMetadata: runtimeMetadata,
-//                            codec: codec,
-//                            payload: payload,
-//                            runtimeVersion: runtimeVersion,
-//                            genesisHash: genesisHash,
-//                            accountId: accountId,
-//                            nonce: 0,
-//                            tip: tip,
-//                            signatureEngine: signatureEngine
-//                        ), nil)
-//                    }
-//                })
-//            }
-//        }
+        SignedPayload(
+            runtimeMetadata: try await runtimeMetadataProvider?.runtimeMetadata() as RuntimeMetadata?,
+            codec: codec,
+            payload: try await makePayload(moduleName: moduleName, callName: callName, callValue: callValue),
+            runtimeVersion: try await modules?.systemRpc.runtimeVersion() as RuntimeVersion?,
+            genesisHash: try await modules?.chainRpc.blockHash(number: 0) as String?,
+            accountId: accountId,
+            nonce: try await modules?.systemRpc.account(accountId: accountId)?.nonce,
+            tip: tip,
+            signatureEngine: signatureEngine
+        )
+    }
+    
+    /// Method for extrinsics tests which sets `nonce` as '0', otherwise error is posted
+    func makeSigned<T: Codable>(
+        moduleName: String,
+        callName: String,
+        callValue: T,
+        tip: Balance,
+        accountId: AccountId,
+        nonce: Index,
+        signatureEngine: SignatureEngine
+    ) async throws -> Payload? {
+        SignedPayload(
+            runtimeMetadata: try await runtimeMetadataProvider?.runtimeMetadata() as RuntimeMetadata?,
+            codec: codec,
+            payload: try await makePayload(moduleName: moduleName, callName: callName, callValue: callValue),
+            runtimeVersion: try await modules?.systemRpc.runtimeVersion() as RuntimeVersion?,
+            genesisHash: try await modules?.chainRpc.blockHash(number: 0) as String?,
+            accountId: accountId,
+            nonce: nonce,
+            tip: tip,
+            signatureEngine: signatureEngine
+        )
     }
 }

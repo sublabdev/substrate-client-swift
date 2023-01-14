@@ -4,9 +4,9 @@ import BigInt
 
 /// Contains details of query fee
 public struct QueryFeeDetails: Decodable {
-    let baseFee: Balance
-    let lenFee: Balance
-    let adjustedWeightFee: Balance
+    public let baseFee: Balance
+    public let lenFee: Balance
+    public let adjustedWeightFee: Balance
 }
 
 class QueryFeeDetailsResponse: Codable {

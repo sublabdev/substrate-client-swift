@@ -2,7 +2,7 @@ import Foundation
 import ScaleCodecSwift
 
 /// An interface for getting a query fee details response
-protocol PaymentRpc {
+public protocol PaymentRpc {
     /// Gets query fee details for a payload
     /// - Parameters:
     ///     - payload: `Payload` for which query fee details should be returned
@@ -11,7 +11,7 @@ protocol PaymentRpc {
 }
 
 /// Handles payment query fee details fetching
-public class PaymentRpcClient: PaymentRpc {
+final class PaymentRpcClient: PaymentRpc {
     private weak var rpcClient: RpcClient?
     
     init(rpcClient: RpcClient?) {
@@ -19,10 +19,11 @@ public class PaymentRpcClient: PaymentRpc {
     }
     
     func queryFeeDetails(payload: Payload) async throws -> QueryFeeDetails? {
-        guard let payloadData = try payload.toData() else { return nil }
-        return try await rpcClient?.sendRequest(
-            [payloadData.hex.encode(includePrefix: true)],
+        let response: QueryFeeDetailsResponse? = try await rpcClient?.sendRequest(
+            [try payload.toData().hex.encode(includePrefix: true)],
             method: "payment_queryFeeDetails"
         )
+        
+        return response.flatMap { $0.toFinal() }
     }
 }

@@ -8,8 +8,8 @@ final class UnsignedPayload<T: Codable>: Payload {
     fileprivate let callVariant: RuntimeTypeDefVariant.Variant
     fileprivate let callValue: T
     
-    var moduleName: String { module.name }
-    var callName: String { callVariant.name }
+    var moduleName: String? { module.name }
+    var callName: String? { callVariant.name }
     
     init(
         codec: ScaleCoder?,
@@ -23,8 +23,9 @@ final class UnsignedPayload<T: Codable>: Payload {
         self.callValue = callValue
     }
     
-    func toData() throws -> Data? {
-        try codec?.transaction()
+    func toData() throws -> Data {
+        guard let codec = codec else { throw ExtrinsicError.noCodec }
+        return try codec.transaction()
             .appendUnsignedPayload(self)
             .commit()
     }

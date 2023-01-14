@@ -7,9 +7,12 @@ enum ExtrinsicError: Error {
     case genesisHashNotLoaded(RpcError?)
     
     // used in composition
+    case noPayload
     case noRuntimeMetadata
-    case genesisHashEncodingFailed
-    case blockHashEncodingFailed
+    case noCodec
+    case noNonce
+    case noGenesisHash
+    case noBlockHash
+    case noRuntimeVersion
     case lookupFailure
-    case signingFailure
 }

@@ -1,4 +1,5 @@
 import BigInt
+import CommonSwift
 import Foundation
 import ScaleCodecSwift
 
@@ -7,6 +8,9 @@ import ScaleCodecSwift
 /// An interface for providing a scale codec adapter as well as methods for decoding and encoding
 protocol AdapterProtocol {
     var scaleAdapter: ScaleCodecAdaptable { get }
+    
+    // For normalizing
+    var bytesLength: Int? { get }
     
     /// Converts value to `Data`
     /// - Parameters:
@@ -25,15 +29,18 @@ protocol AdapterProtocol {
 /// a `Data` or convert `Data` to the type
 final class Adapter<T>: AdapterProtocol {
     let scaleAdapter: ScaleCodecAdaptable
+    let bytesLength: Int?
     let toDataClosure: ((T) -> Data)?
     let fromDataClosure: ((Data) -> T)?
     
     init(
         scaleAdapter: ScaleCodecAdapter<T>,
+        bytesLength: Int? = nil,
         toDataClosure: ((T) -> Data)? = nil,
         fromDataClosure: ((Data) -> T)? = nil
     ) {
         self.scaleAdapter = scaleAdapter
+        self.bytesLength = bytesLength
         self.toDataClosure = toDataClosure
         self.fromDataClosure = fromDataClosure
     }
@@ -111,72 +118,84 @@ final class DynamicAdapterProvider {
         case .uint8:
             return Adapter(
                 scaleAdapter: NumericAdapter<UInt8>(),
+                bytesLength: UInt8.bitWidth * 8,
                 toDataClosure: { NumericAdapter.toData($0) },
                 fromDataClosure: { NumericAdapter.fromData($0) }
             )
         case .uint16:
             return Adapter(
                 scaleAdapter: NumericAdapter<UInt16>(),
+                bytesLength: UInt16.bitWidth * 8,
                 toDataClosure: { NumericAdapter.toData($0) },
                 fromDataClosure: { NumericAdapter.fromData($0) }
             )
         case .uint32:
             return Adapter(
                 scaleAdapter: NumericAdapter<UInt32>(),
+                bytesLength: UInt32.bitWidth * 8,
                 toDataClosure: { NumericAdapter.toData($0) },
                 fromDataClosure: { NumericAdapter.fromData($0) }
             )
         case .uint64:
             return Adapter(
                 scaleAdapter: NumericAdapter<UInt64>(),
+                bytesLength: UInt64.bitWidth * 8,
                 toDataClosure: { NumericAdapter.toData($0) },
                 fromDataClosure: { NumericAdapter.fromData($0) }
             )
         case .uint128:
             return Adapter(
                 scaleAdapter: UInt128Adapter(),
+                bytesLength: UInt128.size,
                 toDataClosure: { $0.data() },
                 fromDataClosure: { $0.uInt128() }
             )
         case .uint256:
             return Adapter(
                 scaleAdapter: UInt256Adapter(),
+                bytesLength: UInt256.size,
                 toDataClosure: { $0.data() },
                 fromDataClosure: { $0.uInt256() }
             )
         case .int8:
             return Adapter(
                 scaleAdapter: NumericAdapter<Int8>(),
+                bytesLength: Int8.bitWidth * 8,
                 toDataClosure: { NumericAdapter.toData($0) },
                 fromDataClosure: { NumericAdapter.fromData($0) }
             )
         case .int16:
             return Adapter(
                 scaleAdapter: NumericAdapter<Int16>(),
+                bytesLength: Int16.bitWidth * 8,
                 toDataClosure: { NumericAdapter.toData($0) },
                 fromDataClosure: { NumericAdapter.fromData($0) }
             )
         case .int32:
             return Adapter(
                 scaleAdapter: NumericAdapter<Int32>(),
+                bytesLength: Int32.bitWidth * 8,
                 toDataClosure: { NumericAdapter.toData($0) },
                 fromDataClosure: { NumericAdapter.fromData($0) }
             )
         case .int64:
             return Adapter(
                 scaleAdapter: NumericAdapter<Int64>(),
+                bytesLength: Int64.bitWidth * 8,
                 toDataClosure: { NumericAdapter.toData($0) },
                 fromDataClosure: { NumericAdapter.fromData($0) }
             )
         case .int128:
             return Adapter(
                 scaleAdapter: Int128Adapter(),
+                bytesLength: Int128.size,
                 toDataClosure: { $0.data() },
                 fromDataClosure: { $0.int128() }
             )
         case .int256:
             return Adapter(
                 scaleAdapter: Int256Adapter(),
+                bytesLength: Int256.size,
                 toDataClosure: { $0.data() },
                 fromDataClosure: { $0.int256() }
             )

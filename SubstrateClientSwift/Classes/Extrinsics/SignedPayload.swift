@@ -4,31 +4,31 @@ import HashingSwift
 import ScaleCodecSwift
 
 final class SignedPayload<T: Codable>: Payload {
-    fileprivate let runtimeMetadata: RuntimeMetadata
+    fileprivate let runtimeMetadata: RuntimeMetadata?
     private weak var codec: ScaleCoder?
-    private let payload: UnsignedPayload<T>
-    fileprivate let runtimeVersion: RuntimeVersion
-    fileprivate let genesisHash: String
+    private let payload: UnsignedPayload<T>?
+    fileprivate let runtimeVersion: RuntimeVersion?
+    fileprivate let genesisHash: String?
     fileprivate let era: Era
-    fileprivate let blockHash: String
+    fileprivate let blockHash: String?
     fileprivate let accountId: AccountId
-    fileprivate let nonce: Index
+    fileprivate let nonce: Index?
     fileprivate let tip: Balance
     fileprivate let signatureEngine: SignatureEngine
     
-    var moduleName: String { payload.moduleName }
-    var callName: String { payload.callName }
+    var moduleName: String? { payload?.moduleName }
+    var callName: String? { payload?.callName }
     
     init(
-        runtimeMetadata: RuntimeMetadata,
+        runtimeMetadata: RuntimeMetadata?,
         codec: ScaleCoder?,
-        payload: UnsignedPayload<T>,
-        runtimeVersion: RuntimeVersion,
-        genesisHash: String,
+        payload: UnsignedPayload<T>?,
+        runtimeVersion: RuntimeVersion?,
+        genesisHash: String?,
         era: Era = .immortal,
         blockHash: String? = nil,
         accountId: AccountId,
-        nonce: Index,
+        nonce: Index?,
         tip: Balance,
         signatureEngine: SignatureEngine
     ) {
@@ -49,31 +49,44 @@ final class SignedPayload<T: Codable>: Payload {
 // MARK: - Extrinsic composition
 
 extension SignedPayload {
-    func toData() throws -> Data? {
-        guard let payloadData = try payload.toData()?.asScaleEncoded() else { return nil }
-        return try codec?.transaction()
-            .append(0b10000000 + runtimeMetadata.extrinsic.version)
+    private func makeExtrinsic() throws -> Data {
+        guard let payloadData = try payload?.toData().asScaleEncoded() else {
+            throw ExtrinsicError.noPayload
+        }
+        guard let extrinsicVersion = runtimeMetadata?.extrinsic.version else { throw ExtrinsicError.noRuntimeMetadata }
+        guard let codec = codec else { throw ExtrinsicError.noCodec }
+        
+        return try codec.transaction()
+            .append(0b10000000 + extrinsicVersion)
             .appendAccountId(from: self)
             .appendSignature(from: self)
             .appendExtra(from: self)
             .append(payloadData)
             .commit()
     }
+    
+    func toData() throws -> Data {
+        guard let codec = codec else { throw ExtrinsicError.noCodec }
+        return try codec.encoder.encode(makeExtrinsic())
+    }
 }
 
 // MARK: - Signing
 
 extension SignedPayload {
-    private func signingPayload() throws -> Data? {
-        try codec?.transaction()
+    private func signingPayload() throws -> Data {
+        guard let payload = payload else { throw ExtrinsicError.noPayload }
+        guard let codec = codec else { throw ExtrinsicError.noCodec }
+        
+        return try codec.transaction()
             .appendUnsignedPayload(payload)
             .appendExtra(from: self)
             .appendAdditional(from: self)
             .commit()
     }
     
-    func sign() throws -> Data? {
-        guard var signingPayload = try signingPayload() else { return nil }
+    func sign() throws -> Data {
+        var signingPayload = try signingPayload()
         if signingPayload.count > 256 /* move to constants */ {
             signingPayload = try signingPayload.hashing.blake2b_256()
         }
@@ -107,7 +120,8 @@ extension RuntimeMetadata {
 
 extension ScaleCodecTransaction {
     fileprivate func appendAccountId<T: Codable>(from signedPayload: SignedPayload<T>) throws -> Self {
-        let addressTypeDef = try signedPayload.runtimeMetadata.findSignatureTypeDef(name: "Address")
+        guard let runtimeMetadata = signedPayload.runtimeMetadata else { throw ExtrinsicError.noRuntimeMetadata }
+        let addressTypeDef = try runtimeMetadata.findSignatureTypeDef(name: "Address")
         switch addressTypeDef {
         case .variant(let runtimeTypeDefVariant):
             let addressVariants = runtimeTypeDefVariant.variants
@@ -130,7 +144,8 @@ extension ScaleCodecTransaction {
 
 extension ScaleCodecTransaction {
     fileprivate func appendSignature<T: Codable>(from signedPayload: SignedPayload<T>) throws -> Self {
-        let signatureTypeDef = try signedPayload.runtimeMetadata.findSignatureTypeDef(name: "Signature")
+        guard let runtimeMetadata = signedPayload.runtimeMetadata else { throw ExtrinsicError.noRuntimeMetadata }
+        let signatureTypeDef = try runtimeMetadata.findSignatureTypeDef(name: "Signature")
         switch signatureTypeDef {
         case .variant(let runtimeTypeDefVariant):
             let signatureVariants = runtimeTypeDefVariant.variants
@@ -140,8 +155,7 @@ extension ScaleCodecTransaction {
             
             try append(signatureTypeIndex)
             // Ignore size, inject directly
-            guard let signature = try signedPayload.sign() else { throw ExtrinsicError.signingFailure }
-            try append(signature.asScaleEncoded())
+            try append(try signedPayload.sign().asScaleEncoded())
         default:
             throw ExtrinsicError.lookupFailure
         }
@@ -154,11 +168,16 @@ extension ScaleCodecTransaction {
 
 extension ScaleCodecTransaction {
     fileprivate func appendExtra<T: Codable>(from signedPayload: SignedPayload<T>) throws -> Self {
-        for ext in signedPayload.runtimeMetadata.extrinsic.signedExtensions {
+        guard let runtimeMetadata = signedPayload.runtimeMetadata else { throw ExtrinsicError.noRuntimeMetadata }
+        for ext in runtimeMetadata.extrinsic.signedExtensions {
             switch ext.identifier {
-            case "CheckMortality": try append(signedPayload.era)
-            case "CheckNonce": try append(signedPayload.nonce.value)
-            case "ChargeTransactionPayment": try append(signedPayload.tip.value)
+            case "CheckMortality":
+                try append(signedPayload.era)
+            case "CheckNonce":
+                guard let nonce = signedPayload.nonce else { throw ExtrinsicError.noNonce }
+                try append(nonce.value)
+            case "ChargeTransactionPayment":
+                try append(signedPayload.tip.value)
             default: break
             }
         }
@@ -171,16 +190,22 @@ extension ScaleCodecTransaction {
 
 extension ScaleCodecTransaction {
     fileprivate func appendAdditional<T: Codable>(from signedPayload: SignedPayload<T>) throws -> Self {
-        for ext in signedPayload.runtimeMetadata.extrinsic.signedExtensions {
+        guard let runtimeMetadata = signedPayload.runtimeMetadata else { throw ExtrinsicError.noRuntimeMetadata }
+        
+        for ext in runtimeMetadata.extrinsic.signedExtensions {
             switch ext.identifier {
             case "CheckGenesis":
-                try append(try signedPayload.genesisHash.hex.decode().asScaleEncoded())
+                guard let genesisHash = signedPayload.genesisHash else { throw ExtrinsicError.noGenesisHash }
+                try append(try genesisHash.hex.decode().asScaleEncoded())
             case "CheckMortality":
-                try append(try signedPayload.blockHash.hex.decode().asScaleEncoded())
+                guard let blockHash = signedPayload.blockHash else { throw ExtrinsicError.noGenesisHash }
+                try append(try blockHash.hex.decode().asScaleEncoded())
             case "CheckSpecVersion":
-                try append(signedPayload.runtimeVersion.specVersion)
+                guard let runtimeVersion = signedPayload.runtimeVersion else { throw ExtrinsicError.noRuntimeVersion }
+                try append(runtimeVersion.specVersion)
             case "CheckTxVersion":
-                try append(signedPayload.runtimeVersion.txVersion)
+                guard let runtimeVersion = signedPayload.runtimeVersion else { throw ExtrinsicError.noRuntimeVersion }
+                try append(runtimeVersion.txVersion)
             default: break
             }
         }

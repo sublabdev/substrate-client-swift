@@ -22,4 +22,5 @@ class DefaultModuleRpcProvider: InternalModuleRpcProvider {
     lazy var stateRpc: StateRpc = StateRpcClient(codec: codec, rpcClient: rpcClient, hashersProvider: hashersProvider)
     lazy var systemRpc: SystemRpc = SystemRpcClient(constants: constants, storage: storage)
     lazy var chainRpc: ChainRpc = ChainRpcClient(rpcClient: rpcClient)
+    lazy var paymentRpc: PaymentRpc = PaymentRpcClient(rpcClient: rpcClient)
 }

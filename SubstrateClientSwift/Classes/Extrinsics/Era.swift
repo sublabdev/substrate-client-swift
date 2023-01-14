@@ -2,6 +2,11 @@ import Foundation
 
 /// An extrinsic era
 public enum Era: Equatable, Codable {
+    enum CodingKeys: Int, CodingKey {
+        case immortal = 0
+        case mortal = 1
+    }
+    
     case immortal
     case mortal(value: Mortal)
 }
