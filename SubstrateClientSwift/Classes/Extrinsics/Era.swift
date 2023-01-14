@@ -1,5 +1,6 @@
 import Foundation
 
+/// An extrinsic era
 enum Era: Equatable {
     case immortal(value: Immortal)
     case mortal(value: Mortal)

@@ -167,6 +167,7 @@ final class WebSocketClient: WebSocketClientProtocol {
         }
     }
 
+    /// Subscribes to errors u
     func subscribeToErrors(_ errorSubscription: @escaping ErrorSubscription) {
         guard policy != .none else { return }
         

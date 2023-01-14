@@ -4,7 +4,7 @@ import Foundation
 protocol HashersProvider {
     /// Provides a storage hasher for a specified storage
     /// - Parameters:
-    ///     - value: The module storage which needs to be hashed
+    ///     - storage: The module storage which needs to be hashed
     /// - Returns: A storage hasher
     func getStorageHasher(storage: RuntimeModuleStorage) -> StorageHashing
 }

@@ -27,7 +27,7 @@ class SubstrateConstantsService {
     /// - Parameters:
     ///     - moduleName: Module's name in which the constant should be looked for
     ///     - constantName: Constant name by which the constant should be found
-    ///     - completion: Contains a runtime module on a client-specified queue
+    ///     - completion: Contains a runtime module constant on a client-specified queue
     func find(
         moduleName: String,
         constantName: String,

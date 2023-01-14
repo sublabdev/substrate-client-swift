@@ -14,7 +14,7 @@ protocol AdapterProtocol {
     /// - Returns: An optional `Data` from the provided value
     func toData(value: Any) -> Data?
     
-    ///Converts provided data into `Any`
+    /// Converts provided data into `Any`
     /// - Parameters:
     ///     - data: `Data` to convert to `Any`
     /// - Returns: An optional `Any` from the provided `Data`

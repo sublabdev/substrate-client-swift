@@ -1,6 +1,6 @@
 import Foundation
 
-/// Payload object
+/// An extrinsic's payload object
 class Payload: Encodable {
     var moduleName: String
     var callName: String

@@ -14,7 +14,7 @@ public class RuntimeLookup: Codable {
         self.items = items
     }
     
-    /// Finds a lookup item by an index
+    /// Finds a lookup item by an index of type BigUInt
     /// - Parameters:
     ///     - index: Index to find a lookup item
     /// - Returns: A lookup item for a specific index

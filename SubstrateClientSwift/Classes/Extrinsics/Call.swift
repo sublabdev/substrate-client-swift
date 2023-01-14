@@ -1,5 +1,6 @@
 import Foundation
 
+/// An extrinsic call
 public class Call<T: Codable> {
     let moduleName: String
     let name: String
