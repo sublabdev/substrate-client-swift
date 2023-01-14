@@ -13,36 +13,13 @@ class TestRandomAccount: XCTestCase {
         .sr25519
     ]
     
-    func testNoRecordsAboutAccount() throws {
-        var expectations: [XCTestExpectation] = []
-        
+    func testNoRecordsAboutAccount() async throws {
         for factory in factories {
             let keyPair = try factory.generate()
             let accountId = try keyPair.publicKey.ss58.accountId()
-            let expectation = XCTestExpectation()
-            expectations.append(expectation)
             
-            client.storageService { storage in
-                storage.fetch(moduleName: "system", itemName: "account", key: keyPair.publicKey) {
-                    (response: Account?, error: RpcError?) in
-                    
-                    XCTAssertNil(response) // as this is random account, no info should be present here
-                    XCTAssertNil(error) // should be no error, no failing request
-                    expectation.fulfill()
-                }
-            }
+            let response: Account? = try await client.storage.fetch(moduleName: "system", itemName: "account", key: accountId)
+            XCTAssertNil(response) // as this is random account, no info should be present here
         }
-        
-        wait(for: expectations, timeout: Constants.expectationLongTimeout)
-    }
-    
-    private func testFailingExtrinsic(keyPair: KeyPair, accountId: Data) {
-        guard let memo = "hi".data(using: .utf8) else {
-            XCTFail()
-            return
-        }
-        
-        let addMemoInstruction = AddMemo(index: 0, memo: memo)
-        // TODO: Need to create a signed extrinsic
     }
 }

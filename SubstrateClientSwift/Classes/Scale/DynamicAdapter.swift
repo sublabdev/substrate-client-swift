@@ -1,3 +1,4 @@
+import CommonSwift
 import Foundation
 import ScaleCodecSwift
 
@@ -22,7 +23,10 @@ final class DynamicAdapter<T>: ScaleCodecAdapter<T> {
             throw DynamicAdapterError.dynamicAdapterGivenInvalidType
         }
         
-        let adapter = try provider.adapterProvider(for: dynamicType)
+        let adapter = try runBlocking {
+            try await provider.adapterProvider(for: dynamicType)
+        }
+        
 //        print("[dynamic][\(type)] adapter = \(adapter)")
         // We read this as Any
         do {
@@ -60,7 +64,10 @@ final class DynamicAdapter<T>: ScaleCodecAdapter<T> {
             throw DynamicAdapterError.dynamicAdapterGivenInvalidType
         }
         
-        let adapter = try provider.adapterProvider(for: type(of: value))
+        let adapter = try runBlocking {
+            try await provider.adapterProvider(for: type(of: value))
+        }
+        
         if let value = adapter.fromData(value.toData()) {
             // for conversions like Index <> UInt32(64, whatever)
             return try adapter.scaleAdapter.tryWrite(value: value)

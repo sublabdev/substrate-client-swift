@@ -1,14 +1,14 @@
 import Foundation
 
 /// RPC response
-struct RpcResponse<T: Codable>: Codable {
-    let jsonrpc: String
-    let id: Int32
-    var result: T? = nil
-    var error: RpcResponseError? = nil
+public struct RpcResponse<T: Decodable>: Decodable {
+    public let jsonrpc: String
+    public let id: Int32
+    public var result: T? = nil
+    public var error: Error? = nil
    
-    struct RpcResponseError: Codable {
-        let code: Int
-        let message: String
+    public struct Error: Decodable {
+        public let code: Int
+        public let message: String
     }
 }

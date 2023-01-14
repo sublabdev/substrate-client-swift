@@ -1,16 +1,12 @@
 import Foundation
 
 /// An extrinsic era
-enum Era: Equatable {
-    case immortal(value: Immortal)
+public enum Era: Equatable, Codable {
+    case immortal
     case mortal(value: Mortal)
 }
 
-// TODO: Check Immortal's logic here
-struct Immortal: Hashable, Equatable {
-}
-
-struct Mortal: Equatable {
-    let period: UInt64
-    let phase: UInt64
+public struct Mortal: Equatable, Codable {
+    public let period: UInt64
+    public let phase: UInt64
 }

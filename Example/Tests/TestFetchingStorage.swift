@@ -28,9 +28,7 @@ class TestFetchingStorage: XCTestCase {
     private let storageItemAccountFetchingExpectation = XCTestExpectation()
     private let storageItemFindingExpectation = XCTestExpectation()
     private let storageItemAccountFindingExpectation = XCTestExpectation()
-    
-    private var storageService: SubstrateStorageService?
-    
+        
     private var storageItem: RpcStorageItem<UInt64> {
         .init(module: "timestamp", item: "now") {
             // Difference should be within one minute, let's assume some big lag
@@ -40,11 +38,13 @@ class TestFetchingStorage: XCTestCase {
         }
     }
     
-    private var storageItemAccount: RpcStorageItem<Account> {
+    private func storageItemAccount() throws -> RpcStorageItem<Account> {
+        let key = try "0xd857fcac7bd9bb03551d70b9743895a98b74b06e54bdc34f1b27ab240356857d".hex.decode()
         return .init(
             module: "system",
             item: "account",
-            keys: ["0xd857fcac7bd9bb03551d70b9743895a98b74b06e54bdc34f1b27ab240356857d".hex.decode() ?? Data()])
+            keys: [key]
+        )
         { account in
             // Random Kusama validator account, as long as it participates in validation, all fields should be > 0
             account.data.feeFrozen.value > BigInt.zero &&
@@ -54,127 +54,89 @@ class TestFetchingStorage: XCTestCase {
         }
     }
     
-    func testService() {
-        client.storageService { [weak self] storageService in
-            guard let `self` = self else {
-                XCTFail()
-                return
-            }
-            
-            self.storageService = storageService
-            self.testStorageItem(storageService: storageService)
-        }
-
-        let expectations = [
-            storageItemFetchingExpectation,
-            storageItemAccountFetchingExpectation,
-            storageItemFindingExpectation,
-            storageItemAccountFindingExpectation
-        ]
-        
-        wait(for: expectations, timeout: Constants.expectationLongTimeout)
-    }
-    
-    // MARK: - Private
-    
-    private func testStorageItem(storageService: SubstrateStorageService) {
-        testStorageItemFetching(
-            storageService: storageService,
-            item: storageItem,
-            expectation: storageItemFetchingExpectation
+    func testStorageItem() async throws {
+        try await testStorageItemFetching(
+            storageService: client.storage,
+            item: storageItem
         )
 
-        testStorageItemFetching(
-            storageService: storageService,
-            item: storageItemAccount,
-            expectation: storageItemAccountFetchingExpectation
+        try await testStorageItemFetching(
+            storageService: client.storage,
+            item: try storageItemAccount()
         )
         
-        do {
-            try testStorageItemFinding(
-                storageService: storageService,
-                item: storageItem,
-                expectation: storageItemFindingExpectation
-            )
+        try await testStorageItemFinding(
+            storageService: client.storage,
+            item: storageItem
+        )
 
-            try self.testStorageItemFinding(
-                storageService: storageService,
-                item: storageItem,
-                expectation: storageItemAccountFindingExpectation
-            )
-        } catch let error {
-            XCTFail(error.localizedDescription)
-        }
+        try await testStorageItemFinding(
+            storageService: client.storage,
+            item: storageItem
+        )
     }
     
     private func testStorageItemFetching<T: Decodable>(
         storageService: SubstrateStorageService,
-        item: RpcStorageItem<T>,
-        expectation: XCTestExpectation
-    ) {
-        storageService.fetch(
+        item: RpcStorageItem<T>
+    ) async throws {
+        let response: T? = try await storageService.fetch(
             moduleName: item.module,
             itemName: item.item,
             keys: item.keys
-        ) { (response: T?, error: RpcError?) in
-            XCTAssertNotNil(response)
-            
-            guard let result = response else {
-                XCTFail()
-                expectation.fulfill()
-                return
-            }
-            
-            let isValid = item.validate(value: result)
-            
-            if !isValid {
-                print("not valid result: \(result)")
-            }
-            
-            XCTAssertTrue(isValid)
-            expectation.fulfill()
+        )
+        
+        XCTAssertNotNil(response)
+        
+        guard let result = response else {
+            XCTFail()
+            return
         }
+        
+        let isValid = item.validate(value: result)
+        
+        if !isValid {
+            print("not valid result: \(result)")
+        }
+        
+        XCTAssertTrue(isValid)
     }
     
     private func testStorageItemFinding<T: Codable>(
         storageService: SubstrateStorageService,
-        item: RpcStorageItem<T>,
-        expectation: XCTestExpectation
-    ) throws {
-        let result = try storageService.find(moduleName: item.module, itemName: item.item)
-        try handleFoundItem(result, for: item, using: storageService, expectation: expectation)
+        item: RpcStorageItem<T>
+    ) async throws {
+        let result = try await storageService.find(moduleName: item.module, itemName: item.item)
+        try await handleFoundItem(result, for: item, using: storageService)
     }
     
     private func handleFoundItem<T: Codable>(
         _ result: FindStorageItemResult?,
         for item: RpcStorageItem<T>,
-        using service: SubstrateStorageService,
-        expectation: XCTestExpectation
-    ) throws {
+        using service: SubstrateStorageService
+    ) async throws {
         guard let storage = result?.storage, let resultItem = result?.item else {
             XCTFail()
             return
         }
         
-        try service.fetch(
+        let response: T? = try await service.fetch(
             item: resultItem,
             keys: item.keys,
             storage: storage
-        ) { (response: T?, error: RpcError?)  in
-            guard let result = response else {
-                XCTFail()
-                expectation.fulfill()
-                return
-            }
-            
-            let isValid = item.validate(value: result)
-            
-            if !isValid {
-                print("not valid result: \(result)")
-            }
-            
-            XCTAssertTrue(isValid)
-            expectation.fulfill()
+        )
+        
+        guard let result = response else {
+            XCTFail()
+            return
         }
+        
+        let isValid = item.validate(value: result)
+        
+        if !isValid {
+            print("not valid result: \(result)")
+        }
+        
+        XCTAssertTrue(isValid)
     }
 }

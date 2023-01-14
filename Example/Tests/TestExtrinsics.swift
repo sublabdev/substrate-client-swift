@@ -13,7 +13,6 @@ class TestExtrinsics: XCTestCase {
     private let network: Network = .kusama
     private lazy var client = network.makeClient()
     private let coder = ScaleCoder.default()
-    private var expectations: [XCTestExpectation] = []
     
     private func generatedAddMemoCases() throws -> [ExtrinsicTestCase<AddMemo>] {
         return try (0..<Constants.testsCount).compactMap { _ -> ExtrinsicTestCase<AddMemo>? in
@@ -26,10 +25,8 @@ class TestExtrinsics: XCTestCase {
             let randomString = UUID().uuidString
             let scaleEncodedRandomString = try coder.encoder.encode(randomString)
             
-            guard
-                let addMemoPrefix = "0x4906".hex.decode(),
-                let memo = randomString.data(using: .utf8)
-            else {
+            let addMemoPrefix = try "0x4906".hex.decode()
+            guard let memo = randomString.data(using: .utf8) else {
                 XCTFail()
                 return nil
             }
@@ -64,43 +61,30 @@ class TestExtrinsics: XCTestCase {
         return testCases
     }
     
-    func testUnsignedExtrinsic() throws {
+    func testUnsignedExtrinsic() async throws {
         for `case` in try testCases() {
-            try testCase(`case`)
+            try await testCase(`case`)
         }
-        
-        wait(for: expectations, timeout: Constants.expectationLongTimeout)
     }
     
-    private func testCase<T: Codable>(_ testCase: ExtrinsicTestCase<T>) throws {
-        let expectation = XCTestExpectation()
-        expectations.append(expectation)
+    private func testCase<T: Codable>(_ testCase: ExtrinsicTestCase<T>) async throws {
+        let unsigned = try await client.extrinsics.makeUnsigned(
+            moduleName: testCase.moduleName,
+            callName: testCase.callName,
+            callValue: testCase.callValue
+        )
         
-        client.extrinsicsService { [weak self] extrinsicsService in
-            extrinsicsService.makeUnsigned(
-                moduleName: testCase.moduleName,
-                callName: testCase.callName,
-                callValue: testCase.callValue
-            ) { unsigned in
-                XCTAssertNotNil(unsigned)
-                
-                do {
-                    let decodedUnsignedHex = testCase.unsignedHex.hex.decode()
-                    let encodedUnsigned = try self?.coder.encoder.encode(unsigned)
-                    
-                    if decodedUnsignedHex != encodedUnsigned {
-                        let expectedValue = testCase.unsignedHex
-                        let recievedValue = encodedUnsigned?.hex.encode(includePrefix: true)
-                        print("Expected to get \(expectedValue), but recieved: \(recievedValue)")
-                    }
-                    
-                    XCTAssertEqual(decodedUnsignedHex, encodedUnsigned)
-                    expectation.fulfill()
-                } catch let error {
-                    XCTFail(error.localizedDescription)
-                    expectation.fulfill()
-                }
-            }
+        XCTAssertNotNil(unsigned)
+        
+        let decodedUnsignedHex = try testCase.unsignedHex.hex.decode()
+        let encodedUnsigned = try unsigned?.toData()
+        
+        if decodedUnsignedHex != encodedUnsigned {
+            let expectedValue = testCase.unsignedHex
+            let receivedValue = encodedUnsigned?.hex.encode(includePrefix: true)
+            print("Expected to get \(expectedValue), but received: \(receivedValue)")
         }
+        
+        XCTAssertEqual(decodedUnsignedHex, encodedUnsigned)
     }
 }

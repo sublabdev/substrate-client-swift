@@ -1,6 +1,7 @@
 import XCTest
 @testable import SubstrateClientSwift
 
+// TODO: add async/await tests probably
 class RpcClientTests: XCTestCase {
     private let network: Network = .kusama
     private lazy var client = network.makeRpcClient()

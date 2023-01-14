@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1107FEB5290EB687000B3BD8 /* TestRuntimeMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1107FEB4290EB687000B3BD8 /* TestRuntimeMetadata.swift */; };
-		1107FEB7290F1C06000B3BD8 /* RpcClientMockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1107FEB6290F1C06000B3BD8 /* RpcClientMockTests.swift */; };
 		1107FEB9290F1C46000B3BD8 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1107FEB8290F1C46000B3BD8 /* Constants.swift */; };
 		1107FEBC290F24BD000B3BD8 /* MockUrlProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1107FEBB290F24BD000B3BD8 /* MockUrlProtocol.swift */; };
 		111024A3293E5AEE00B02B67 /* TestFetchingConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111024A2293E5AEE00B02B67 /* TestFetchingConstants.swift */; };
@@ -43,7 +42,6 @@
 
 /* Begin PBXFileReference section */
 		1107FEB4290EB687000B3BD8 /* TestRuntimeMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestRuntimeMetadata.swift; sourceTree = "<group>"; };
-		1107FEB6290F1C06000B3BD8 /* RpcClientMockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RpcClientMockTests.swift; sourceTree = "<group>"; };
 		1107FEB8290F1C46000B3BD8 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		1107FEBB290F24BD000B3BD8 /* MockUrlProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUrlProtocol.swift; sourceTree = "<group>"; };
 		111024A2293E5AEE00B02B67 /* TestFetchingConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFetchingConstants.swift; sourceTree = "<group>"; };
@@ -194,7 +192,6 @@
 				1151277E291AE5AE00359F1C /* LocalResponses */,
 				1107FEBA290F225B000B3BD8 /* Mocks */,
 				11DA197029084DC500D42279 /* WebsocketTests.swift */,
-				1107FEB6290F1C06000B3BD8 /* RpcClientMockTests.swift */,
 				11A80E762913DA4400435BC6 /* RcpClientTests.swift */,
 				1107FEB4290EB687000B3BD8 /* TestRuntimeMetadata.swift */,
 				116C2319293CB1A700FB07F2 /* TestFetchingStorage.swift */,
@@ -441,7 +438,6 @@
 			files = (
 				11A80E772913DA4400435BC6 /* RcpClientTests.swift in Sources */,
 				116C231A293CB1A700FB07F2 /* TestFetchingStorage.swift in Sources */,
-				1107FEB7290F1C06000B3BD8 /* RpcClientMockTests.swift in Sources */,
 				11920B92291FF336006C4E36 /* Network.swift in Sources */,
 				1107FEB5290EB687000B3BD8 /* TestRuntimeMetadata.swift in Sources */,
 				11DA197129084DC500D42279 /* WebsocketTests.swift in Sources */,

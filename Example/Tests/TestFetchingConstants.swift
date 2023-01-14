@@ -13,7 +13,6 @@ private struct RpcConstant<T: Equatable> {
 class TestFetchingConstants: XCTestCase {
     private let network: Network = .kusama
     private lazy var client = network.makeClient()
-    private var expectations = [XCTestExpectation]()
     
     private let constants: [Any] = [
         RpcConstant<UInt64>(module: "babe", constant: "EpochDuration", expectedValue: 600),
@@ -28,65 +27,43 @@ class TestFetchingConstants: XCTestCase {
         RpcConstant<UInt64>(module: "timestamp", constant: "MinimumPeriod", expectedValue: 3000)
     ]
     
-    func testService() {
+    func testService() async throws {
         for constant in constants {
             if let rpcConstant = rpcConstant(from: constant, with: UInt16.self) {
-                testStorageItem(client: client, constant: rpcConstant)
+                try await testStorageItem(client: client, constant: rpcConstant)
             } else if let rpcConstant = rpcConstant(from: constant, with: UInt32.self) {
-                testStorageItem(client: client, constant: rpcConstant)
+                try await testStorageItem(client: client, constant: rpcConstant)
             } else if let rpcConstant = rpcConstant(from: constant, with: UInt64.self) {
-                testStorageItem(client: client, constant: rpcConstant)
+                try await testStorageItem(client: client, constant: rpcConstant)
             } else {
                 XCTFail()
             }
         }
-        
-        wait(for: expectations, timeout: Constants.expectationLongTimeout)
     }
     
-    private func testStorageItem<T: Codable>(client: SubstrateClient, constant: RpcConstant<T>) {
-        let storageItemFindingExpectation = XCTestExpectation()
-        expectations.append(storageItemFindingExpectation)
-        
-        client.constantsService { [weak self] constantService in
-            guard let `self` = self else {
-                XCTFail()
-                return
-            }
-            
-            self.testService(
-                client: client,
-                constantService: constantService,
-                constant: constant,
-                expectation: storageItemFindingExpectation
-            )
-        }
+    private func testStorageItem<T: Codable>(client: SubstrateClient, constant: RpcConstant<T>) async throws {
+        try await testService(
+            client: client,
+            constant: constant
+        )
     }
     
     // MARK: - Private
     private func testService<T: Codable>(
         client: SubstrateClient,
-        constantService: SubstrateConstantsService,
-        constant: RpcConstant<T>,
-        expectation: XCTestExpectation
-    ) {
-        do {
-            try testStorageItemFetching(
-                constantService: constantService,
-                stateRpc: client.modules.stateRpc(),
-                constant: constant
-            )
-            
-            try testStorageItemFinding(
-                constantService: constantService,
-                codec: client.codec,
-                constant: constant,
-                expectation: expectation
-            )
-        }
-        catch let error {
-            XCTFail(error.localizedDescription)
-        }
+        constant: RpcConstant<T>
+    ) async throws {
+        try await testStorageItemFetching(
+            constantService: client.constants,
+            stateRpc: client.modules.stateRpc,
+            constant: constant
+        )
+        
+        try await testStorageItemFinding(
+            constantService: client.constants,
+            codec: client.codec,
+            constant: constant
+        )
     }
     
     private func rpcConstant<T: Equatable>(from constant: Any, with expectedType: T.Type) -> RpcConstant<T>? {
@@ -97,51 +74,35 @@ class TestFetchingConstants: XCTestCase {
         constantService: SubstrateConstantsService,
         stateRpc: StateRpc,
         constant: RpcConstant<T>
-    ) throws {
-        try constantService.fetch(
-            moduleName: constant.module,
-            constantName: constant.constant
-        ) { (storageItem: T?) in
-            XCTAssertEqual(storageItem, constant.expectedValue)
-        }
+    ) async throws {
+        let storageItem: T? = try await constantService.fetch(moduleName: constant.module, constantName: constant.constant)
+        XCTAssertEqual(storageItem, constant.expectedValue)
     }
     
     private func testStorageItemFinding<T: Codable>(
         constantService: SubstrateConstantsService,
         codec: ScaleCoder,
-        constant: RpcConstant<T>,
-        expectation: XCTestExpectation
-    ) throws {
-        try constantService.find(
-            moduleName: constant.module,
-            constantName: constant.constant
-        ) { [weak self] runtimeModuleConstant in
-            self?.fetchExpectedValueForModuleConstant(
-                runtimeModuleConstant: runtimeModuleConstant,
-                for: constant,
-                using: constantService,
-                expectation: expectation
-            )
-        }
+        constant: RpcConstant<T>
+    ) async throws {
+        let runtimeModuleConstant = try await constantService.find(moduleName: constant.module, constantName: constant.constant)
+        try fetchExpectedValueForModuleConstant(
+            runtimeModuleConstant: runtimeModuleConstant,
+            for: constant,
+            using: constantService
+        )
     }
     
     private func fetchExpectedValueForModuleConstant<T: Codable>(
         runtimeModuleConstant: RuntimeModuleConstant?,
         for constant: RpcConstant<T>,
-        using service: SubstrateConstantsService,
-        expectation: XCTestExpectation
-    ) {
+        using service: SubstrateConstantsService
+    ) throws {
         guard let moduleConstant = runtimeModuleConstant else {
             XCTFail()
             return
         }
         
-        do {
-            let fetchedValue = try service.fetch(T.self, constant: moduleConstant)
-            XCTAssertEqual(constant.expectedValue, fetchedValue)
-            expectation.fulfill()
-        } catch {
-            XCTFail()
-        }
+        let fetchedValue = try service.fetch(T.self, constant: moduleConstant)
+        XCTAssertEqual(constant.expectedValue, fetchedValue)
     }
 }

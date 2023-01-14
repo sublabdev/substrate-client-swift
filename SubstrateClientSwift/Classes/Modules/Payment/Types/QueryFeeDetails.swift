@@ -3,7 +3,7 @@ import CommonSwift
 import BigInt
 
 /// Contains details of query fee
-public struct QueryFeeDetails {
+public struct QueryFeeDetails: Decodable {
     let baseFee: Balance
     let lenFee: Balance
     let adjustedWeightFee: Balance

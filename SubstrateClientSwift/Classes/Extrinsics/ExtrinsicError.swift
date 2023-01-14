@@ -2,8 +2,14 @@ import Foundation
 
 /// Extrinsic possible errors
 enum ExtrinsicError: Error {
-    case runtimeCallUnknown
-    case runtimeVersionNotKnown
-    case genesisHashNotKnown
-    case extrinsicBuildFailedDueToLookupFailure
+    // used in service
+    case runtimeVersionNotLoaded
+    case genesisHashNotLoaded(RpcError?)
+    
+    // used in composition
+    case noRuntimeMetadata
+    case genesisHashEncodingFailed
+    case blockHashEncodingFailed
+    case lookupFailure
+    case signingFailure
 }

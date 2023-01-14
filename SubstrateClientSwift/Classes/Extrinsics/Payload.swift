@@ -1,12 +1,9 @@
 import Foundation
 
 /// An extrinsic's payload object
-class Payload: Encodable {
-    var moduleName: String
-    var callName: String
+public protocol Payload {
+    var moduleName: String { get }
+    var callName: String { get }
     
-    init(moduleName: String, callName: String) {
-        self.moduleName = moduleName
-        self.callName = callName
-    }
+    func toData() throws -> Data?
 }

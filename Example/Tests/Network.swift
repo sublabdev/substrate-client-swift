@@ -66,8 +66,7 @@ enum Network: CaseIterable {
             webSocketParams: ["apikey": Constants.onFinalityKey],
             webSocketSecure: true,
             runtimeMetadataUpdateTimeoutMs: def.runtimeMetadataUpdateTimeoutMs,
-            namingPolicy: def.namingPolicy,
-            clientQueue: def.clientQueue
+            namingPolicy: def.namingPolicy
         )
     }
     

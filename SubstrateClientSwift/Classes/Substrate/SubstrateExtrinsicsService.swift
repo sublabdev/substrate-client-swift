@@ -1,37 +1,14 @@
+import EncryptingSwift
 import Foundation
+import HashingSwift
 import ScaleCodecSwift
 
-private class RuntimeCall {
+private struct RuntimeCall {
     let module: RuntimeModule
     let variant: RuntimeTypeDefVariant.Variant
-    
-    init(module: RuntimeModule, variant: RuntimeTypeDefVariant.Variant) {
-        self.module = module
-        self.variant = variant
-    }
 }
 
-/// Substrate extrinsics service
-class SubstrateExtrinsicsService {
-    weak var runtimeMetadata: RuntimeMetadata?
-    let codec: ScaleCoder
-    let lookup: SubstrateLookupService
-    let namingPolicy: SubstrateClientNamingPolicy
-    let clientQueue: DispatchQueue
-    
-    init(
-        codec: ScaleCoder,
-        lookup: SubstrateLookupService,
-        namingPolicy: SubstrateClientNamingPolicy,
-        clientQueue: DispatchQueue
-    ) {
-        self.codec = codec
-        self.lookup = lookup
-        self.namingPolicy = namingPolicy
-        self.runtimeMetadata = lookup.runtimeMetadata
-        self.clientQueue = clientQueue
-    }
-    
+public protocol SubstrateExtrinsics: AnyObject {
     /// Makes an unsigned payload
     /// - Parameters:
     ///     - moduleName: A runtime module name used to find the call
@@ -41,32 +18,53 @@ class SubstrateExtrinsicsService {
     func makeUnsigned<T: Codable>(
         moduleName: String,
         callName: String,
-        callValue: T,
-        completion: @escaping (Payload?) -> Void
-    ) {
-        let payload = makePayload(moduleName: moduleName, callName: callName, callValue: callValue)
-        
-        clientQueue.async {
-            completion(payload)
-        }
-    }
+        callValue: T
+    ) async throws -> Payload?
     
     /// Makes an unsigned payload from a call
     /// - Parameters:
     ///     - call: A generic call
     ///     - completion: Completion with an unsigned payload
-    func makeUnsigned<T: Codable>(call: Call<T>, completion: @escaping (Payload?) -> Void) {
-        makeUnsigned(
-            moduleName: call.moduleName,
-            callName: call.name,
-            callValue: call.value,
-            completion: completion
-        )
+    func makeUnsigned<T: Codable>(call: Call<T>) async throws -> Payload?
+    
+    func makeSigned<T: Codable>(
+        moduleName: String,
+        callName: String,
+        callValue: T,
+        tip: Balance,
+        accountId: AccountId,
+        signatureEngine: SignatureEngine
+    ) async throws -> Payload?
+}
+
+protocol InternalSubstrateExtrinsics: SubstrateExtrinsics {
+    var runtimeMetadataProvider: RuntimeMetadataProvider? { get set }
+}
+
+/// Substrate extrinsics service
+public class SubstrateExtrinsicsService: InternalSubstrateExtrinsics {
+    weak var runtimeMetadataProvider: RuntimeMetadataProvider?
+    private weak var modules: ModuleRpcProvider?
+    private weak var codec: ScaleCoder?
+    private weak var lookup: SubstrateLookup?
+    private let namingPolicy: SubstrateClientNamingPolicy
+    
+    init(
+        modules: ModuleRpcProvider,
+        codec: ScaleCoder,
+        lookup: SubstrateLookup,
+        namingPolicy: SubstrateClientNamingPolicy
+    ) {
+        self.modules = modules
+        self.codec = codec
+        self.lookup = lookup
+        self.namingPolicy = namingPolicy
     }
-    
-    // TODO: Add logic for SignedPayload
-    
-    // MARK: - Private
+}
+
+// MARK: - Finding call
+
+extension SubstrateExtrinsicsService {
     /// Finds a call for a given variant
     /// - Parameters:
     ///     - variant: A variant runtime type used to find the call
@@ -94,10 +92,10 @@ class SubstrateExtrinsicsService {
     ///     - module: A runtime module used to find the call
     ///     - callName: The name by which the call should be found
     /// - Returns: A runtime call with a runtime module and variant
-    private func findCall(module: RuntimeModule, callName: String) -> RuntimeCall? {
+    private func findCall(module: RuntimeModule, callName: String) async throws -> RuntimeCall? {
         guard let callIndex = module.callIndex else { return nil }
         
-        let runtimeItem = lookup.findRuntimeItem(index: callIndex)
+        let runtimeItem = try await lookup?.findRuntimeItem(index: callIndex)
         
         guard let variant = findCall(typeDef: runtimeItem?.def, callName: callName) else {
             return nil
@@ -111,12 +109,15 @@ class SubstrateExtrinsicsService {
     ///     - moduleName: A runtime module name used to find the call
     ///     - callName: The name by which the call should be found
     /// - Returns: A runtime call with a runtime module and variant
-    private func findCall(moduleName: String, callName: String) -> RuntimeCall? {
-        guard let runtimeModule = lookup.findModule(name: moduleName) else { return nil }
-        
-        return findCall(module: runtimeModule, callName: callName)
+    private func findCall(moduleName: String, callName: String) async throws -> RuntimeCall? {
+        guard let runtimeModule = try await lookup?.module(name: moduleName) else { return nil }
+        return try await findCall(module: runtimeModule, callName: callName)
     }
-    
+}
+
+// MARK: - Payload
+
+extension SubstrateExtrinsicsService {
     /// Makes an unsigned payload
     /// - Parameters:
     ///     - moduleName: A runtime module name used to find the call
@@ -127,13 +128,79 @@ class SubstrateExtrinsicsService {
         moduleName: String,
         callName: String,
         callValue: T
-    ) -> Payload? {
-        guard let call = findCall(moduleName: moduleName, callName: callName) else { return nil }
+    ) async throws -> UnsignedPayload<T>? {
+        guard let call = try await findCall(moduleName: moduleName, callName: callName) else { return nil }
         
         return UnsignedPayload(
+            codec: codec,
             module: call.module,
             callVariant: call.variant,
             callValue: callValue
         )
+    }
+}
+
+// MARK: - Unsigned
+
+extension SubstrateExtrinsicsService {
+    public func makeUnsigned<T: Codable>(
+        moduleName: String,
+        callName: String,
+        callValue: T
+    ) async throws -> Payload? {
+        try await makePayload(moduleName: moduleName, callName: callName, callValue: callValue)
+    }
+    
+    public func makeUnsigned<T: Codable>(call: Call<T>) async throws -> Payload? {
+        try await makeUnsigned(
+            moduleName: call.moduleName,
+            callName: call.name,
+            callValue: call.value
+        )
+    }
+}
+
+// MARK: - Signed
+
+extension SubstrateExtrinsicsService {
+    public func makeSigned<T: Codable>(
+        moduleName: String,
+        callName: String,
+        callValue: T,
+        tip: Balance,
+        accountId: AccountId,
+        signatureEngine: SignatureEngine
+    ) async throws -> Payload? {
+        let payload = try await makePayload(moduleName: moduleName, callName: callName, callValue: callValue)
+        return nil
+//        try modules.systemRpc { systemRpc in
+//            try systemRpc.runtimeVersion { runtimeVersion in
+//                guard let runtimeVersion = runtimeVersion else {
+//                    completion(nil, ExtrinsicError.runtimeVersionNotLoaded)
+//                    return
+//                }
+//
+//                try modules.chainRpc(completion: { chainRpc in
+//                    chainRpc.getBlockHash(number: 0) { genesisHash, error in
+//                        guard let genesisHash = genesisHash else {
+//                            completion(nil, ExtrinsicError.genesisHashNotLoaded(error))
+//                            return
+//                        }
+//
+//                        completion(SignedPayload(
+//                            runtimeMetadata: runtimeMetadata,
+//                            codec: codec,
+//                            payload: payload,
+//                            runtimeVersion: runtimeVersion,
+//                            genesisHash: genesisHash,
+//                            accountId: accountId,
+//                            nonce: 0,
+//                            tip: tip,
+//                            signatureEngine: signatureEngine
+//                        ), nil)
+//                    }
+//                })
+//            }
+//        }
     }
 }

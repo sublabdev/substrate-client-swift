@@ -66,13 +66,9 @@ final class DynamicAdapterProvider {
     /// - Parameters:
     ///     - type: Dynamic type based on which an adapter is provided
     /// - Returns: An adapter based on the provided dynamic type
-    func adapterProvider(for type: DynamicType.Type) throws -> AdapterProtocol {
-        guard let runtimeMetadata = runtimeMetadataProvider?.runtimeSync() else {
-            // In fact, this should only happen upon the substrate client deallocation, so it's safe
-            throw DynamicAdapterError.internalFailure
-        }
-        
-        guard let typeDef: RuntimeTypeDef = runtimeMetadata.lookup.findItemByIndex(type.lookupIndex)?.def else {
+    func adapterProvider(for type: DynamicType.Type) async throws -> AdapterProtocol {
+        guard let typeDef: RuntimeTypeDef
+                = try await runtimeMetadataProvider?.runtimeMetadata().lookup.findItemByIndex(type.lookupIndex)?.def else {
             throw DynamicAdapterError.typeIsNotFoundInRuntimeMetadataException
         }
         

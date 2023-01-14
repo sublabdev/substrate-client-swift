@@ -36,7 +36,7 @@ public class RpcClient {
     /// - Parameters:
     ///     - rpcRequest: `RpcRequest` that takes a generic codable params
     ///     - completion: Completion with either the request's optional result or `RpcError`
-    func send<Request: Codable, Response: Codable>(
+    public func send<Request: Encodable, Response: Decodable>(
         _ rpcRequest: RpcRequest<Request>,
         completion: @escaping (RpcResponse<Response>?, RpcError?) -> Void
     ) {
@@ -87,12 +87,31 @@ public class RpcClient {
         task.resume()
     }
     
+    public func send<Request: Encodable, Response: Decodable>(
+        _ rpcRequest: RpcRequest<Request>
+    ) async throws -> RpcResponse<Response> {
+        try await withCheckedThrowingContinuation { continuation in
+            self.send(rpcRequest) { (response: RpcResponse<Response>?, error: RpcError?) in
+                guard let response = response else {
+                    if let error = error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume(throwing: RpcError.responseError(.noData))
+                    }
+                    return
+                }
+                
+                continuation.resume(returning: response)
+            }
+        }
+    }
+    
     /// Sending a request by creating `RpcRequest`
     /// - Parameters:
     ///     - rpcRequest: params for `RpcRequest`
     ///     - method: The method to be used in `RpcRequest`
     ///     - completion: Completion with the request's result
-    func sendRequest<Request: Codable, Response: Codable>(
+    public func sendRequest<Request: Encodable, Response: Decodable>(
         _ request: Request,
         method: String,
         completion: @escaping (Response?, RpcError?) -> Void
@@ -105,14 +124,43 @@ public class RpcClient {
         }
     }
     
+    public func sendRequest<Request: Encodable, Response: Decodable>(
+        _ request: Request,
+        method: String
+    ) async throws -> Response? {
+        try await withCheckedThrowingContinuation { continuation in
+            self.sendRequest(request, method: method) { (response: Response?, error: RpcError?) in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume(returning: response)
+                }
+            }
+        }
+    }
+    
     /// Sending a request by only setting the method
     /// - Parameters:
     ///     - method: The method to be used in `RpcRequest`
     ///     - completion: Completion with the request's result
-    func sendRequest<Response: Codable>(
+    public func sendRequest<Response: Decodable>(
         method: String,
         completion: @escaping (Response?, RpcError?) -> Void
     ) {
         sendRequest(Nothing(), method: method, completion: completion)
+    }
+    
+    public func sendRequest<Response: Decodable>(
+        method: String
+    ) async throws -> Response? {
+        try await withCheckedThrowingContinuation { continuation in
+            self.sendRequest(method: method) { (response: Response?, error: RpcError?) in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume(returning: response)
+                }
+            }
+        }
     }
 }

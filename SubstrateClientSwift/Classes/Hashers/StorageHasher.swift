@@ -22,7 +22,7 @@ public struct StorageHasher: StorageHashing {
     public func hash(storageItem: RuntimeModuleStorageItem, keys: [Data]) throws -> Data {
         switch storageItem.type {
         case .plain:
-            return hashPlainKey(storageItem: storageItem)
+            return try hashPlainKey(storageItem: storageItem)
         case .map(let value):
             assert(keys.count == value.hasers.count, "Keys count should be equal to hashers count")
             return try hashMapKey(storageItem: storageItem, keys: keys, hashers: value.hasers)
@@ -33,8 +33,8 @@ public struct StorageHasher: StorageHashing {
     /// - Parameters:
     ///     - storageItem: A storage item to hash
     /// - Returns: A hashed `Data`
-    private func hashPlainKey(storageItem: RuntimeModuleStorageItem) -> Data {
-        storage.prefix.hashing.xx128() + storageItem.name.hashing.xx128()
+    private func hashPlainKey(storageItem: RuntimeModuleStorageItem) throws -> Data {
+        try storage.prefix.hashing.xx128() + storageItem.name.hashing.xx128()
     }
     
     /// Hashes the key based on provided hasher's type
@@ -52,11 +52,11 @@ public struct StorageHasher: StorageHashing {
             let data = try key.hashing.blake2b_128()
             return data + key
         case .twox128:
-            return key.hashing.xx128()
+            return try key.hashing.xx128()
         case .twox256:
-            return key.hashing.xx256()
+            return try key.hashing.xx256()
         case .twox64Concat:
-            return key.hashing.xx64() + key
+            return try key.hashing.xx64() + key
         case .identity:
             return key
         }

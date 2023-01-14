@@ -1,11 +1,11 @@
 import Foundation
 
 class JobWithTimeout {
-    let job: () -> Void
+    let job: () async throws -> Void
     let timeout: TimeInterval
     private var lastUpdateDate: Date? = nil
     
-    init(timeout: TimeInterval, job: @escaping () -> Void) {
+    init(timeout: TimeInterval, job: @escaping () async throws -> Void) {
         self.job = job
         self.timeout = timeout
     }
@@ -20,8 +20,10 @@ class JobWithTimeout {
         }
         
         if updateNeeded {
-            job()
-            lastUpdateDate = now
+            Task { [weak self] in
+                try await self?.job()
+                self?.lastUpdateDate = now
+            }
         }
     }
 }

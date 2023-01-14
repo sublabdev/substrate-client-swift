@@ -11,12 +11,6 @@ public struct SubstrateClientSettings {
     public let runtimeMetadataUpdateTimeoutMs: Int64
     public let namingPolicy: SubstrateClientNamingPolicy
     // TODO: object storage
-    public let clientQueue: DispatchQueue
-    public let innerQueue = DispatchQueue(
-        label: "substrate-client-inner-queue",
-        qos: .userInitiated,
-        attributes: .concurrent
-    )
     
     public init(
         rpcPath: String? = nil,
@@ -26,8 +20,7 @@ public struct SubstrateClientSettings {
         webSocketParams: [String : String?],
         webSocketSecure: Bool,
         runtimeMetadataUpdateTimeoutMs: Int64,
-        namingPolicy: SubstrateClientNamingPolicy,
-        clientQueue: DispatchQueue
+        namingPolicy: SubstrateClientNamingPolicy
     ) {
         self.rpcPath = rpcPath
         self.rpcParams = rpcParams
@@ -37,7 +30,6 @@ public struct SubstrateClientSettings {
         self.webSocketSecure = webSocketSecure
         self.runtimeMetadataUpdateTimeoutMs = runtimeMetadataUpdateTimeoutMs
         self.namingPolicy = namingPolicy
-        self.clientQueue = clientQueue
     }
     
     /// The default settings for substrate client
@@ -56,8 +48,7 @@ public struct SubstrateClientSettings {
             webSocketParams: [:],
             webSocketSecure: false,
             runtimeMetadataUpdateTimeoutMs: 3600 * 1000,
-            namingPolicy: .caseInsensitive,
-            clientQueue: clientQueue
+            namingPolicy: .caseInsensitive
         )
     }
 }

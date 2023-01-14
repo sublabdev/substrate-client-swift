@@ -6,74 +6,54 @@ import CommonSwift
 class TestRuntimeMetadata: XCTestCase {
     private let bundle = Bundle(for: TestRuntimeMetadata.self)
     
-    func testLocalMetadataParsing() {
-        Network.allCases.forEach {
-            parseLocalMetadata(
-                for: $0.localRuntimeMetadataSnapshot.localURL,
-                magicNumber: $0.localRuntimeMetadataSnapshot.magicNumber
+    func testLocalMetadataParsing() throws {
+        for network in Network.allCases {
+            try parseLocalMetadata(
+                for: network.localRuntimeMetadataSnapshot.localURL,
+                magicNumber: network.localRuntimeMetadataSnapshot.magicNumber
             )
         }
     }
     
-    func testMetadataVersion() {
-        Network.allCases.forEach {
-            testMetadataVersion(using: $0.makeRpcClient())
+    func testMetadataVersion() async throws {
+        for network in Network.allCases {
+            try await testMetadataVersion(using: network.makeRpcClient())
         }
     }
     
-    private func testMetadataVersion(using client: RpcClient) {
-        client.sendRequest(method: "state_getMetadata") { [weak self] (response: String?, error: RpcError?) in
-            if let error = error {
-                XCTFail(error.localizedDescription)
-                return
-            }
-            
-            guard let string = response else {
-                XCTFail()
-                return
-            }
-            
-            do {
-                guard let runtimeMetadata = try self?.getMetadata(from: string) else {
-                    XCTFail()
-                    return
-                }
-                
-                XCTAssertEqual(runtimeMetadata.version, 14)
-                
-            } catch let error {
-                XCTFail(error.localizedDescription)
-            }
+    private func testMetadataVersion(using client: RpcClient) async throws {
+        let response: String? = try await client.sendRequest(method: "state_getMetadata")
+        guard let string = response else {
+            XCTFail()
+            return
         }
+        
+        guard let runtimeMetadata = try metadata(from: string) else {
+            XCTFail()
+            return
+        }
+        
+        XCTAssertEqual(runtimeMetadata.version, 14)
     }
     
-    private func parseLocalMetadata(for url: URL?, magicNumber: UInt32) {
+    private func parseLocalMetadata(for url: URL?, magicNumber: UInt32) throws {
         guard let url = url else {
             XCTFail()
             return
         }
         
-        do {
-            let string = try String(contentsOf: url, encoding: .utf8)
-            
-            guard let runtimeMetadata = try getMetadata(from: string) else {
-                XCTFail()
-                return
-            }
-            
-            XCTAssertEqual(runtimeMetadata.magicNumber, magicNumber)
-        } catch let error {
-            XCTFail("\(error)")
-        }
-    }
-    
-    private func getMetadata(from string: String) throws -> RuntimeMetadata? {
-        guard let hexData = string.hex.decode() else {
+        let string = try String(contentsOf: url, encoding: .utf8)
+        
+        guard let runtimeMetadata = try metadata(from: string) else {
             XCTFail()
-            return nil
+            return
         }
         
-        let codec = ScaleCoder.default()
-        return try codec.decoder.decode(RuntimeMetadata.self, from: hexData)
+        XCTAssertEqual(runtimeMetadata.magicNumber, magicNumber)
+    }
+    
+    private func metadata(from string: String) throws -> RuntimeMetadata? {
+        let encoded = try string.hex.decode()
+        return try ScaleCoder.default().decoder.decode(RuntimeMetadata.self, from: encoded)
     }
 }

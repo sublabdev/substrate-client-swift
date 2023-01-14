@@ -3,11 +3,11 @@ import ScaleCodecSwift
 import CommonSwift
 
 /// Interface for getting Runtime metadata and fetching Storage Items
-public protocol StateRpc {
+public protocol StateRpc: AnyObject {
     /// Gets runtime metadata
     /// - Parameters:
     ///     - completion: A completion that returns either `RuntimeMetadata` or `RpcError`
-    func getRuntimeMetadata(completion: @escaping (RuntimeMetadata?, RpcError?) -> Void)
+    func runtimeMetadata() async throws -> RuntimeMetadata?
     /// Fetches storage item
     /// - Parameters:
     ///     - item: An item to be hashed to get a key which can be used as `RpcRequest`'s parameters
@@ -15,9 +15,8 @@ public protocol StateRpc {
     ///     - completion: The result for type a generic type `T` or `RpcError`
     func fetchStorageItem<T: Decodable>(
         item: RuntimeModuleStorageItem,
-        storage: RuntimeModuleStorage,
-        completion: @escaping (T?, RpcError?) -> Void
-    ) throws
+        storage: RuntimeModuleStorage
+    ) async throws -> T?
     /// Fetches storage item
     /// - Parameters:
     ///     - item: An item to be hashed to get a key which can be used as `RpcRequest`'s parameters
@@ -27,9 +26,8 @@ public protocol StateRpc {
     func fetchStorageItem<T: Decodable>(
         item: RuntimeModuleStorageItem,
         key: Data,
-        storage: RuntimeModuleStorage,
-        completion: @escaping (T?, RpcError?) -> Void
-    ) throws
+        storage: RuntimeModuleStorage
+    ) async throws -> T?
     /// Fetches storage item
     /// - Parameters:
     ///     - item: An item to be hashed to get a key which can be used as `RpcRequest`'s parameters
@@ -39,57 +37,53 @@ public protocol StateRpc {
     func fetchStorageItem<T: Decodable>(
         item: RuntimeModuleStorageItem,
         keys: [Data],
-        storage: RuntimeModuleStorage,
-        completion: @escaping (T?, RpcError?) -> Void
-    ) throws
+        storage: RuntimeModuleStorage
+    ) async throws -> T?
 }
 
 /// State RPC client which handles fetching storage item and runtime metadata
-struct StateRpcClient: StateRpc {
-    let codec: ScaleCoder
-    let rpcClient: RpcClient
+final class StateRpcClient: StateRpc {
+    weak var codec: ScaleCoder?
+    weak var rpcClient: RpcClient?
     let hashersProvider: HashersProvider
-    let clientQueue: DispatchQueue
-    let innerQueue: DispatchQueue
     
-    func getRuntimeMetadata(completion: @escaping (RuntimeMetadata?, RpcError?) -> Void) {
-        rpcClient.sendRequest(method: "state_getMetadata") { (response: String?, error: RpcError?) in
-            guard let result = response?.hex.decode() else {
-                completion(nil, error)
-                return
-            }
-            
-            decode(from: result, completion: completion)
-        }
+    init(codec: ScaleCoder? = nil, rpcClient: RpcClient? = nil, hashersProvider: HashersProvider) {
+        self.codec = codec
+        self.rpcClient = rpcClient
+        self.hashersProvider = hashersProvider
+    }
+    
+    func runtimeMetadata() async throws -> RuntimeMetadata? {
+        let metadataEncoded: String? = try await rpcClient?.sendRequest(method: "state_getMetadata")
+        guard let metadataEncoded = try metadataEncoded?.hex.decode() else { return nil }
+        
+        return try codec?.decoder.decode(RuntimeMetadata.self, from: metadataEncoded)
     }
     
     func fetchStorageItem<T: Decodable>(
         item: RuntimeModuleStorageItem,
-        storage: RuntimeModuleStorage,
-        completion: @escaping (T?, RpcError?) -> Void
-    ) throws {
+        storage: RuntimeModuleStorage
+    ) async throws -> T? {
         let key = try hashersProvider.getStorageHasher(storage: storage).hash(storageItem: item, keys: [])
-        fetchStorageItem(key: key, completion: completion)
+        return try await fetchStorageItem(key: key)
     }
     
     func fetchStorageItem<T: Decodable>(
         item: RuntimeModuleStorageItem,
         key: Data,
-        storage: RuntimeModuleStorage,
-        completion: @escaping (T?, RpcError?) -> Void
-    ) throws {
+        storage: RuntimeModuleStorage
+    ) async throws -> T? {
         let key = try hashersProvider.getStorageHasher(storage: storage).hash(storageItem: item, keys: [key])
-        fetchStorageItem(key: key, completion: completion)
+        return try await fetchStorageItem(key: key)
     }
     
     func fetchStorageItem<T: Decodable>(
         item: RuntimeModuleStorageItem,
         keys: [Data],
-        storage: RuntimeModuleStorage,
-        completion: @escaping (T?, RpcError?) -> Void
-    ) throws {
+        storage: RuntimeModuleStorage
+    ) async throws -> T? {
         let key = try hashersProvider.getStorageHasher(storage: storage).hash(storageItem: item, keys: keys)
-        fetchStorageItem(key: key, completion: completion)
+        return try await fetchStorageItem(key: key)
     }
     
     // MARK: - Private
@@ -97,43 +91,10 @@ struct StateRpcClient: StateRpc {
     /// - Parameters:
     ///     - key: Key to be used as `RpcRequest`'s parameter after being encoded (with including its prefix)
     ///     - completion: The result of fetching a storage item. Can contain either a generic type of `T` or `RpcError`
-    private func fetchStorageItem<T: Decodable>(key: Data, completion: @escaping (T?, RpcError?) -> Void) {
-        let request = RpcRequest(
-            id: 0,
-            method: "state_getStorage",
-            params: [key.hex.encode(includePrefix: true)]
-        )
+    private func fetchStorageItem<T: Decodable>(key: Data) async throws -> T? {
+        let encoded: String? = try await rpcClient?.sendRequest([key.hex.encode(includePrefix: true)], method: "state_getStorage")
+        guard let encoded = try encoded?.hex.decode() else { return nil }
         
-        rpcClient.send(request) { (response: RpcResponse<String>?, error: RpcError?) in
-            guard let result = response?.result?.hex.decode() else {
-                clientQueue.async {
-                    completion(nil, error)
-                }
-                
-                return
-            }
-            
-            decode(from: result, completion: completion)
-        }
-    }
-    
-    /// Decodes the provided data
-    /// - Parameters:
-    ///     - data: `Data` to be decoded
-    ///     - completion: The result of decoding the data. Can contain either a generic type of `T` or `RpcError`
-    private func decode<T: Decodable>(from data: Data, completion: @escaping (T?, RpcError?) -> Void) {
-        innerQueue.async {
-            do {
-                let result = try codec.decoder.decode(T.self, from: data)
-                
-                clientQueue.async {
-                    completion(result, nil)
-                }
-            } catch let error {
-                clientQueue.async {
-                    completion(nil, .bodyEncodingFailed(error))
-                }
-            }
-        }
+        return try codec?.decoder.decode(T.self, from: encoded)
     }
 }

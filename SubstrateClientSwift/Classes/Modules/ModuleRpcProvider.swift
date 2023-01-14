@@ -1,24 +1,20 @@
 import Foundation
 
 /// An interface for getting RPCs
-public protocol ModuleRpcProvider {
+public protocol ModuleRpcProvider: AnyObject {
     /// Provides an interface for getting `RuntimeMetadata` and fetching `StorageItems`
     /// - Returns: And interface which defines methods for getting `RuntimeMetadata` and `StorageItems`
-    func stateRpc() -> StateRpc
+    var stateRpc: StateRpc { get }
     
     /// Provides an interface for getting `RuntimeVersion`
-    /// - Parameters:
-    ///     completion: A completion with system RPC
-    func systemRpc(completion: @escaping (SystemRpc) -> Void)
+    var systemRpc: SystemRpc { get }
     
     /// Provides an interface for chain `RPC` client
-    /// - Parameters:
-    ///     completion: A completion with system chain `RPC`
-    func chainRpc(completion: @escaping (ChainRpc) -> Void)
+    var chainRpc: ChainRpc { get }
 }
 
 /// An internal interface for working with cliend
 protocol InternalModuleRpcProvider: ModuleRpcProvider {
-    /// Handles substrate client
-    func workingWithClient(client: SubstrateClient)
+    var constants: SubstrateConstantsService? { get set }
+    var storage: SubstrateStorageService? { get set }
 }

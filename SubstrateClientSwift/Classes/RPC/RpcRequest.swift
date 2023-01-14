@@ -1,9 +1,9 @@
 import Foundation
 
 /// RPC request with generic params
-struct RpcRequest<T: Codable>: Codable {
-    var jsonrpc = "2.0"
-    let id: Int32
-    let method: String
-    var params: T
+public struct RpcRequest<T: Encodable>: Encodable {
+    public var jsonrpc = "2.0"
+    public var id: Int32
+    public var method: String
+    public var params: T
 }
