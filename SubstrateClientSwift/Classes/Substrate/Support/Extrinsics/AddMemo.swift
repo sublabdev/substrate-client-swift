@@ -23,7 +23,7 @@ struct AddMemo: Codable {
     let memo: Data
 }
 
-class AddMemoCall: Call<AddMemo> {
+final class AddMemoCall: Call<AddMemo> {
     init(value: AddMemo) {
         super.init(moduleName: "crowdloan", name: "add_memo", value: value)
     }

@@ -19,7 +19,7 @@
 import Foundation
 
 /// Variant runtime type
-public class RuntimeTypeDefVariant: Codable {
+public final class RuntimeTypeDefVariant: Codable {
     let variants: [Variant]
     
     init(variants: [Variant]) {

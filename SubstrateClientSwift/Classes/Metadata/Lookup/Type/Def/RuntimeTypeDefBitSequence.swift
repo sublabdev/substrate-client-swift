@@ -20,7 +20,7 @@ import BigInt
 import Foundation
 
 /// Bit sequence runtime type
-public class RuntimeTypeDefBitSequence: Codable {
+public final class RuntimeTypeDefBitSequence: Codable {
     let store: BigUInt
     let order: BigUInt
     

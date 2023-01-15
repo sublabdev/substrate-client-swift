@@ -20,7 +20,7 @@ import Foundation
 import ScaleCodecSwift
 
 /// Default module provider
-class DefaultModuleProvider: InternalModuleProvider {
+final class DefaultModuleProvider: InternalModuleProvider {
     weak var constants: SubstrateConstants?
     weak var storage: SubstrateStorage?
     weak var codec: ScaleCoder?

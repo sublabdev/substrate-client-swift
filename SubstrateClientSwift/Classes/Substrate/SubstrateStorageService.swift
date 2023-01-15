@@ -99,7 +99,7 @@ public protocol SubstrateStorage: AnyObject {
 }
 
 /// Substrate storage service
-public class SubstrateStorageService: SubstrateStorage {
+public final class SubstrateStorageService: SubstrateStorage {
     private weak var lookup: SubstrateLookup?
     private weak var stateRpc: StateModule?
     

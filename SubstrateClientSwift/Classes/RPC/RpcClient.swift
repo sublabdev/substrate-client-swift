@@ -26,7 +26,7 @@ public enum RpcError: Error {
 }
 
 /// RPC client that handles sending requests
-public class RpcClient {
+public final class RpcClient {
     private enum Constants {
         static let scheme = "https"
     }

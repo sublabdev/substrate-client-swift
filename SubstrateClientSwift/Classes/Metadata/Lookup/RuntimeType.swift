@@ -19,7 +19,7 @@
 import Foundation
 
 /// Runtime type
-public class RuntimeType: Codable {
+public final class RuntimeType: Codable {
     public let path: [String]
     public let params: [RuntimeTypeParam]
     public let def: RuntimeTypeDef

@@ -20,7 +20,7 @@ import BigInt
 import Foundation
 
 /// Runtime type field
-class RuntimeTypeDefField: Codable {
+final class RuntimeTypeDefField: Codable {
     let name: String?
     let type: BigUInt
     let typeName: String?

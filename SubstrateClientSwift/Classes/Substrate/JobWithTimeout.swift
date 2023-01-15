@@ -18,7 +18,7 @@
 
 import Foundation
 
-class JobWithTimeout {
+final class JobWithTimeout {
     let job: () async throws -> Void
     let timeout: TimeInterval
     private var lastUpdateDate: Date? = nil

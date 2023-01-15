@@ -50,7 +50,7 @@ public protocol SubstrateConstants: AnyObject {
 }
 
 /// Substrate constants service. Handles fetching runtime module constant
-public class SubstrateConstantsService: SubstrateConstants {
+public final class SubstrateConstantsService: SubstrateConstants {
     enum ConstantServiceError: Error {
         case noResult
         case fetchingFailure

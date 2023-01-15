@@ -94,7 +94,7 @@ protocol InternalSubstrateExtrinsics: SubstrateExtrinsics {
 }
 
 /// Substrate extrinsics service
-public class SubstrateExtrinsicsService: InternalSubstrateExtrinsics {
+public final class SubstrateExtrinsicsService: InternalSubstrateExtrinsics {
     weak var runtimeMetadataProvider: RuntimeMetadataProvider?
     private weak var modules: ModuleProvider?
     private weak var codec: ScaleCoder?

@@ -26,7 +26,7 @@ public protocol RuntimeMetadataProvider: AnyObject {
 
 /// Substrate client which holds substrate lookup service; constants service and storage service.
 /// Is the entering point for using those services.
-public class SubstrateClient: RuntimeMetadataProvider {
+public final class SubstrateClient: RuntimeMetadataProvider {
     private let host: String
     private let settings: SubstrateClientSettings
     private let hashers: HashersProvider

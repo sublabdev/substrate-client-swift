@@ -19,7 +19,7 @@
 import Foundation
 
 /// Additional information for extrinsics
-class ExtrinsicAdditional {
+final class ExtrinsicAdditional {
     let specVersion: UInt32
     let txVersion: UInt32
     let genesisHash: Data

@@ -21,7 +21,7 @@ import CommonSwift
 import Foundation
 
 /// Runtime lookup. Holds an array of lookup items
-public class RuntimeLookup: Codable {
+public final class RuntimeLookup: Codable {
     public let items: [RuntimeLookupItem]
 
     private var itemsByIndices: [(BigUInt, RuntimeType)] {

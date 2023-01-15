@@ -19,7 +19,7 @@
 import Foundation
 
 /// Composite runtime type
-public class RuntimeTypeDefComposite: Codable {
+public final class RuntimeTypeDefComposite: Codable {
     let fields: [RuntimeTypeDefField]
     
     init(fields: [RuntimeTypeDefField]) {

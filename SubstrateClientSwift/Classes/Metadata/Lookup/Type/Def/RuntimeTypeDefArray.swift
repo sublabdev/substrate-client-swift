@@ -20,7 +20,7 @@ import BigInt
 import Foundation
 
 /// Array runtime type
-public class RuntimeTypeDefArray: Codable {
+public final class RuntimeTypeDefArray: Codable {
     let length: UInt32
     let type: BigUInt
     

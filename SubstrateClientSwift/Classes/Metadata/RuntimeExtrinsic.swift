@@ -20,7 +20,7 @@ import Foundation
 import BigInt
 
 /// Runtime extrinsic. Contains its type, version and an array of signed extensions
-public class RuntimeExtrinsic: Codable {
+public final class RuntimeExtrinsic: Codable {
     public let type: BigUInt
     public let version: UInt8
     public let signedExtensions: [SignedExtension]
@@ -32,7 +32,7 @@ public class RuntimeExtrinsic: Codable {
     }
     
     /// Signed extension for a runtime extrinsic
-    public class SignedExtension: Codable {
+    public final class SignedExtension: Codable {
         public let identifier: String
         public let type: BigUInt
         public let additionalSigned: BigUInt
