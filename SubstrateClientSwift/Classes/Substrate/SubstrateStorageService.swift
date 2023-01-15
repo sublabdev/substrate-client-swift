@@ -19,8 +19,87 @@
 import Foundation
 import ScaleCodecSwift
 
+/// An interface for substrate storage service
+public protocol SubstrateStorage: AnyObject {
+    /// Finds a storage item result, which is a wrapper over runtime module storage item and runtime module storage itself,
+    /// by previously fetching the module
+    /// - Parameters:
+    ///     - moduleName: Module's name to fetch
+    ///     - itemName: Storage item's name
+    /// - Returns: A storage item result from a module
+    func find(moduleName: String, itemName: String) async throws -> FindStorageItemResult?
+    
+    /// Fetches a storage item after getting a module first
+    /// - Parameters:
+    ///     - moduleName: Module's name to fetch
+    ///     - itemName: Storage item's name
+    /// - Returns: A generic storage item of type `T`
+    func fetch<T: Decodable>(
+        moduleName: String,
+        itemName: String
+    ) async throws -> T?
+    
+    /// Fetches a storage item after getting a module first
+    /// - Parameters:
+    ///     - moduleName: Module's name to fetch
+    ///     - itemName: Storage item's name
+    ///     - key: Key to use for fetching a storage item
+    /// - Returns: A generic storage item of type `T`
+    func fetch<T: Decodable>(
+        moduleName: String,
+        itemName: String,
+        key: Data
+    ) async throws -> T?
+    
+    /// Fetches a storage item after getting a module first
+    /// - Parameters:
+    ///     - moduleName: Module's name to fetch
+    ///     - itemName: Storage item's name
+    ///     - keys: Keys to use for fetching a storage item
+    /// - Returns: A generic storage item of type `T`
+    func fetch<T: Decodable>(
+        moduleName: String,
+        itemName: String,
+        keys: [Data]
+    ) async throws -> T?
+    
+    /// Fetches storage item from a specified storage
+    /// - Parameters:
+    ///     - item: An item to be hashed
+    ///     - storage: Storage for which a storage hasher is created, which hashes the item
+    /// - Returns: A generic storage item of type T
+    func fetch<T: Decodable>(
+        item: RuntimeModuleStorageItem,
+        storage: RuntimeModuleStorage
+    ) async throws -> T?
+    
+    /// Fetches storage item from a specified storage
+    /// - Parameters:
+    ///     - item: An item to be hashed
+    ///     - key: A key to be used when hashing in a storage hasher
+    ///     - storage: Storage for which a storage hasher is created, which hashes the item
+    /// - Returns: A generic storage item of type `T`
+    func fetch<T: Decodable>(
+        item: RuntimeModuleStorageItem,
+        key: Data,
+        storage: RuntimeModuleStorage
+    ) async throws -> T?
+    
+    /// Fetches storage item from a specified storage
+    /// - Parameters:
+    ///     - item: An item to be hashed
+    ///     - keys: Keys to be used when hashing in a storage hasher
+    ///     - storage: Storage for which a storage hasher is created, which hashes the item
+    /// - Returns: A generic storage item of type `T`
+    func fetch<T: Decodable>(
+        item: RuntimeModuleStorageItem,
+        keys: [Data],
+        storage: RuntimeModuleStorage
+    ) async throws -> T?
+}
+
 /// Substrate storage service
-public class SubstrateStorageService {
+public class SubstrateStorageService: SubstrateStorage {
     private weak var lookup: SubstrateLookup?
     private weak var stateRpc: StateModule?
     
@@ -38,21 +117,10 @@ public class SubstrateStorageService {
         self.stateRpc = stateRpc
     }
     
-    /// Finds a storage item result, which is a wrapper over runtime module storage item and runtime module storage itself,
-    /// by previously fetching the module
-    /// - Parameters:
-    ///     - moduleName: Module's name to fetch
-    ///     - itemName: Storage item's name
-    /// - Returns: A storage item result from a module
     public func find(moduleName: String, itemName: String) async throws -> FindStorageItemResult? {
         try await lookup?.findStorageItem(moduleName: moduleName, itemName: itemName)
     }
     
-    /// Fetches a storage item after getting a module first
-    /// - Parameters:
-    ///     - moduleName: Module's name to fetch
-    ///     - itemName: Storage item's name
-    /// - Returns: A generic storage item of type `T`
     public func fetch<T: Decodable>(
         moduleName: String,
         itemName: String
@@ -61,12 +129,6 @@ public class SubstrateStorageService {
         return try await fetch(item: result.item, storage: result.storage)
     }
     
-    /// Fetches a storage item after getting a module first
-    /// - Parameters:
-    ///     - moduleName: Module's name to fetch
-    ///     - itemName: Storage item's name
-    ///     - key: Key to use for fetching a storage item
-    /// - Returns: A generic storage item of type `T`
     public func fetch<T: Decodable>(
         moduleName: String,
         itemName: String,
@@ -76,12 +138,6 @@ public class SubstrateStorageService {
         return try await fetch(item: result.item, key: key, storage: result.storage)
     }
     
-    /// Fetches a storage item after getting a module first
-    /// - Parameters:
-    ///     - moduleName: Module's name to fetch
-    ///     - itemName: Storage item's name
-    ///     - keys: Keys to use for fetching a storage item
-    /// - Returns: A generic storage item of type `T`
     public func fetch<T: Decodable>(
         moduleName: String,
         itemName: String,
@@ -91,11 +147,6 @@ public class SubstrateStorageService {
         return try await fetch(item: result.item, keys: keys, storage: result.storage)
     }
     
-    /// Fetches storage item from a specified storage
-    /// - Parameters:
-    ///     - item: An item to be hashed
-    ///     - storage: Storage for which a storage hasher is created, which hashes the item
-    /// - Returns: A generic storage item of type T
     public func fetch<T: Decodable>(
         item: RuntimeModuleStorageItem,
         storage: RuntimeModuleStorage
@@ -103,12 +154,6 @@ public class SubstrateStorageService {
         try await stateRpc?.fetchStorageItem(item: item, storage: storage)
     }
     
-    /// Fetches storage item from a specified storage
-    /// - Parameters:
-    ///     - item: An item to be hashed
-    ///     - key: A key to be used when hashing in a storage hasher
-    ///     - storage: Storage for which a storage hasher is created, which hashes the item
-    /// - Returns: A generic storage item of type `T`
     public func fetch<T: Decodable>(
         item: RuntimeModuleStorageItem,
         key: Data,
@@ -117,12 +162,6 @@ public class SubstrateStorageService {
         try await stateRpc?.fetchStorageItem(item: item, key: key, storage: storage)
     }
     
-    /// Fetches storage item from a specified storage
-    /// - Parameters:
-    ///     - item: An item to be hashed
-    ///     - keys: Keys to be used when hashing in a storage hasher
-    ///     - storage: Storage for which a storage hasher is created, which hashes the item
-    /// - Returns: A generic storage item of type `T`
     public func fetch<T: Decodable>(
         item: RuntimeModuleStorageItem,
         keys: [Data],

@@ -62,10 +62,10 @@ final class SystemModuleClient: SystemModule {
         case hexDecodeFailed
     }
     
-    private weak var constants: SubstrateConstantsService?
-    private weak var storage: SubstrateStorageService?
+    private weak var constants: SubstrateConstants?
+    private weak var storage: SubstrateStorage?
     
-    init(constants: SubstrateConstantsService?, storage: SubstrateStorageService?) {
+    init(constants: SubstrateConstants?, storage: SubstrateStorage?) {
         self.constants = constants
         self.storage = storage
     }

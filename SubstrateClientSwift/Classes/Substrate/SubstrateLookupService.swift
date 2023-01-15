@@ -25,7 +25,7 @@ private struct ModulePath: Hashable {
     let childName: String
 }
 
-/// An interface for substrate lookup
+/// An interface for substrate lookup service
 public protocol SubstrateLookup: AnyObject {
     /// Finds a runtime lookup item for a provided index
     /// - Parameters:

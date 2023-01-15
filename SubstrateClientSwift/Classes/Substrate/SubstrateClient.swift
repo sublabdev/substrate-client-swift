@@ -53,8 +53,8 @@ public class SubstrateClient: RuntimeMetadataProvider {
     private let _lookup: InternalSubstrateLookup
     public var lookup: SubstrateLookup { _lookup }
     
-    public let constants: SubstrateConstantsService
-    public let storage: SubstrateStorageService
+    public let constants: SubstrateConstants
+    public let storage: SubstrateStorage
     
     private let _extrinsics: InternalSubstrateExtrinsics
     public var extrinsics: SubstrateExtrinsics { _extrinsics }
@@ -87,8 +87,17 @@ public class SubstrateClient: RuntimeMetadataProvider {
         self._modules = modules
         
         self._lookup = SubstrateLookupService(namingPolicy: settings.namingPolicy)
-        self.constants = .init(codec: self.codec, lookup: self._lookup)
-        self.storage = .init(lookup: self._lookup, stateRpc: modules.state)
+        
+        self.constants = SubstrateConstantsService(
+            codec: self.codec,
+            lookup: self._lookup
+        )
+        
+        self.storage = SubstrateStorageService(
+            lookup: self._lookup,
+            stateRpc: modules.state
+        )
+        
         self._extrinsics = SubstrateExtrinsicsService(
             modules: modules,
             codec: codec,

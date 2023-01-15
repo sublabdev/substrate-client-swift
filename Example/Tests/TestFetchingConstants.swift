@@ -89,7 +89,7 @@ class TestFetchingConstants: XCTestCase {
     }
     
     private func testStorageItemFetching<T: Codable>(
-        constantService: SubstrateConstantsService,
+        constantService: SubstrateConstants,
         stateRpc: StateModule,
         constant: RpcConstant<T>
     ) async throws {
@@ -98,7 +98,7 @@ class TestFetchingConstants: XCTestCase {
     }
     
     private func testStorageItemFinding<T: Codable>(
-        constantService: SubstrateConstantsService,
+        constantService: SubstrateConstants,
         codec: ScaleCoder,
         constant: RpcConstant<T>
     ) async throws {
@@ -113,7 +113,7 @@ class TestFetchingConstants: XCTestCase {
     private func fetchExpectedValueForModuleConstant<T: Codable>(
         runtimeModuleConstant: RuntimeModuleConstant?,
         for constant: RpcConstant<T>,
-        using service: SubstrateConstantsService
+        using service: SubstrateConstants
     ) throws {
         guard let moduleConstant = runtimeModuleConstant else {
             XCTFail()

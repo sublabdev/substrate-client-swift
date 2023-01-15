@@ -95,7 +95,7 @@ class TestFetchingStorage: XCTestCase {
     }
     
     private func testStorageItemFetching<T: Decodable>(
-        storageService: SubstrateStorageService,
+        storageService: SubstrateStorage,
         item: RpcStorageItem<T>
     ) async throws {
         let response: T? = try await storageService.fetch(
@@ -121,7 +121,7 @@ class TestFetchingStorage: XCTestCase {
     }
     
     private func testStorageItemFinding<T: Codable>(
-        storageService: SubstrateStorageService,
+        storageService: SubstrateStorage,
         item: RpcStorageItem<T>
     ) async throws {
         let result = try await storageService.find(moduleName: item.module, itemName: item.item)
@@ -131,7 +131,7 @@ class TestFetchingStorage: XCTestCase {
     private func handleFoundItem<T: Codable>(
         _ result: FindStorageItemResult?,
         for item: RpcStorageItem<T>,
-        using service: SubstrateStorageService
+        using service: SubstrateStorage
     ) async throws {
         guard let storage = result?.storage, let resultItem = result?.item else {
             XCTFail()

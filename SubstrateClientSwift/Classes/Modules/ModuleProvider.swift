@@ -35,6 +35,6 @@ public protocol ModuleProvider: AnyObject {
 
 /// An internal interface for working with cliend
 protocol InternalModuleProvider: ModuleProvider {
-    var constants: SubstrateConstantsService? { get set }
-    var storage: SubstrateStorageService? { get set }
+    var constants: SubstrateConstants? { get set }
+    var storage: SubstrateStorage? { get set }
 }
