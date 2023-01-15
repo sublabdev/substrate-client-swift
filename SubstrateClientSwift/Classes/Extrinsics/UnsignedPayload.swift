@@ -32,6 +32,12 @@ final class UnsignedPayload<T: Codable>: Payload {
 }
 
 extension ScaleCodecTransaction {
+    /// Appends to `Self` the provided unsigned payload. Specifically its module's index, call variant's index
+    /// and call value
+    /// - Parameters:
+    ///     - unsignedPayload: An unsigned payload whose module's and call variant's indexes and call value will be
+    ///     appended
+    /// - Returns: `Self` with appended unsigned payload
     func appendUnsignedPayload<T: Codable>(_ unsignedPayload: UnsignedPayload<T>) throws -> Self {
         try append(unsignedPayload.module.index)
             .append(unsignedPayload.callVariant.index)

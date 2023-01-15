@@ -24,7 +24,7 @@ public class SubstrateConstantsService {
     /// - Parameters:
     ///     - moduleName: Module's name in which the constant should be looked for
     ///     - constantName: Constant name by which the constant should be found
-    ///     - completion: Contains a runtime module constant on a client-specified queue
+    /// - Returns: A runtime module constant on a client-specified queue
     public func find(
         moduleName: String,
         constantName: String
@@ -32,6 +32,11 @@ public class SubstrateConstantsService {
         try await lookup?.findConstant(moduleName: moduleName, constantName: constantName)
     }
     
+    /// Fetches a generic `T`, conforming to `Decodable`, from a runtime module constant
+    /// - Parameters:
+    ///     - moduleName: Module's name in which the constant should be looked for
+    ///     - constantName: Constant name by which the constant should be found
+    /// - Returns: A generic `T` from a module constant
     public func fetch<T: Decodable>(
         moduleName: String,
         constantName: String

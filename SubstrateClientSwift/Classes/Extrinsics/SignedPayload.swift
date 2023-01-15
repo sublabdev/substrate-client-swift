@@ -3,6 +3,7 @@ import Foundation
 import HashingSwift
 import ScaleCodecSwift
 
+/// Signed payload. A subclass of `Payload`
 final class SignedPayload<T: Codable>: Payload {
     fileprivate let runtimeMetadata: RuntimeMetadata?
     private weak var codec: ScaleCoder?
@@ -85,6 +86,8 @@ extension SignedPayload {
             .commit()
     }
     
+    /// Signs the payload
+    /// - Returns: A signed payload
     func sign() throws -> Data {
         var signingPayload = try signingPayload()
         if signingPayload.count > 256 /* move to constants */ {

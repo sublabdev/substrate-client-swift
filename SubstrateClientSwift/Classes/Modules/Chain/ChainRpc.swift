@@ -6,6 +6,7 @@ public protocol ChainRpc: AnyObject {
     /// Gets block hash using the provided number as a parameter for `RPC` request
     /// - Parameters:
     ///     - number: Number for which block hash should be fetched.
+    /// - Returns: Block hash for the provided number
     func blockHash(number: UInt) async throws -> String?
 }
 
