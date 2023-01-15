@@ -50,7 +50,7 @@ class RpcClientTests: XCTestCase {
         }
     }
     
-    private func handleSuccessRequest(using client: RpcClient) {
+    private func handleSuccessRequest(using client: Rpc) {
         let method = "state_getMetadata"
         let expectation = XCTestExpectation()
         let id: Int32 = 0

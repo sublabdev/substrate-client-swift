@@ -92,7 +92,7 @@ enum Network: CaseIterable {
         .init(host: host, settings: makeSettings())
     }
     
-    func makeRpcClient(urlSession: URLSession = .shared) -> RpcClient {
-        .init(host: host, path: "rpc", params: ["apikey": Constants.onFinalityKey], urlSession: urlSession)
+    func makeRpcClient(urlSession: URLSession = .shared) -> Rpc {
+        RpcClient(host: host, path: "rpc", params: ["apikey": Constants.onFinalityKey], urlSession: urlSession)
     }
 }

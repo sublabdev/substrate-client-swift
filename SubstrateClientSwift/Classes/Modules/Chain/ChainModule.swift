@@ -30,9 +30,9 @@ public protocol ChainModule: AnyObject {
 
 /// Handles chain block hash fetching
 final class ChainModuleClient: ChainModule {
-    private weak var rpcClient: RpcClient?
+    private weak var rpcClient: Rpc?
     
-    init(rpcClient: RpcClient?) {
+    init(rpcClient: Rpc?) {
         self.rpcClient = rpcClient
     }
     

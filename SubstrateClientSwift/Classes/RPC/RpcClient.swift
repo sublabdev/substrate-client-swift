@@ -25,8 +25,72 @@ public enum RpcError: Error {
     case responseError(RpcResponseError)
 }
 
+/// An interface for RPC client that handles sending requests
+public protocol Rpc: AnyObject {
+    /// Sends a ready `RpcRequest`.
+    /// The request's and response's types should be explicitly specified.
+    /// - Parameters:
+    ///     - rpcRequest: `RpcRequest` that takes a generic codable params
+    ///     - completion: Completion with either the request's optional result or `RpcError`
+    func send<Request: Encodable, Response: Decodable>(
+        _ rpcRequest: RpcRequest<Request>,
+        completion: @escaping (RpcResponse<Response>?, RpcError?) -> Void
+    )
+    
+    /// Sends a generic request, conforming to `Encodable`.
+    /// The request's and response's types should be explicitly specified.
+    /// - Parameters:
+    ///     - request: A generic request, conforming to `Encodable`
+    /// - Returns: The expected `Decodable` generic response
+    func send<Request: Encodable, Response: Decodable>(
+        _ rpcRequest: RpcRequest<Request>
+    ) async throws -> RpcResponse<Response>
+    
+    /// Sends a generic request, conforming to `Encodable`.
+    /// The request's and response's types should be explicitly specified.
+    /// - Parameters:
+    ///     - rpcRequest: params for `RpcRequest`
+    ///     - method: The method to be used in `RpcRequest`
+    ///     - completion: Completion with the request's result
+    func sendRequest<Request: Encodable, Response: Decodable>(
+        _ request: Request,
+        method: String,
+        completion: @escaping (Response?, RpcError?) -> Void
+    )
+    
+    /// Sends a generic request, conforming to `Encodable`.
+    /// The request's and response's types should be explicitly specified.
+    /// - Parameters:
+    ///     - request: A generic request, conforming to `Encodable`
+    ///     - method: The method to be used in `RpcRequest`
+    /// - Returns: The expected `Decodable` generic response
+    func sendRequest<Request: Encodable, Response: Decodable>(
+        _ request: Request,
+        method: String
+    ) async throws -> Response?
+    
+    /// Sends a request by only setting the method.
+    /// The response's type should be explicitly specified.
+    /// - Parameters:
+    ///     - method: The method to be used in `RpcRequest`
+    ///     - completion: Completion with the request's optional result or an optional `RpcError`
+    func sendRequest<Response: Decodable>(
+        method: String,
+        completion: @escaping (Response?, RpcError?) -> Void
+    )
+    
+    /// Sends a request by only setting the method.
+    /// The response's type should be explicitly specified.
+    /// - Parameters:
+    ///     - method: The method to be used in `RpcRequest`
+    /// - Returns: An response of a specified type
+    func sendRequest<Response: Decodable>(
+        method: String
+    ) async throws -> Response?
+}
+
 /// RPC client that handles sending requests
-public final class RpcClient {
+public final class RpcClient: Rpc {
     private enum Constants {
         static let scheme = "https"
     }
@@ -50,11 +114,6 @@ public final class RpcClient {
     private let urlSession: URLSession
     private var requestId: Int32 = 0
     
-    /// Sends a ready `RpcRequest`.
-    /// The request's and response's types should be explicitly specified.
-    /// - Parameters:
-    ///     - rpcRequest: `RpcRequest` that takes a generic codable params
-    ///     - completion: Completion with either the request's optional result or `RpcError`
     public func send<Request: Encodable, Response: Decodable>(
         _ rpcRequest: RpcRequest<Request>,
         completion: @escaping (RpcResponse<Response>?, RpcError?) -> Void
@@ -106,11 +165,6 @@ public final class RpcClient {
         task.resume()
     }
     
-    /// Sends a generic request, conforming to `Encodable`.
-    /// The request's and response's types should be explicitly specified.
-    /// - Parameters:
-    ///     - request: A generic request, conforming to `Encodable`
-    /// - Returns: The expected `Decodable` generic response
     public func send<Request: Encodable, Response: Decodable>(
         _ rpcRequest: RpcRequest<Request>
     ) async throws -> RpcResponse<Response> {
@@ -130,12 +184,6 @@ public final class RpcClient {
         }
     }
     
-    /// Sends a generic request, conforming to `Encodable`.
-    /// The request's and response's types should be explicitly specified.
-    /// - Parameters:
-    ///     - rpcRequest: params for `RpcRequest`
-    ///     - method: The method to be used in `RpcRequest`
-    ///     - completion: Completion with the request's result
     public func sendRequest<Request: Encodable, Response: Decodable>(
         _ request: Request,
         method: String,
@@ -149,12 +197,6 @@ public final class RpcClient {
         }
     }
     
-    /// Sends a generic request, conforming to `Encodable`.
-    /// The request's and response's types should be explicitly specified.
-    /// - Parameters:
-    ///     - request: A generic request, conforming to `Encodable`
-    ///     - method: The method to be used in `RpcRequest`
-    /// - Returns: The expected `Decodable` generic response
     public func sendRequest<Request: Encodable, Response: Decodable>(
         _ request: Request,
         method: String
@@ -170,11 +212,6 @@ public final class RpcClient {
         }
     }
     
-    /// Sends a request by only setting the method.
-    /// The response's type should be explicitly specified.
-    /// - Parameters:
-    ///     - method: The method to be used in `RpcRequest`
-    ///     - completion: Completion with the request's optional result or an optional `RpcError`
     public func sendRequest<Response: Decodable>(
         method: String,
         completion: @escaping (Response?, RpcError?) -> Void
@@ -182,12 +219,6 @@ public final class RpcClient {
         sendRequest(Nothing(), method: method, completion: completion)
     }
     
-    
-    /// Sends a request by only setting the method.
-    /// The response's type should be explicitly specified.
-    /// - Parameters:
-    ///     - method: The method to be used in `RpcRequest`
-    /// - Returns: An response of a specified type
     public func sendRequest<Response: Decodable>(
         method: String
     ) async throws -> Response? {

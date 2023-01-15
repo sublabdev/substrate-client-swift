@@ -39,7 +39,7 @@ class TestRuntimeMetadata: XCTestCase {
         }
     }
     
-    private func testMetadataVersion(using client: RpcClient) async throws {
+    private func testMetadataVersion(using client: Rpc) async throws {
         let response: String? = try await client.sendRequest(method: "state_getMetadata")
         guard let string = response else {
             XCTFail()

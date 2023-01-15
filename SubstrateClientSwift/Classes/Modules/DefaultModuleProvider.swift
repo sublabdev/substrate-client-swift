@@ -24,12 +24,12 @@ final class DefaultModuleProvider: InternalModuleProvider {
     weak var constants: SubstrateConstants?
     weak var storage: SubstrateStorage?
     weak var codec: ScaleCoder?
-    let rpcClient: RpcClient // Holder of rpc client
+    let rpcClient: Rpc // Holder of rpc client
     let hashersProvider: HashersProvider
     
     init(
         codec: ScaleCoder,
-        rpcClient: RpcClient,
+        rpcClient: Rpc,
         hashersProvider: HashersProvider
     ) {
         self.codec = codec

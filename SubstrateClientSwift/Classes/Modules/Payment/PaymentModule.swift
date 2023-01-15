@@ -30,9 +30,9 @@ public protocol PaymentModule {
 
 /// Handles payment query fee details fetching
 final class PaymentModuleClient: PaymentModule {
-    private weak var rpcClient: RpcClient?
+    private weak var rpcClient: Rpc?
     
-    init(rpcClient: RpcClient?) {
+    init(rpcClient: Rpc?) {
         self.rpcClient = rpcClient
     }
     

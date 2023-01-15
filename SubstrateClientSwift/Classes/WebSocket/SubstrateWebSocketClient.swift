@@ -18,8 +18,26 @@
 
 import Foundation
 
-/// Substrate web socket client
-public final class SubstrateWebSocketClient {
+/// An interface for substrate web socket client
+public protocol WebSocket: AnyObject {
+    /// Sends a generic request
+    /// - Parameters:
+    ///     - request: Generic request conforming to `Codable`
+    ///     - completion: Completion containing an optional `Error`
+    func sendRequest<T: Codable>(_ request: T, completion: @escaping (Error?) -> Void) throws
+    
+    /// Subscribes to client's messages
+    /// - Parameters:
+    ///     - completion: Completion with either `URLSessionWebSocketTask.Message` or nil
+    func subscribe(completion: @escaping (URLSessionWebSocketTask.Message?) -> Void)
+    
+    /// Subscribes to client's errors
+    /// - Parameters:
+    ///     - errorSubscription: Completion with `Error.Message`
+    func subscribeToErrors(_ errorSubscription: @escaping (Error) -> Void)
+}
+
+public final class SubstrateWebSocketClient: WebSocket {
     private let client: WebSocketClientProtocol
 
     /// Creates a substrate web socket client
@@ -27,26 +45,16 @@ public final class SubstrateWebSocketClient {
         client = wsClientBuilder.webSocketClient()
     }
     
-    /// Sends a generic request
-    /// - Parameters:
-    ///     - request: Generic request conforming to `Codable`
-    ///     - completion: Completion containing an optional `Error`
-    func sendRequest<T: Codable>(_ request: T, completion: @escaping (Error?) -> Void) throws {
+    public func sendRequest<T: Codable>(_ request: T, completion: @escaping (Error?) -> Void) throws {
         let webSocketRequest = Request(id: UUID().uuidString, request: request)
         try sendRequest(webSocketRequest, completion: completion)
     }
     
-    /// Subscribes to client's messages
-    /// - Parameters:
-    ///     - completion: Completion with either `URLSessionWebSocketTask.Message` or nil
-    func subscribe(completion: @escaping (URLSessionWebSocketTask.Message?) -> Void) {
+    public func subscribe(completion: @escaping (URLSessionWebSocketTask.Message?) -> Void) {
         client.subscribe(subscription: completion)
     }
     
-    /// Subscribes to client's errors
-    /// - Parameters:
-    ///     - errorSubscription: Completion with `Error.Message`
-    func subscribeToErrors(_ errorSubscription: @escaping (Error) -> Void) {
+    public func subscribeToErrors(_ errorSubscription: @escaping (Error) -> Void) {
         client.subscribeToErrors(errorSubscription)
     }
     

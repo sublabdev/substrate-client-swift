@@ -61,10 +61,10 @@ public protocol StateModule: AnyObject {
 /// State module client which handles fetching storage item and runtime metadata
 final class StateModuleClient: StateModule {
     weak var codec: ScaleCoder?
-    weak var rpcClient: RpcClient?
+    weak var rpcClient: Rpc?
     let hashersProvider: HashersProvider
     
-    init(codec: ScaleCoder? = nil, rpcClient: RpcClient? = nil, hashersProvider: HashersProvider) {
+    init(codec: ScaleCoder? = nil, rpcClient: Rpc? = nil, hashersProvider: HashersProvider) {
         self.codec = codec
         self.rpcClient = rpcClient
         self.hashersProvider = hashersProvider
