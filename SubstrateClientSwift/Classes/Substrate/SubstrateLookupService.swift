@@ -7,18 +7,41 @@ private struct ModulePath: Hashable {
     let childName: String
 }
 
-// TODO: move comments from impl to here
+/// An interface for substrate lookup
 public protocol SubstrateLookup: AnyObject {
+    /// Finds a runtime lookup item for a provided index
+    /// - Parameters:
+    ///     - index: Index for which a runtime lookup item should be found
+    /// - Returns: An optional runtime lookup item
     func findRuntimeItem(index: BigUInt) async throws -> RuntimeType?
+    
+    /// Finds a runtime lookup item for a provided index
+    /// - Parameters:
+    ///     - index: Index for which a runtime lookup item should be found
+    /// - Returns: An optional runtime lookup item
     func findRuntimeType(index: BigUInt) async throws -> RuntimeType?
     
+    /// Finds a runtime module for a provided name
+    /// - Parameters:
+    ///     - name: The name to find a module for
+    /// - Returns: Found runtime module
     func module(name: String) async throws -> RuntimeModule?
     
+    /// Finds constant with the provided name either in cache or in a runtime module
+    /// - Parameters:
+    ///     - module: Runtime module to search in if in the constants' cache the constant can not be found
+    ///     - name: The name of the constant to be searched by
+    /// - Returns: Found runtime module constant
     func findConstant(
         moduleName: String,
         constantName: String
     ) async throws -> RuntimeModuleConstant?
     
+    /// Finds the storage item in a module by its name
+    /// - Parameters:
+    ///     - module: The module to use for searching the storage item
+    ///     - name: The module's child's name
+    /// - Returns: A storage item in a module
     func findStorageItem(
         moduleName: String,
         itemName: String
@@ -54,7 +77,6 @@ final class SubstrateLookupService: InternalSubstrateLookup {
     
     /// Creates a substrate lookup serivce
     /// - Parameters:
-    ///     - runtimeMetadata: A `PassthroughSubject` which holds an optional `RuntimeMetadata`
     ///     - namingPolicy: Naming policy
     init(namingPolicy: SubstrateClientNamingPolicy) {
         self.namingPolicy = namingPolicy
@@ -64,18 +86,10 @@ final class SubstrateLookupService: InternalSubstrateLookup {
 // MARK: - Lookup by index
 
 extension SubstrateLookupService {
-    /// Finds a runtime lookup item for a provided index
-    /// - Parameters:
-    ///     - index: Index for which a runtime lookup item should be found
-    /// - Returns: An optional runtime lookup item
     public func findRuntimeItem(index: BigUInt) async throws -> RuntimeType? {
         try await findRuntimeType(index: index)
     }
     
-    /// Finds a runtime lookup item for a provided index
-    /// - Parameters:
-    ///     - index: Index for which a runtime lookup item should be found
-    /// - Returns: An optional runtime lookup item
     public func findRuntimeType(index: BigUInt) async throws -> RuntimeType? {
         try await runtimeMetadata().lookup.findItem(by: index)
     }
@@ -84,11 +98,6 @@ extension SubstrateLookupService {
 // MARK: - Modules lookup
 
 extension SubstrateLookupService {
-    // Finds a runtime module for a provided name
-    /// - Parameters:
-    ///     - name: The name to find a module for
-    ///     - metadata: Metadata modules of which should be searched
-    /// - Returns: Found runtime module
     public func module(name: String) async throws -> RuntimeModule? {
         if let module = self.modulesCache[name] {
             return module
@@ -106,12 +115,6 @@ extension SubstrateLookupService {
 // MARK: - Constants lookup
 
 extension SubstrateLookupService {
-    // MARK: - Finding Constant
-    /// Finds constant with the provided name either in cache or in a runtime module
-    /// - Parameters:
-    ///     - module: Runtime module to search in if in the constants' cache the constant can not be found
-    ///     - name: The name of the constant to be searched by
-    /// - Returns: Found runtime module constant
     private func findConstant(module: RuntimeModule, name: String) -> RuntimeModuleConstant? {
         let constantPath = ModulePath(moduleName: module.name, childName: name)
         let constant = constantsCache[constantPath] ?? module.constants.first(where: { namingPolicy.equals($0.name, name) })
@@ -139,17 +142,13 @@ extension SubstrateLookupService {
 
 // MARK: - Storage lookup
 
+/// Storage item result
 public struct FindStorageItemResult: Codable {
     public let item: RuntimeModuleStorageItem
     public let storage: RuntimeModuleStorage
 }
 
 extension SubstrateLookupService {
-    /// Finds the storage item in a module by its name
-    /// - Parameters:
-    ///     - module: The module to use for searching the storage item
-    ///     - name: The module's child's name
-    /// - Returns: A storage item in a module
     private func findStorageItem(
         module: RuntimeModule,
         name: String

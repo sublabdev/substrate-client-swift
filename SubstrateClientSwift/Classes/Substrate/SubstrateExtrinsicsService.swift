@@ -14,7 +14,7 @@ public protocol SubstrateExtrinsics: AnyObject {
     ///     - moduleName: A runtime module name used to find the call
     ///     - callName: Name of a call
     ///     - callValue: A generic call value
-    ///     - completion: Completion with an unsigned payload
+    /// - Returns: An unsigned payload
     func makeUnsigned<T: Codable>(
         moduleName: String,
         callName: String,
@@ -24,9 +24,17 @@ public protocol SubstrateExtrinsics: AnyObject {
     /// Makes an unsigned payload from a call
     /// - Parameters:
     ///     - call: A generic call
-    ///     - completion: Completion with an unsigned payload
+    ///- Returns: An unsigned payload
     func makeUnsigned<T: Codable>(call: Call<T>) async throws -> Payload?
     
+    /// Makes a signed payload
+    /// - Parameters:
+    ///     - moduleName: Module name
+    ///     - callName: Call name
+    ///     - callValue: Generic call value
+    ///     - tip: Tip conforming to `DynamicType`
+    ///     - signatureEngine: Signature engine
+    /// - Returns: An optional signed payload
     func makeSigned<T: Codable>(
         moduleName: String,
         callName: String,
@@ -34,6 +42,32 @@ public protocol SubstrateExtrinsics: AnyObject {
         tip: Balance,
         accountId: AccountId,
         signatureEngine: SignatureEngine
+    ) async throws -> Payload?
+    
+    /// Makes a signed payload
+    /// - Parameters:
+    ///     - call: A generic call
+    ///     - tip: Tip conforming to `DynamicType`
+    ///     - accountId: An account id
+    ///     - signatureEngine: Signature engine
+    /// - Returns: An optional signed payload
+    func makeSigned<T: Codable>(
+        call: Call<T>,
+        tip: Balance,
+        accountId: AccountId,
+        signatureEngine: SignatureEngine
+    ) async throws -> Payload?
+    
+    /// Makes a signed payload
+    /// - Parameters:
+    ///     - call: A generic call
+    ///     - tip: Tip conforming to `DynamicType`
+    ///     - keyPair: A keypair with private and public keys
+    /// - Returns: An optional signed payload
+    func makeSigned<T: Codable>(
+        call: Call<T>,
+        tip: Balance,
+        keyPair: KeyPair
     ) async throws -> Payload?
 }
 
@@ -181,6 +215,35 @@ extension SubstrateExtrinsicsService {
             nonce: try await modules?.systemRpc.account(accountId: accountId)?.nonce,
             tip: tip,
             signatureEngine: signatureEngine
+        )
+    }
+    
+    public func makeSigned<T: Codable>(
+        call: Call<T>,
+        tip: Balance,
+        accountId: AccountId,
+        signatureEngine: SignatureEngine
+    ) async throws -> Payload? {
+        try await makeSigned(
+            moduleName: call.moduleName,
+            callName: call.name,
+            callValue: call.value,
+            tip: tip,
+            accountId: accountId,
+            signatureEngine: signatureEngine
+        )
+    }
+    
+    public func makeSigned<T: Codable>(
+        call: Call<T>,
+        tip: Balance,
+        keyPair: KeyPair
+    ) async throws -> Payload? {
+        try await makeSigned(
+            call: call,
+            tip: tip,
+            accountId: keyPair.publicKey.ss58.accountId(),
+            signatureEngine: keyPair.signatureEngine(for: keyPair.privateKey)
         )
     }
     

@@ -34,7 +34,7 @@ public class SubstrateStorageService {
     /// - Parameters:
     ///     - moduleName: Module's name to fetch
     ///     - itemName: Storage item's name
-    ///     - completion: Completion with either a generic `T` or `RpcError`
+    /// - Returns: A generic storage item of type `T`
     public func fetch<T: Decodable>(
         moduleName: String,
         itemName: String
@@ -48,7 +48,7 @@ public class SubstrateStorageService {
     ///     - moduleName: Module's name to fetch
     ///     - itemName: Storage item's name
     ///     - key: Key to use for fetching a storage item
-    ///     - completion: Completion with either a generic `T` or `RpcError`
+    /// - Returns: A generic storage item of type `T`
     public func fetch<T: Decodable>(
         moduleName: String,
         itemName: String,
@@ -63,7 +63,7 @@ public class SubstrateStorageService {
     ///     - moduleName: Module's name to fetch
     ///     - itemName: Storage item's name
     ///     - keys: Keys to use for fetching a storage item
-    ///     - completion: Completion with either a generic `T` or `RpcError`
+    /// - Returns: A generic storage item of type `T`
     public func fetch<T: Decodable>(
         moduleName: String,
         itemName: String,
@@ -74,10 +74,10 @@ public class SubstrateStorageService {
     }
     
     /// Fetches storage item from a specified storage
-    ///  - Parameters:
+    /// - Parameters:
     ///     - item: An item to be hashed
     ///     - storage: Storage for which a storage hasher is created, which hashes the item
-    ///     - completion: Completion with either a generic `T` or `RpcError`
+    /// - Returns: A generic storage item of type T
     public func fetch<T: Decodable>(
         item: RuntimeModuleStorageItem,
         storage: RuntimeModuleStorage
@@ -86,11 +86,11 @@ public class SubstrateStorageService {
     }
     
     /// Fetches storage item from a specified storage
-    ///  - Parameters:
+    /// - Parameters:
     ///     - item: An item to be hashed
     ///     - key: A key to be used when hashing in a storage hasher
     ///     - storage: Storage for which a storage hasher is created, which hashes the item
-    ///     - completion: Completion with either a generic `T` or `RpcError`
+    /// - Returns: A generic storage item of type `T`
     public func fetch<T: Decodable>(
         item: RuntimeModuleStorageItem,
         key: Data,
@@ -100,11 +100,11 @@ public class SubstrateStorageService {
     }
     
     /// Fetches storage item from a specified storage
-    ///  - Parameters:
+    /// - Parameters:
     ///     - item: An item to be hashed
     ///     - keys: Keys to be used when hashing in a storage hasher
     ///     - storage: Storage for which a storage hasher is created, which hashes the item
-    ///     - completion: Completion with either a generic `T` or `RpcError`
+    /// - Returns: A generic storage item of type `T`
     public func fetch<T: Decodable>(
         item: RuntimeModuleStorageItem,
         keys: [Data],

@@ -7,6 +7,7 @@ final class DynamicAdapter<T>: ScaleCodecAdapter<T> {
     // MARK: - DynamicAdapter
     
     private let provider: DynamicAdapterProvider
+    
     init(provider: DynamicAdapterProvider) {
         self.provider = provider
         super.init()
