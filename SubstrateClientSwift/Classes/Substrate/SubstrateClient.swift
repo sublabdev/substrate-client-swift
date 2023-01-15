@@ -44,11 +44,11 @@ public class SubstrateClient: RuntimeMetadataProvider {
     private lazy var runtimeMetadataUpdateJob = JobWithTimeout(
         timeout: TimeInterval(settings.runtimeMetadataUpdateTimeoutMs)
     ) { [weak self] in
-        self?.runtimeMetadata = try await self?.modules.stateRpc.runtimeMetadata()
+        self?.runtimeMetadata = try await self?.modules.state.runtimeMetadata()
     }
     
-    private let _modules: InternalModuleRpcProvider
-    public var modules: ModuleRpcProvider { _modules }
+    private let _modules: InternalModuleProvider
+    public var modules: ModuleProvider { _modules }
     
     private let _lookup: InternalSubstrateLookup
     public var lookup: SubstrateLookup { _lookup }
@@ -79,7 +79,7 @@ public class SubstrateClient: RuntimeMetadataProvider {
         let hashersProvider = DefaultHashersProvider()
         self.hashers = hashersProvider
         
-        let modules = DefaultModuleRpcProvider(
+        let modules = DefaultModuleProvider(
             codec: codec,
             rpcClient: RpcClient(host: host, path: settings.rpcPath, params: settings.rpcParams),
             hashersProvider: hashersProvider
@@ -88,7 +88,7 @@ public class SubstrateClient: RuntimeMetadataProvider {
         
         self._lookup = SubstrateLookupService(namingPolicy: settings.namingPolicy)
         self.constants = .init(codec: self.codec, lookup: self._lookup)
-        self.storage = .init(lookup: self._lookup, stateRpc: modules.stateRpc)
+        self.storage = .init(lookup: self._lookup, stateRpc: modules.state)
         self._extrinsics = SubstrateExtrinsicsService(
             modules: modules,
             codec: codec,

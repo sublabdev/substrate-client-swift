@@ -19,29 +19,27 @@
 import Foundation
 import ScaleCodecSwift
 
-/// An interface for getting a query fee details response
-public protocol PaymentRpc {
-    /// Gets query fee details for a payload
+/// An interface for chain client
+public protocol ChainModule: AnyObject {
+    /// Gets block hash using the provided number as a parameter for `RPC` request
     /// - Parameters:
-    ///     - payload: `Payload` for which query fee details should be returned
-    /// - Returns: An optional query fee details
-    func queryFeeDetails(payload: Payload) async throws -> QueryFeeDetails?
+    ///     - number: Number for which block hash should be fetched.
+    /// - Returns: Block hash for the provided number
+    func blockHash(number: UInt) async throws -> String?
 }
 
-/// Handles payment query fee details fetching
-final class PaymentRpcClient: PaymentRpc {
+/// Handles chain block hash fetching
+final class ChainModuleClient: ChainModule {
     private weak var rpcClient: RpcClient?
     
     init(rpcClient: RpcClient?) {
         self.rpcClient = rpcClient
     }
     
-    func queryFeeDetails(payload: Payload) async throws -> QueryFeeDetails? {
-        let response: QueryFeeDetailsResponse? = try await rpcClient?.sendRequest(
-            [try payload.toData().hex.encode(includePrefix: true)],
-            method: "payment_queryFeeDetails"
+    func blockHash(number: UInt) async throws -> String? {
+        try await rpcClient?.sendRequest(
+            [NumericAdapter.toData(number).hex.encode(includePrefix: true)],
+            method: "chain_getBlockHash"
         )
-        
-        return response.flatMap { $0.toFinal() }
     }
 }

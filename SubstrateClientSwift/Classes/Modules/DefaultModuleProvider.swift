@@ -19,8 +19,8 @@
 import Foundation
 import ScaleCodecSwift
 
-/// Default module rpc provider
-class DefaultModuleRpcProvider: InternalModuleRpcProvider {
+/// Default module provider
+class DefaultModuleProvider: InternalModuleProvider {
     weak var constants: SubstrateConstantsService?
     weak var storage: SubstrateStorageService?
     weak var codec: ScaleCoder?
@@ -37,8 +37,8 @@ class DefaultModuleRpcProvider: InternalModuleRpcProvider {
         self.hashersProvider = hashersProvider
     }
     
-    lazy var stateRpc: StateRpc = StateRpcClient(codec: codec, rpcClient: rpcClient, hashersProvider: hashersProvider)
-    lazy var systemRpc: SystemRpc = SystemRpcClient(constants: constants, storage: storage)
-    lazy var chainRpc: ChainRpc = ChainRpcClient(rpcClient: rpcClient)
-    lazy var paymentRpc: PaymentRpc = PaymentRpcClient(rpcClient: rpcClient)
+    lazy var state: StateModule = StateModuleClient(codec: codec, rpcClient: rpcClient, hashersProvider: hashersProvider)
+    lazy var system: SystemModule = SystemModuleClient(constants: constants, storage: storage)
+    lazy var chain: ChainModule = ChainModuleClient(rpcClient: rpcClient)
+    lazy var payment: PaymentModule = PaymentModuleClient(rpcClient: rpcClient)
 }

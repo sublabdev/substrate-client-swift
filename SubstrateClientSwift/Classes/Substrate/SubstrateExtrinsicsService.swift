@@ -96,13 +96,13 @@ protocol InternalSubstrateExtrinsics: SubstrateExtrinsics {
 /// Substrate extrinsics service
 public class SubstrateExtrinsicsService: InternalSubstrateExtrinsics {
     weak var runtimeMetadataProvider: RuntimeMetadataProvider?
-    private weak var modules: ModuleRpcProvider?
+    private weak var modules: ModuleProvider?
     private weak var codec: ScaleCoder?
     private weak var lookup: SubstrateLookup?
     private let namingPolicy: SubstrateClientNamingPolicy
     
     init(
-        modules: ModuleRpcProvider,
+        modules: ModuleProvider,
         codec: ScaleCoder,
         lookup: SubstrateLookup,
         namingPolicy: SubstrateClientNamingPolicy
@@ -227,10 +227,10 @@ extension SubstrateExtrinsicsService {
             runtimeMetadata: try await runtimeMetadataProvider?.runtimeMetadata() as RuntimeMetadata?,
             codec: codec,
             payload: try await makePayload(moduleName: moduleName, callName: callName, callValue: callValue),
-            runtimeVersion: try await modules?.systemRpc.runtimeVersion() as RuntimeVersion?,
-            genesisHash: try await modules?.chainRpc.blockHash(number: 0) as String?,
+            runtimeVersion: try await modules?.system.runtimeVersion() as RuntimeVersion?,
+            genesisHash: try await modules?.chain.blockHash(number: 0) as String?,
             accountId: accountId,
-            nonce: try await modules?.systemRpc.account(accountId: accountId)?.nonce,
+            nonce: try await modules?.system.account(accountId: accountId)?.nonce,
             tip: tip,
             signatureEngine: signatureEngine
         )
@@ -279,8 +279,8 @@ extension SubstrateExtrinsicsService {
             runtimeMetadata: try await runtimeMetadataProvider?.runtimeMetadata() as RuntimeMetadata?,
             codec: codec,
             payload: try await makePayload(moduleName: moduleName, callName: callName, callValue: callValue),
-            runtimeVersion: try await modules?.systemRpc.runtimeVersion() as RuntimeVersion?,
-            genesisHash: try await modules?.chainRpc.blockHash(number: 0) as String?,
+            runtimeVersion: try await modules?.system.runtimeVersion() as RuntimeVersion?,
+            genesisHash: try await modules?.chain.blockHash(number: 0) as String?,
             accountId: accountId,
             nonce: nonce,
             tip: tip,

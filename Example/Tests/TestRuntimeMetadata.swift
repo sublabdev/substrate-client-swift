@@ -78,7 +78,7 @@ class TestRuntimeMetadata: XCTestCase {
     func testRuntimeVersion() async throws {
         for network in Network.allCases {
             let client = network.makeClient()
-            let runtimeVersion = try await client.modules.systemRpc.runtimeVersion()
+            let runtimeVersion = try await client.modules.system.runtimeVersion()
             XCTAssertNotNil(runtimeVersion)
         }
     }
@@ -86,7 +86,7 @@ class TestRuntimeMetadata: XCTestCase {
     func testGenesisHash() async throws {
         for network in Network.allCases {
             let client = network.makeClient()
-            let genesisHash = try await client.modules.chainRpc.blockHash(number: 0)
+            let genesisHash = try await client.modules.chain.blockHash(number: 0)
             XCTAssertNotNil(genesisHash)
             XCTAssertEqual(network.genesisHash, genesisHash)
         }

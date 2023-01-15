@@ -21,7 +21,7 @@ import Foundation
 import HashingSwift
 
 /// An interface for fetching runtime version and account
-public protocol SystemRpc: AnyObject {
+public protocol SystemModule: AnyObject {
     /// Gets runtime version
     /// - Returns: An optiional runtime version
     func runtimeVersion() async throws -> RuntimeVersion?
@@ -57,7 +57,7 @@ public protocol SystemRpc: AnyObject {
     func account(keyPair: KeyPair) async throws -> Account?
 }
 
-final class SystemRpcClient: SystemRpc {
+final class SystemModuleClient: SystemModule {
     enum Error: Swift.Error {
         case hexDecodeFailed
     }

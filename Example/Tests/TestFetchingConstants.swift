@@ -73,7 +73,7 @@ class TestFetchingConstants: XCTestCase {
     ) async throws {
         try await testStorageItemFetching(
             constantService: client.constants,
-            stateRpc: client.modules.stateRpc,
+            stateRpc: client.modules.state,
             constant: constant
         )
         
@@ -90,7 +90,7 @@ class TestFetchingConstants: XCTestCase {
     
     private func testStorageItemFetching<T: Codable>(
         constantService: SubstrateConstantsService,
-        stateRpc: StateRpc,
+        stateRpc: StateModule,
         constant: RpcConstant<T>
     ) async throws {
         let storageItem: T? = try await constantService.fetch(moduleName: constant.module, constantName: constant.constant)

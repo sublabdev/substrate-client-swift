@@ -21,7 +21,7 @@ import ScaleCodecSwift
 import CommonSwift
 
 /// Interface for getting Runtime metadata and fetching Storage Items
-public protocol StateRpc: AnyObject {
+public protocol StateModule: AnyObject {
     /// Gets runtime metadata
     /// - Returns: A runtime metadata
     func runtimeMetadata() async throws -> RuntimeMetadata?
@@ -58,8 +58,8 @@ public protocol StateRpc: AnyObject {
     ) async throws -> T?
 }
 
-/// State RPC client which handles fetching storage item and runtime metadata
-final class StateRpcClient: StateRpc {
+/// State module client which handles fetching storage item and runtime metadata
+final class StateModuleClient: StateModule {
     weak var codec: ScaleCoder?
     weak var rpcClient: RpcClient?
     let hashersProvider: HashersProvider

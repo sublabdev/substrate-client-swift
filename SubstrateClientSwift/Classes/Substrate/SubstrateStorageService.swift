@@ -22,7 +22,7 @@ import ScaleCodecSwift
 /// Substrate storage service
 public class SubstrateStorageService {
     private weak var lookup: SubstrateLookup?
-    private weak var stateRpc: StateRpc?
+    private weak var stateRpc: StateModule?
     
     /// Creates a substrate storage service
     /// - Parameters:
@@ -32,7 +32,7 @@ public class SubstrateStorageService {
     ///     - innerQueue: An inner queue on which the logic takes place
     init(
         lookup: SubstrateLookup?,
-        stateRpc: StateRpc?
+        stateRpc: StateModule?
     ) {
         self.lookup = lookup
         self.stateRpc = stateRpc

@@ -111,7 +111,7 @@ class TestExtrinsics: XCTestCase {
         let keyPair = try KeyPairFactory.sr25519.generate()
         let accountId = try keyPair.publicKey.ss58.accountId()
         
-        let nonce = try await client.modules.systemRpc.account(accountId: accountId)?.nonce
+        let nonce = try await client.modules.system.account(accountId: accountId)?.nonce
         XCTAssertNil(nonce)
         
         // Unwrap internal methods
@@ -135,7 +135,7 @@ class TestExtrinsics: XCTestCase {
             return
         }
                 
-        let queryFeeDetails = try await client.modules.paymentRpc.queryFeeDetails(payload: signed)
+        let queryFeeDetails = try await client.modules.payment.queryFeeDetails(payload: signed)
         guard let queryFeeDetails = queryFeeDetails else {
             XCTFail()
             return
