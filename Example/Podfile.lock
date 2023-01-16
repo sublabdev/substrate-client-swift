@@ -1,16 +1,122 @@
 PODS:
-  - SubstrateClientSwift (1.0.0)
+  - Base58Swift (2.1.10):
+    - BigInt (~> 5.0.0)
+  - BigInt (5.0.0)
+  - Bip39.swift (0.1.1):
+    - UncommonCrypto (~> 0.1.0)
+  - Blake2 (0.1.2)
+  - CommonSwift (1.0.0):
+    - BigInt (~> 5.0.0)
+  - CryptoSwift (1.6.0)
+  - ed25519swift (1.2.8):
+    - CryptoSwift
+  - EncryptingSwift (1.0.0):
+    - Bip39.swift (~> 0.1.1)
+    - CommonSwift (~> 1.0.0)
+    - ed25519swift (~> 1.2.8)
+    - HashingSwift (~> 1.0.0)
+    - secp256k1.swift (~> 0.1.4)
+    - Sr25519 (~> 0.1.3)
+    - UncommonCrypto (~> 0.1.3)
+  - HashingSwift (1.0.0):
+    - Base58Swift (~> 2.1.10)
+    - Blake2 (~> 0.1.2)
+    - CommonSwift
+    - keccak.c (~> 0.1.3)
+    - xxHash-Swift (~> 1.1.1)
+  - keccak.c (0.1.3)
+  - ScaleCodecSwift (1.0.0):
+    - BigInt (~> 5.0.0)
+    - CommonSwift
+  - secp256k1.swift (0.1.4)
+  - Sr25519 (0.1.3):
+    - Sr25519/Sr25519 (= 0.1.3)
+  - Sr25519/CSr25519 (0.1.3):
+    - UncommonCrypto (~> 0.1.0)
+  - Sr25519/Helpers (0.1.3):
+    - Sr25519/CSr25519
+  - Sr25519/Sr25519 (0.1.3):
+    - Sr25519/CSr25519
+    - Sr25519/Helpers
+  - SubstrateClientSwift (1.0.0):
+    - BigInt (~> 5.0.0)
+    - CommonSwift (~> 1.0.0)
+    - EncryptingSwift (~> 1.0.0)
+    - HashingSwift (~> 1.0.0)
+    - ScaleCodecSwift (~> 1.0.0)
+  - UncommonCrypto (0.1.3)
+  - xxHash-Swift (1.1.1)
 
 DEPENDENCIES:
+  - BigInt
+  - CommonSwift (from `https://github.com/sublabdev/common-swift.git`, branch `dev`)
+  - EncryptingSwift (from `https://github.com/sublabdev/encrypting-swift.git`, branch `dev`)
+  - HashingSwift (from `https://github.com/sublabdev/hashing-swift.git`, branch `dev`)
+  - ScaleCodecSwift (from `https://github.com/sublabdev/scale-codec-swift`, branch `dev`)
   - SubstrateClientSwift (from `../`)
 
+SPEC REPOS:
+  trunk:
+    - Base58Swift
+    - BigInt
+    - Bip39.swift
+    - Blake2
+    - CryptoSwift
+    - ed25519swift
+    - keccak.c
+    - secp256k1.swift
+    - Sr25519
+    - UncommonCrypto
+    - xxHash-Swift
+
 EXTERNAL SOURCES:
+  CommonSwift:
+    :branch: dev
+    :git: https://github.com/sublabdev/common-swift.git
+  EncryptingSwift:
+    :branch: dev
+    :git: https://github.com/sublabdev/encrypting-swift.git
+  HashingSwift:
+    :branch: dev
+    :git: https://github.com/sublabdev/hashing-swift.git
+  ScaleCodecSwift:
+    :branch: dev
+    :git: https://github.com/sublabdev/scale-codec-swift
   SubstrateClientSwift:
     :path: "../"
 
-SPEC CHECKSUMS:
-  SubstrateClientSwift: 2ded003789595b98846e649245b456606acafe05
+CHECKOUT OPTIONS:
+  CommonSwift:
+    :commit: e9d6a9bf34ea0f5f52f82012d10f6c260cc50df0
+    :git: https://github.com/sublabdev/common-swift.git
+  EncryptingSwift:
+    :commit: 64b17784032cae62c5ba639b30d3337ca3535f14
+    :git: https://github.com/sublabdev/encrypting-swift.git
+  HashingSwift:
+    :commit: f03de80ae87ffa3dc13903afa1865868ff1015ab
+    :git: https://github.com/sublabdev/hashing-swift.git
+  ScaleCodecSwift:
+    :commit: 081c3d7eb003238705fc54fa0f7e1403cc0701fb
+    :git: https://github.com/sublabdev/scale-codec-swift
 
-PODFILE CHECKSUM: 307e0fc1cb3454dc2fc76b5ceae4db8dcc10dd52
+SPEC CHECKSUMS:
+  Base58Swift: 53d551f0b33d9478fa63b3445e453a772d6b31a7
+  BigInt: 74b4d88367b0e819d9f77393549226d36faeb0d8
+  Bip39.swift: b1d6bf4084659232e711b3d3e4bf7df666f39974
+  Blake2: f33072b13349da1b8048a2bf26a3a24d4eac6dcc
+  CommonSwift: ad350f0e06c040e5cb660cd7154f947851c73fbd
+  CryptoSwift: 562f8eceb40e80796fffc668b0cad9313284cfa6
+  ed25519swift: 32845b4d73fdd3598d6334972a62f463314de730
+  EncryptingSwift: ceaa2f0f36295835b8f1dc7c80e5c50d2dfe6c88
+  HashingSwift: d97c9d264e558e471b15d4c65773104c587a9b4c
+  keccak.c: 859583afdaccb4e4fcc0f0096064d101580313f4
+  ScaleCodecSwift: 2fa35cbc70c5634fdc0960cc6c712e917b2c688c
+  secp256k1.swift: a7e7a214f6db6ce5db32cc6b2b45e5c4dd633634
+  Sr25519: 87a974e2d714113af55e1d7e5cef1b82864a57bd
+  SubstrateClientSwift: af132c82e31d514a0623a3011c12344b972cd7bb
+  UncommonCrypto: 8e6276bd3def28cdbd55966926c38c37ea1c9af5
+  xxHash-Swift: 13ebcbfc48658a5acf3777751e64b18c0f110d25
+
+PODFILE CHECKSUM: d310bb1702686e171f710a34c73db16dc8901246
 
 COCOAPODS: 1.11.3

@@ -7,12 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1107FEB5290EB687000B3BD8 /* TestRuntimeMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1107FEB4290EB687000B3BD8 /* TestRuntimeMetadata.swift */; };
+		1107FEB9290F1C46000B3BD8 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1107FEB8290F1C46000B3BD8 /* Constants.swift */; };
+		1107FEBC290F24BD000B3BD8 /* MockUrlProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1107FEBB290F24BD000B3BD8 /* MockUrlProtocol.swift */; };
+		111024A3293E5AEE00B02B67 /* TestFetchingConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 111024A2293E5AEE00B02B67 /* TestFetchingConstants.swift */; };
+		1123C45D291DB9CD0028A493 /* kusama-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 1123C45C291DB9CD0028A493 /* kusama-metadata */; };
+		1135ED96296837C300A1A913 /* TestRandomAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1135ED95296837C200A1A913 /* TestRandomAccount.swift */; };
+		1135ED982968400D00A1A913 /* TestExtrinsics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1135ED972968400D00A1A913 /* TestExtrinsics.swift */; };
+		115A20E9291BCC2D009AE14E /* polkadot-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 115A20E8291BCB2A009AE14E /* polkadot-metadata */; };
+		115A20EB291BD1FE009AE14E /* westend-metadata in Resources */ = {isa = PBXBuildFile; fileRef = 115A20EA291BD1EA009AE14E /* westend-metadata */; };
+		116C231A293CB1A700FB07F2 /* TestFetchingStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 116C2319293CB1A700FB07F2 /* TestFetchingStorage.swift */; };
+		11920B90291FF304006C4E36 /* EndpointInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11920B8E291FF2FF006C4E36 /* EndpointInfo.swift */; };
+		11920B92291FF336006C4E36 /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11920B91291FF336006C4E36 /* Network.swift */; };
+		11A80E772913DA4400435BC6 /* RcpClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11A80E762913DA4400435BC6 /* RcpClientTests.swift */; };
+		11DA197129084DC500D42279 /* WebsocketTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11DA197029084DC500D42279 /* WebsocketTests.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
-		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		933B7C243CB928C03CD2AA63 /* Pods_SubstrateClientSwift_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5481B7EB79E944AB39E51C78 /* Pods_SubstrateClientSwift_Tests.framework */; };
 		A2AC2570BF42FCCBC5F1C716 /* Pods_SubstrateClientSwift_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7279B016EE5A5BD3E245DAA /* Pods_SubstrateClientSwift_Example.framework */; };
 /* End PBXBuildFile section */
@@ -28,6 +41,20 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1107FEB4290EB687000B3BD8 /* TestRuntimeMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestRuntimeMetadata.swift; sourceTree = "<group>"; };
+		1107FEB8290F1C46000B3BD8 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		1107FEBB290F24BD000B3BD8 /* MockUrlProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockUrlProtocol.swift; sourceTree = "<group>"; };
+		111024A2293E5AEE00B02B67 /* TestFetchingConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFetchingConstants.swift; sourceTree = "<group>"; };
+		1123C45C291DB9CD0028A493 /* kusama-metadata */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "kusama-metadata"; sourceTree = "<group>"; };
+		1135ED95296837C200A1A913 /* TestRandomAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestRandomAccount.swift; sourceTree = "<group>"; };
+		1135ED972968400D00A1A913 /* TestExtrinsics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestExtrinsics.swift; sourceTree = "<group>"; };
+		115A20E8291BCB2A009AE14E /* polkadot-metadata */ = {isa = PBXFileReference; lastKnownFileType = text; path = "polkadot-metadata"; sourceTree = "<group>"; };
+		115A20EA291BD1EA009AE14E /* westend-metadata */ = {isa = PBXFileReference; lastKnownFileType = text; path = "westend-metadata"; sourceTree = "<group>"; };
+		116C2319293CB1A700FB07F2 /* TestFetchingStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFetchingStorage.swift; sourceTree = "<group>"; };
+		11920B8E291FF2FF006C4E36 /* EndpointInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointInfo.swift; sourceTree = "<group>"; };
+		11920B91291FF336006C4E36 /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
+		11A80E762913DA4400435BC6 /* RcpClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RcpClientTests.swift; sourceTree = "<group>"; };
+		11DA197029084DC500D42279 /* WebsocketTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebsocketTests.swift; sourceTree = "<group>"; };
 		318606AB835D5A5FF3030756 /* SubstrateClientSwift.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = SubstrateClientSwift.podspec; path = ../SubstrateClientSwift.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		4BC4DCCBCFBDC53219577848 /* Pods-SubstrateClientSwift_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubstrateClientSwift_Tests.release.xcconfig"; path = "Target Support Files/Pods-SubstrateClientSwift_Tests/Pods-SubstrateClientSwift_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		5481B7EB79E944AB39E51C78 /* Pods_SubstrateClientSwift_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SubstrateClientSwift_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -40,7 +67,6 @@
 		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		607FACE51AFB9204008FA782 /* SubstrateClientSwift_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SubstrateClientSwift_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACEA1AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		607FACEB1AFB9204008FA782 /* Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tests.swift; sourceTree = "<group>"; };
 		63E7A3A09701911EC1DDC2DE /* Pods-SubstrateClientSwift_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SubstrateClientSwift_Tests.debug.xcconfig"; path = "Target Support Files/Pods-SubstrateClientSwift_Tests/Pods-SubstrateClientSwift_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		9F52A71B9EEA8E73E1ABD9E1 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		A81521871ECFF9F5AAB45125 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
@@ -69,6 +95,33 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1107FEBA290F225B000B3BD8 /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				1107FEBB290F24BD000B3BD8 /* MockUrlProtocol.swift */,
+			);
+			name = Mocks;
+			sourceTree = "<group>";
+		};
+		1151277E291AE5AE00359F1C /* LocalResponses */ = {
+			isa = PBXGroup;
+			children = (
+				1123C45C291DB9CD0028A493 /* kusama-metadata */,
+				115A20E8291BCB2A009AE14E /* polkadot-metadata */,
+				115A20EA291BD1EA009AE14E /* westend-metadata */,
+			);
+			name = LocalResponses;
+			sourceTree = "<group>";
+		};
+		11920B8D291FF2F3006C4E36 /* Endpoints */ = {
+			isa = PBXGroup;
+			children = (
+				11920B8E291FF2FF006C4E36 /* EndpointInfo.swift */,
+				11920B91291FF336006C4E36 /* Network.swift */,
+			);
+			name = Endpoints;
+			sourceTree = "<group>";
+		};
 		35FBC09AF9F45D62D3E7E7AD /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -135,8 +188,18 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				607FACEB1AFB9204008FA782 /* Tests.swift */,
+				11920B8D291FF2F3006C4E36 /* Endpoints */,
+				1151277E291AE5AE00359F1C /* LocalResponses */,
+				1107FEBA290F225B000B3BD8 /* Mocks */,
+				11DA197029084DC500D42279 /* WebsocketTests.swift */,
+				11A80E762913DA4400435BC6 /* RcpClientTests.swift */,
+				1107FEB4290EB687000B3BD8 /* TestRuntimeMetadata.swift */,
+				116C2319293CB1A700FB07F2 /* TestFetchingStorage.swift */,
+				111024A2293E5AEE00B02B67 /* TestFetchingConstants.swift */,
+				1135ED95296837C200A1A913 /* TestRandomAccount.swift */,
+				1135ED972968400D00A1A913 /* TestExtrinsics.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
+				1107FEB8290F1C46000B3BD8 /* Constants.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -212,11 +275,11 @@
 				TargetAttributes = {
 					607FACCF1AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = "";
 					};
 					607FACE41AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = "";
 						TestTargetID = 607FACCF1AFB9204008FA782;
 					};
 				};
@@ -256,6 +319,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				115A20EB291BD1FE009AE14E /* westend-metadata in Resources */,
+				115A20E9291BCC2D009AE14E /* polkadot-metadata in Resources */,
+				1123C45D291DB9CD0028A493 /* kusama-metadata in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -313,11 +379,41 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SubstrateClientSwift_Example/Pods-SubstrateClientSwift_Example-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Base58Swift/Base58Swift.framework",
+				"${BUILT_PRODUCTS_DIR}/BigInt/BigInt.framework",
+				"${BUILT_PRODUCTS_DIR}/Bip39.swift/Bip39.framework",
+				"${BUILT_PRODUCTS_DIR}/Blake2/Blake2.framework",
+				"${BUILT_PRODUCTS_DIR}/CommonSwift/CommonSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/CryptoSwift/CryptoSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/EncryptingSwift/EncryptingSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/HashingSwift/HashingSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/ScaleCodecSwift/ScaleCodecSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/Sr25519/Sr25519.framework",
 				"${BUILT_PRODUCTS_DIR}/SubstrateClientSwift/SubstrateClientSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/UncommonCrypto/UncommonCrypto.framework",
+				"${BUILT_PRODUCTS_DIR}/ed25519swift/ed25519swift.framework",
+				"${BUILT_PRODUCTS_DIR}/keccak.c/keccak.framework",
+				"${BUILT_PRODUCTS_DIR}/secp256k1.swift/secp256k1.framework",
+				"${BUILT_PRODUCTS_DIR}/xxHash-Swift/xxHash_Swift.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Base58Swift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BigInt.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Bip39.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Blake2.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CommonSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CryptoSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/EncryptingSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HashingSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ScaleCodecSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Sr25519.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SubstrateClientSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/UncommonCrypto.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ed25519swift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/keccak.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/secp256k1.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/xxHash_Swift.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -340,7 +436,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				607FACEC1AFB9204008FA782 /* Tests.swift in Sources */,
+				11A80E772913DA4400435BC6 /* RcpClientTests.swift in Sources */,
+				116C231A293CB1A700FB07F2 /* TestFetchingStorage.swift in Sources */,
+				11920B92291FF336006C4E36 /* Network.swift in Sources */,
+				1107FEB5290EB687000B3BD8 /* TestRuntimeMetadata.swift in Sources */,
+				11DA197129084DC500D42279 /* WebsocketTests.swift in Sources */,
+				11920B90291FF304006C4E36 /* EndpointInfo.swift in Sources */,
+				111024A3293E5AEE00B02B67 /* TestFetchingConstants.swift in Sources */,
+				1135ED96296837C300A1A913 /* TestRandomAccount.swift in Sources */,
+				1107FEB9290F1C46000B3BD8 /* Constants.swift in Sources */,
+				1107FEBC290F24BD000B3BD8 /* MockUrlProtocol.swift in Sources */,
+				1135ED982968400D00A1A913 /* TestExtrinsics.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -478,6 +584,7 @@
 			baseConfigurationReference = D6EC0A350F0A743B314B27BD /* Pods-SubstrateClientSwift_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = SubstrateClientSwift/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -485,7 +592,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -494,6 +601,7 @@
 			baseConfigurationReference = BE45F6AE4507D7517E6F4798 /* Pods-SubstrateClientSwift_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = SubstrateClientSwift/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -501,7 +609,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -509,6 +617,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 63E7A3A09701911EC1DDC2DE /* Pods-SubstrateClientSwift_Tests.debug.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -522,7 +631,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SubstrateClientSwift_Example.app/SubstrateClientSwift_Example";
 			};
 			name = Debug;
@@ -531,6 +640,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 4BC4DCCBCFBDC53219577848 /* Pods-SubstrateClientSwift_Tests.release.xcconfig */;
 			buildSettings = {
+				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -540,7 +650,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SubstrateClientSwift_Example.app/SubstrateClientSwift_Example";
 			};
 			name = Release;
