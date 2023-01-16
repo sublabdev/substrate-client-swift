@@ -27,7 +27,7 @@ public struct QueryFeeDetails: Decodable {
     public let adjustedWeightFee: Balance
 }
 
-class QueryFeeDetailsResponse: Codable {
+final class QueryFeeDetailsResponse: Codable {
     let inclusionFee: InclusionFee
     
     init(inclusionFee: InclusionFee) {

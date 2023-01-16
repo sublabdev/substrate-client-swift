@@ -18,25 +18,15 @@
 
 import Foundation
 
-/// Additional information for extrinsics
-final class ExtrinsicAdditional {
-    let specVersion: UInt32
-    let txVersion: UInt32
-    let genesisHash: Data
-    let mortalityCheckpoint: Data
-    let marker: Any
-    
-    init(
-        specVersion: UInt32,
-        txVersion: UInt32,
-        genesisHash: Data,
-        mortalityCheckpoint: Data,
-        marker: Any
-    ) {
-        self.specVersion = specVersion
-        self.txVersion = txVersion
-        self.genesisHash = genesisHash
-        self.mortalityCheckpoint = mortalityCheckpoint
-        self.marker = marker
+/// crowdloan/addMemo call value
+public struct AddMemo: Codable {
+    public let index: UInt32
+    public let memo: Data
+}
+
+/// crowdloan/addMemo call
+public final class AddMemoCall: Call<AddMemo> {
+    public init(value: AddMemo) {
+        super.init(moduleName: "crowdloan", name: "add_memo", value: value)
     }
 }

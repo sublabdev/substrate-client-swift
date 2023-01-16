@@ -53,14 +53,6 @@ public struct SubstrateClientSettings {
     /// The default settings for substrate client
     /// - Returns: Settings for `SubstrateClient`
     public static func `default`() -> SubstrateClientSettings {
-        self.default(clientQueue: .main)
-    }
-    
-    /// The default settings for substrate client with a custom client queue
-    /// - Parameters:
-    ///     - clientQueue: A custom client queue on which the results will be returned
-    /// - Returns: Settings for `SubstrateClient`
-    public static func `default`(clientQueue: DispatchQueue) -> SubstrateClientSettings {
         .init(
             rpcParams: [:],
             webSocketParams: [:],

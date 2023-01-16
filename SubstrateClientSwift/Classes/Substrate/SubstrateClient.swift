@@ -24,8 +24,8 @@ public protocol RuntimeMetadataProvider: AnyObject {
     func runtimeMetadata(_ updates: @escaping (RuntimeMetadata) -> Void, single: Bool)
 }
 
-/// Substrate client which holds substrate lookup service; constants service and storage service.
-/// Is the entering point for using those services.
+/// Substrate client which holds substrate lookup service; constants service, storage service, and extrinsic service.
+/// It's the entry point for using those services.
 public final class SubstrateClient: RuntimeMetadataProvider {
     private let host: String
     private let settings: SubstrateClientSettings

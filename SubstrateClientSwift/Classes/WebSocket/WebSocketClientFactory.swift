@@ -18,12 +18,16 @@
 
 import Foundation
 
+// MARK: - Protocol
+
 /// Web socket client building interface
 protocol WebSocketClientBuilder {
     /// Creates a web socket client
     /// - Returns: An object conforming to `WebSocketClientProtocol`
     func webSocketClient() -> WebSocketClientProtocol
 }
+
+// MARK: - Implementation
 
 /// Web socket client factory
 struct WebSocketClientFactory: WebSocketClientBuilder {

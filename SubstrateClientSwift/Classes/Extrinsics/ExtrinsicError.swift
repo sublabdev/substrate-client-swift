@@ -19,7 +19,7 @@
 import Foundation
 
 /// Extrinsic possible errors
-enum ExtrinsicError: Error {
+public enum ExtrinsicError: Error {
     // used in service
     case runtimeVersionNotLoaded
     case genesisHashNotLoaded(RpcError?)

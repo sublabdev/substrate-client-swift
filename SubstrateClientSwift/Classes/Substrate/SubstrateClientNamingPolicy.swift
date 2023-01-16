@@ -18,7 +18,7 @@
 
 import Foundation
 
-/// Naming police for substrate client
+/// Naming policy for substrate client to resolve pallet, constant, storage key, function names
 public enum SubstrateClientNamingPolicy {
     case none
     case caseInsensitive

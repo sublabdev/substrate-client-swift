@@ -31,7 +31,6 @@ final class DynamicAdapter<T>: ScaleCodecAdapter<T> {
         super.init()
     }
     
-    // MARK: - ScaleCodecAdapter
     /// Decodes data dynamically to a specified generic type `T` using the provided `DataReader`
     /// - Parameters:
     ///     - type: Generic type `T` to which the data should be decoded

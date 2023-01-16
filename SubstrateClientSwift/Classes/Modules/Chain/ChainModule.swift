@@ -19,6 +19,8 @@
 import Foundation
 import ScaleCodecSwift
 
+// MARK: - Protocol
+
 /// An interface for chain client
 public protocol ChainModule: AnyObject {
     /// Gets block hash using the provided number as a parameter for `RPC` request
@@ -27,6 +29,8 @@ public protocol ChainModule: AnyObject {
     /// - Returns: Block hash for the provided number
     func blockHash(number: UInt) async throws -> String?
 }
+
+// MARK: - Implementation
 
 /// Handles chain block hash fetching
 final class ChainModuleClient: ChainModule {

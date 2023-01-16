@@ -74,6 +74,8 @@ final class Adapter<T>: AdapterProtocol {
     }
 }
 
+// MARK: - Provider
+
 /// A dynamic adapter provider that provides an adapter based on the provided dynamic type
 final class DynamicAdapterProvider {
     // MARK: - Dependencies
@@ -86,7 +88,6 @@ final class DynamicAdapterProvider {
         self.runtimeMetadataProvider = runtimeMetadataProvider
     }
     
-    // MARK: -
     /// Provides an adapter based on the provided dynamic type
     /// - Parameters:
     ///     - type: Dynamic type based on which an adapter is provided
@@ -134,33 +135,13 @@ final class DynamicAdapterProvider {
         case .string:
             return Adapter(scaleAdapter: StringAdapter(coder: coder))
         case .uint8:
-            return Adapter(
-                scaleAdapter: NumericAdapter<UInt8>(),
-                bytesLength: UInt8.bitWidth * 8,
-                toDataClosure: { NumericAdapter.toData($0) },
-                fromDataClosure: { NumericAdapter.fromData($0) }
-            )
+            return makeAdapter(for: UInt8.self)
         case .uint16:
-            return Adapter(
-                scaleAdapter: NumericAdapter<UInt16>(),
-                bytesLength: UInt16.bitWidth * 8,
-                toDataClosure: { NumericAdapter.toData($0) },
-                fromDataClosure: { NumericAdapter.fromData($0) }
-            )
+            return makeAdapter(for: UInt16.self)
         case .uint32:
-            return Adapter(
-                scaleAdapter: NumericAdapter<UInt32>(),
-                bytesLength: UInt32.bitWidth * 8,
-                toDataClosure: { NumericAdapter.toData($0) },
-                fromDataClosure: { NumericAdapter.fromData($0) }
-            )
+            return makeAdapter(for: UInt32.self)
         case .uint64:
-            return Adapter(
-                scaleAdapter: NumericAdapter<UInt64>(),
-                bytesLength: UInt64.bitWidth * 8,
-                toDataClosure: { NumericAdapter.toData($0) },
-                fromDataClosure: { NumericAdapter.fromData($0) }
-            )
+            return makeAdapter(for: UInt64.self)
         case .uint128:
             return Adapter(
                 scaleAdapter: UInt128Adapter(),
@@ -176,33 +157,13 @@ final class DynamicAdapterProvider {
                 fromDataClosure: { $0.uInt256() }
             )
         case .int8:
-            return Adapter(
-                scaleAdapter: NumericAdapter<Int8>(),
-                bytesLength: Int8.bitWidth * 8,
-                toDataClosure: { NumericAdapter.toData($0) },
-                fromDataClosure: { NumericAdapter.fromData($0) }
-            )
+            return makeAdapter(for: Int8.self)
         case .int16:
-            return Adapter(
-                scaleAdapter: NumericAdapter<Int16>(),
-                bytesLength: Int16.bitWidth * 8,
-                toDataClosure: { NumericAdapter.toData($0) },
-                fromDataClosure: { NumericAdapter.fromData($0) }
-            )
+            return makeAdapter(for: Int16.self)
         case .int32:
-            return Adapter(
-                scaleAdapter: NumericAdapter<Int32>(),
-                bytesLength: Int32.bitWidth * 8,
-                toDataClosure: { NumericAdapter.toData($0) },
-                fromDataClosure: { NumericAdapter.fromData($0) }
-            )
+            return makeAdapter(for: Int32.self)
         case .int64:
-            return Adapter(
-                scaleAdapter: NumericAdapter<Int64>(),
-                bytesLength: Int64.bitWidth * 8,
-                toDataClosure: { NumericAdapter.toData($0) },
-                fromDataClosure: { NumericAdapter.fromData($0) }
-            )
+            return makeAdapter(for: Int64.self)
         case .int128:
             return Adapter(
                 scaleAdapter: Int128Adapter(),
@@ -218,5 +179,14 @@ final class DynamicAdapterProvider {
                 fromDataClosure: { $0.int256() }
             )
         }
+    }
+    
+    private func makeAdapter<T: FixedWidthInteger>(for type: T.Type) -> AdapterProtocol where T: Codable {
+        Adapter(
+            scaleAdapter: NumericAdapter<T>(),
+            bytesLength: T.bitWidth * 8,
+            toDataClosure: { NumericAdapter.toData($0) },
+            fromDataClosure: { NumericAdapter.fromData($0) }
+        )
     }
 }

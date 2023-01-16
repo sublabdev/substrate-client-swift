@@ -29,6 +29,7 @@ public enum Era: Equatable, Codable {
     case mortal(value: Mortal)
 }
 
+/// Mortal era value
 public struct Mortal: Equatable, Codable {
     public let period: UInt64
     public let phase: UInt64

@@ -18,12 +18,16 @@
 
 import Foundation
 
+// MARK: - Error
+
 /// Possible RPC errors
 public enum RpcError: Error {
     case failedToPrepareRequest
     case bodyEncodingFailed(Error)
     case responseError(RpcResponseError)
 }
+
+// MARK: - Protocol
 
 /// An interface for RPC client that handles sending requests
 public protocol Rpc: AnyObject {
@@ -88,6 +92,8 @@ public protocol Rpc: AnyObject {
         method: String
     ) async throws -> Response?
 }
+
+// MARK: - Implementation
 
 /// RPC client that handles sending requests
 public final class RpcClient: Rpc {

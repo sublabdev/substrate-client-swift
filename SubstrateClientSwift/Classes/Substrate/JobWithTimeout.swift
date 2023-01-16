@@ -18,6 +18,7 @@
 
 import Foundation
 
+/// Performing job with given timeout
 final class JobWithTimeout {
     let job: () async throws -> Void
     let timeout: TimeInterval

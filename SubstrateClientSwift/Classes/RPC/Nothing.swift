@@ -18,6 +18,5 @@
 
 import Foundation
 
-/// An "empty" object representing nothing
-public struct Nothing: Codable {
-}
+/// An "empty" object representing nothing, used in RPC client for empty requests or responses
+public struct Nothing: Codable {}

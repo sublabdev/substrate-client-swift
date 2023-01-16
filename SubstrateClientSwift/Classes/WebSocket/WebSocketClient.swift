@@ -18,8 +18,10 @@
 
 import Foundation
 
+// MARK: - Protocol
+
 /// Web socket client interface
-protocol WebSocketClientProtocol {
+public protocol WebSocketClientProtocol {
     typealias Subscription = (URLSessionWebSocketTask.Message?) -> Void
     typealias ErrorSubscription = (Swift.Error) -> Void
     
@@ -54,6 +56,8 @@ protocol WebSocketClientProtocol {
     ///     - errorSubscription: Subscription (completion) wich either contains a `Error`'s message or nil
     func subscribeToErrors(_ errorSubscription: @escaping ErrorSubscription)
 }
+
+// MARK: - Implementation
 
 /// Web socket client
 final class WebSocketClient: WebSocketClientProtocol {

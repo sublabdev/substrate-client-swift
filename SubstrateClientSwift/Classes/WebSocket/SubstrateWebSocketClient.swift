@@ -18,6 +18,8 @@
 
 import Foundation
 
+// MARK: - Protocol
+
 /// An interface for substrate web socket client
 public protocol WebSocket: AnyObject {
     /// Sends a generic request
@@ -36,6 +38,8 @@ public protocol WebSocket: AnyObject {
     ///     - errorSubscription: Completion with `Error.Message`
     func subscribeToErrors(_ errorSubscription: @escaping (Error) -> Void)
 }
+
+// MARK: - Implementation
 
 public final class SubstrateWebSocketClient: WebSocket {
     private let client: WebSocketClientProtocol

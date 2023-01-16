@@ -24,7 +24,7 @@ struct DefaultHashersProvider: HashersProvider {
     /// - Parameters:
     ///     - storage: Runtime module storage for which storage hashing interface is returned
     /// - Returns: Storage hashing interface for a runtime module
-    func getStorageHasher(storage: RuntimeModuleStorage) -> StorageHashing {
+    func storageHasher(for storage: RuntimeModuleStorage) -> StorageHashing {
         StorageHasher(storage: storage)
     }
 }

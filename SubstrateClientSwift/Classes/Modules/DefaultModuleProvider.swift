@@ -21,11 +21,11 @@ import ScaleCodecSwift
 
 /// Default module provider
 final class DefaultModuleProvider: InternalModuleProvider {
-    weak var constants: SubstrateConstants?
-    weak var storage: SubstrateStorage?
-    weak var codec: ScaleCoder?
-    let rpcClient: Rpc // Holder of rpc client
-    let hashersProvider: HashersProvider
+    internal weak var constants: SubstrateConstants?
+    internal weak var storage: SubstrateStorage?
+    private weak var codec: ScaleCoder?
+    private let rpcClient: Rpc // Holder of rpc client
+    private let hashersProvider: HashersProvider
     
     init(
         codec: ScaleCoder,

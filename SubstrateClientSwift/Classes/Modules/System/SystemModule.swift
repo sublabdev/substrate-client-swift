@@ -20,6 +20,8 @@ import EncryptingSwift
 import Foundation
 import HashingSwift
 
+// MARK: - Protocol
+
 /// An interface for fetching runtime version and account
 public protocol SystemModule: AnyObject {
     /// Gets runtime version
@@ -56,6 +58,8 @@ public protocol SystemModule: AnyObject {
     /// - Returns: An optional `Account`
     func account(keyPair: KeyPair) async throws -> Account?
 }
+
+// MARK: - Implementation
 
 final class SystemModuleClient: SystemModule {
     enum Error: Swift.Error {

@@ -19,6 +19,8 @@
 import Foundation
 import ScaleCodecSwift
 
+// MARK: - Protocol
+
 /// An interface for substrate constants service
 public protocol SubstrateConstants: AnyObject {
     /// Finds a runtime module constant by the constant's name in a specified module
@@ -48,6 +50,8 @@ public protocol SubstrateConstants: AnyObject {
     /// - Returns: Decoded generic type `T`
     func fetch<T: Decodable>(_ type: T.Type, constant: RuntimeModuleConstant) throws -> T?
 }
+
+// MARK: - Implementation
 
 /// Substrate constants service. Handles fetching runtime module constant
 public final class SubstrateConstantsService: SubstrateConstants {

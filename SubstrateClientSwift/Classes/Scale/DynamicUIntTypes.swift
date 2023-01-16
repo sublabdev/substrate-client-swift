@@ -20,6 +20,7 @@ import BigInt
 import Foundation
 
 // MARK: - Index
+
 /// Index with a value of type `BigUInt. Conforms to `DynamicType`, and hence contains a lookup index.
 public struct Index: DynamicType, Codable {
     public let value: BigUInt

@@ -26,6 +26,8 @@ private struct RuntimeCall {
     let variant: RuntimeTypeDefVariant.Variant
 }
 
+// MARK: - Protocol
+
 public protocol SubstrateExtrinsics: AnyObject {
     /// Makes an unsigned payload
     /// - Parameters:
@@ -89,9 +91,13 @@ public protocol SubstrateExtrinsics: AnyObject {
     ) async throws -> Payload?
 }
 
+// MARK: - Internal Protocol
+
 protocol InternalSubstrateExtrinsics: SubstrateExtrinsics {
     var runtimeMetadataProvider: RuntimeMetadataProvider? { get set }
 }
+
+// MARK: - Implementation
 
 /// Substrate extrinsics service
 public final class SubstrateExtrinsicsService: InternalSubstrateExtrinsics {

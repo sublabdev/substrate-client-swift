@@ -25,6 +25,8 @@ private struct ModulePath: Hashable {
     let childName: String
 }
 
+// MARK: - Protocol
+
 /// An interface for substrate lookup service
 public protocol SubstrateLookup: AnyObject {
     /// Finds a runtime lookup item for a provided index
@@ -66,9 +68,13 @@ public protocol SubstrateLookup: AnyObject {
     ) async throws -> FindStorageItemResult?
 }
 
+// MARK: - Internal Protocol
+
 protocol InternalSubstrateLookup: SubstrateLookup {
     var runtimeMetadataProvider: RuntimeMetadataProvider? { get set }
 }
+
+// MARK: - Implementation
 
 /// Substrate lookup serivce
 final class SubstrateLookupService: InternalSubstrateLookup {

@@ -24,5 +24,5 @@ protocol HashersProvider {
     /// - Parameters:
     ///     - storage: The module storage which needs to be hashed
     /// - Returns: A storage hasher
-    func getStorageHasher(storage: RuntimeModuleStorage) -> StorageHashing
+    func storageHasher(for storage: RuntimeModuleStorage) -> StorageHashing
 }

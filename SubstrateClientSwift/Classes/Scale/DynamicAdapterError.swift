@@ -19,7 +19,7 @@
 import Foundation
 
 /// Dynamic adapter errors
-enum DynamicAdapterError: Error {
+public enum DynamicAdapterError: Error {
     case dynamicAdapterGivenInvalidType
     case typeIsNotDynamicException
     case typeIsNotFoundInRuntimeMetadataException

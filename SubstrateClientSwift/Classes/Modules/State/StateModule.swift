@@ -20,6 +20,8 @@ import Foundation
 import ScaleCodecSwift
 import CommonSwift
 
+// MARK: - Protocol
+
 /// Interface for getting Runtime metadata and fetching Storage Items
 public protocol StateModule: AnyObject {
     /// Gets runtime metadata
@@ -58,6 +60,8 @@ public protocol StateModule: AnyObject {
     ) async throws -> T?
 }
 
+// MARK: - Implementation
+
 /// State module client which handles fetching storage item and runtime metadata
 final class StateModuleClient: StateModule {
     weak var codec: ScaleCoder?
@@ -81,7 +85,7 @@ final class StateModuleClient: StateModule {
         item: RuntimeModuleStorageItem,
         storage: RuntimeModuleStorage
     ) async throws -> T? {
-        let key = try hashersProvider.getStorageHasher(storage: storage).hash(storageItem: item, keys: [])
+        let key = try hashersProvider.storageHasher(for: storage).hash(storageItem: item, keys: [])
         return try await fetchStorageItem(key: key)
     }
     
@@ -90,7 +94,7 @@ final class StateModuleClient: StateModule {
         key: Data,
         storage: RuntimeModuleStorage
     ) async throws -> T? {
-        let key = try hashersProvider.getStorageHasher(storage: storage).hash(storageItem: item, keys: [key])
+        let key = try hashersProvider.storageHasher(for: storage).hash(storageItem: item, keys: [key])
         return try await fetchStorageItem(key: key)
     }
     
@@ -99,7 +103,7 @@ final class StateModuleClient: StateModule {
         keys: [Data],
         storage: RuntimeModuleStorage
     ) async throws -> T? {
-        let key = try hashersProvider.getStorageHasher(storage: storage).hash(storageItem: item, keys: keys)
+        let key = try hashersProvider.storageHasher(for: storage).hash(storageItem: item, keys: keys)
         return try await fetchStorageItem(key: key)
     }
     

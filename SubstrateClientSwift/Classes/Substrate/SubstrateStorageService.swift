@@ -19,6 +19,8 @@
 import Foundation
 import ScaleCodecSwift
 
+// MARK: - Protocol
+
 /// An interface for substrate storage service
 public protocol SubstrateStorage: AnyObject {
     /// Finds a storage item result, which is a wrapper over runtime module storage item and runtime module storage itself,
@@ -97,6 +99,8 @@ public protocol SubstrateStorage: AnyObject {
         storage: RuntimeModuleStorage
     ) async throws -> T?
 }
+
+// MARK: - Implementation
 
 /// Substrate storage service
 public final class SubstrateStorageService: SubstrateStorage {

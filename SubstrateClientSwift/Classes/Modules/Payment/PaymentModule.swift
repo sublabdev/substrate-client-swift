@@ -19,6 +19,8 @@
 import Foundation
 import ScaleCodecSwift
 
+// MARK: - Protocol
+
 /// An interface for getting a query fee details response
 public protocol PaymentModule {
     /// Gets query fee details for a payload
@@ -27,6 +29,8 @@ public protocol PaymentModule {
     /// - Returns: An optional query fee details
     func queryFeeDetails(payload: Payload) async throws -> QueryFeeDetails?
 }
+
+// MARK: - Implementation
 
 /// Handles payment query fee details fetching
 final class PaymentModuleClient: PaymentModule {

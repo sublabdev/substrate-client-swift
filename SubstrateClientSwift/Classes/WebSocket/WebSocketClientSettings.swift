@@ -25,7 +25,7 @@ import Foundation
 /// `.firstSubscriber`: Only the first subscriber recieves data
 ///
 /// `.allSubscribers`: All subscribers recieve data
-enum WebSocketClientSubscriptionPolicy {
+public enum WebSocketClientSubscriptionPolicy {
     case none
     case firstSubscriber
     case allSubscribers
