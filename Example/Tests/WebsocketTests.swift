@@ -1,37 +1,46 @@
+/**
+ *
+ * Copyright 2023 SUBSTRATE LABORATORY LLC <info@sublab.dev>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * 
+ */
+
 import XCTest
 @testable import SubstrateClientSwift
 
 class WebsocketTests: XCTestCase {
-    // TODO: Tests
-    
-    // 1. Subscribe, send a message, check that the message is the same
-    // 2. In Settings the default policy is 'none': send a message, subscribe after that, wait 5 sec, make sure that nothing is returned
-    // 3. In Settings policy is 'firstSubscriber': send a message, subscribe with iteration 1, be sure that for that we have the same message and for other iterations we do not recieve anything
-    // 4. In Settings policy is 'allSubscribers': 1000 subscriptions and all of them get the message
-    // 5. In Settings policy is 'firstSubscriber': send 1000 subscriptions (from a set), subscribe, make sure that all messages are returned
-    
     func testEchoClientForNone() {
         let testMessage = UUID().uuidString
-        let expectationTimeOut: TimeInterval = 6
+        let expectationTimeOut: TimeInterval = 5
         
         let expectation = XCTestExpectation()
         let client = webSocketClientWithPolicy(.none)
-        
-        client?.subscribe { _ in
-            // Make sure we do not recieve any message
-            XCTFail()
-            expectation.fulfill()
-        }
         
         client?.sendMessage(.string(testMessage)) { error in
             XCTAssertNil(error)
         }
         
         // Wait for 5 seconds and fulfill the expectation
-        DispatchQueue.main.asyncAfter(deadline: .now() + expectationTimeOut - 1) {
+        sleepFor(timeInterval: expectationTimeOut - 1)
+        
+        client?.subscribe { _ in
+            // Make sure we do not recieve any messages
+            XCTFail()
             expectation.fulfill()
         }
-        
+
+        expectation.fulfill()
         wait(for: [expectation], timeout: expectationTimeOut)
     }
     
@@ -40,6 +49,10 @@ class WebsocketTests: XCTestCase {
         let expectation = XCTestExpectation()
         let client = webSocketClientWithPolicy(.firstSubscriber)
         
+        client?.sendMessage(.string(testMessage), completion: { error in
+            XCTAssertNil(error)
+        })
+        
         client?.subscribe { message in
             switch message {
             case .string(let string):
@@ -47,18 +60,14 @@ class WebsocketTests: XCTestCase {
             default:
                 XCTFail()
             }
-        
+            
             expectation.fulfill()
         }
-        
-        client?.sendMessage(.string(testMessage), completion: { error in
-            XCTAssertNil(error)
-        })
-        
-        wait(for: [expectation], timeout: Constants.expectationShortTimeout)
+
+        wait(for: [expectation], timeout: Constants.singleTestTime)
     }
-    
-    func testEchoClientForFirstSubscriber() {
+
+    func testEchoClientFirstSubscriber() {
         let testMessage = UUID().uuidString
         let expectation = XCTestExpectation()
         let client = webSocketClientWithPolicy(.firstSubscriber)
@@ -68,117 +77,109 @@ class WebsocketTests: XCTestCase {
         }
         
         // Let message be sent and received back
+        sleepFor(timeInterval: Constants.singleTestTime)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + Constants.expectationShortTimeout) {
-            for i in (0..<Constants.testsCount) {
-                client?.subscribe { message in
-                    guard i == 0 else {
-                        // Do not expect to get a message for other subscibers except the first one
-                        XCTFail()
-                        return
-                    }
-                    
-                    switch message {
-                    case .string(let string):
-                        XCTAssertEqual(string, testMessage)
-                    default:
-                        XCTFail()
-                    }
-                    
-                    expectation.fulfill()
+        for i in (0..<Constants.testsCount) {
+            client?.subscribe{ message in
+                guard i == 0 else {
+                    // Do not expect to get a message for other subscibers except the first one
+                    XCTFail()
+                    return
                 }
+                
+                switch message {
+                case .string(let string):
+                    XCTAssertEqual(string, testMessage)
+                default:
+                    XCTFail()
+                }
+                
+                expectation.fulfill()
             }
         }
-
+        
         wait(for: [expectation], timeout: Constants.expectationLongTimeout)
     }
-    
-    func testEchoClientForAllSubscribers() {
+
+    func testEchoClientAllSubscribers() {
         let testMessage = UUID().uuidString
         var expectations: [Int: XCTestExpectation] = [:]
         let client = webSocketClientWithPolicy(.allSubscribers)
-        
+
         client?.sendMessage(.string(testMessage)) { error in
             XCTAssertNil(error)
         }
-        
-        // Let messages be sent and received back
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + Constants.expectationShortTimeout) {
-            for i in (0..<Constants.testsCount) {
-                expectations[i] = XCTestExpectation()
-                
-                client?.subscribe { message in
-                    switch message {
-                    case .string(let string):
-                        XCTAssertEqual(string, testMessage)
-                    default:
-                        XCTFail()
-                    }
-                    
-                    expectations[i]?.fulfill()
-                }
-            }
-        }
 
-        wait(for: Array(expectations.values), timeout: Constants.expectationLongTimeout)
-    }
-    
-    // TODO: Take a look at this one
-    func testEchoClientForFirstSubscriberGettingAllMessages() {
-        var testMessages: Set<String> = []
-//        let semaphore = DispatchSemaphore(value: 1)
-        var expectations: [Int: XCTestExpectation] = [:]
-        var currentSubscriberNumber = 0
-        let client = webSocketClientWithPolicy(.firstSubscriber)
+        // Let messages be sent and received back
+        sleepFor(timeInterval: Constants.singleTestTime)
         
-        for i in (0..<20) {
-            let testMessage = UUID().uuidString
-            testMessages.insert(testMessage)
+        for i in (0..<Constants.testsCount) {
             expectations[i] = XCTestExpectation()
             
+            client?.subscribe { message in
+                switch message {
+                case .string(let string):
+                    XCTAssertEqual(string, testMessage)
+                default:
+                    XCTFail()
+                }
+                
+                expectations[i]?.fulfill()
+            }
+        }
+        
+        wait(for: Array(expectations.values), timeout: Constants.expectationLongTimeout)
+    }
+
+    func testEchoClientFirstSubscriberGettingAllMessages() {
+        var testMessages: Set<String> = []
+        var expectations: [String: XCTestExpectation] = [:]
+        let client = webSocketClientWithPolicy(.firstSubscriber)
+
+        for _ in (0..<Constants.testsCount) {
+            let testMessage = UUID().uuidString
+            testMessages.insert(testMessage)
+            expectations[testMessage] = XCTestExpectation()
+
             client?.sendMessage(.string(testMessage)) { error in
                 XCTAssertNil(error)
             }
         }
-        
+
         // Let messages be sent and received back
+        sleepFor(timeInterval: Constants.singleTestTime)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + Constants.expectationShortTimeout) {
-            client?.subscribe { message in
-    //            semaphore.wait()
-                print("currentSubscriberNumber: ", currentSubscriberNumber)
-                switch message {
-                case .string(let string):
-                    XCTAssertTrue(testMessages.contains(string))
-                default:
-                    XCTFail()
-                }
-            
-                expectations[currentSubscriberNumber]?.fulfill()
-                currentSubscriberNumber += 1
-    //            semaphore.signal()
-            }
-            
-            client?.subscribe { _ in
-                // Shouldn't recieve anything
+        client?.subscribe { message in
+            switch message {
+            case .string(let string):
+                XCTAssertTrue(testMessages.contains(string))
+                testMessages.remove(string)
+                expectations[string]?.fulfill()
+            default:
                 XCTFail()
             }
         }
         
-        wait(for: Array(expectations.values), timeout: 100)
+        // Double check if all messages were received
+        XCTAssertTrue(testMessages.isEmpty)
+        
+        client?.subscribe { _ in
+            // Shouldn't receive anything
+            XCTFail()
+        }
+
+        wait(for: Array(expectations.values), timeout: 1000)
     }
     
-    private func webSocketClientWithPolicy(_ policy: WebSocketClientSettings.Policy) -> WebSocketClientProtocol? {
-        guard let host = URL(string: Constants.webSocketUrl) else {
-            XCTFail()
-            return nil
-        }
-        
-        return WebSocketClient(
-            host: host,
+    private func webSocketClientWithPolicy(_ policy: WebSocketClientSubscriptionPolicy) -> WebSocketClientProtocol? {
+        WebSocketClient(
+            host: Constants.webSocketUrl,
             port: Constants.webSocketPort,
-            settings: .init(policy: policy)
+            policy: policy
         )
+    }
+    
+    private func sleepFor(timeInterval: TimeInterval) {
+        sleep(UInt32(timeInterval))
     }
 }

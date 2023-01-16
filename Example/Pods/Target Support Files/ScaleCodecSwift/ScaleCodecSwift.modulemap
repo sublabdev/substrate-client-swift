@@ -1,6 +1,0 @@
-framework module ScaleCodecSwift {
-  umbrella header "ScaleCodecSwift-umbrella.h"
-
-  export *
-  module * { export * }
-}
