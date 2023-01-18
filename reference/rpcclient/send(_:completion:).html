@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>send(_:completion:)| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SubstrateClientSwift</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">RpcClient</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">send(_:completion:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Instance Method</span>
+  <h1 class="title">send(_:completion:)</h1>
+</div>
+
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Sends a ready <code>RpcRequest</code>. The request’s and response’s types should be explicitly specified.
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>func</span> <span class='token-identifier'>send</span>&lt;<span class='token-genericParameter'>Request</span>, <span class='token-genericParameter'>Response</span>&gt;(<span class='token-externalParam'>_</span> <span class='token-internalParam'>rpcRequest</span>: <a class='type-identifier-link' href='../rpcrequest/index.html'><span>RpcRequest</span></a>&lt;Request&gt;, <span class='token-externalParam'>completion</span>: <span class='token-attribute'>@escaping</span> (<a class='type-identifier-link' href='../rpcresponse/index.html'><span>RpcResponse</span></a>&lt;Response&gt;?, <a class='type-identifier-link' href='../rpcerror/index.html'><span>RpcError</span></a>?) -&gt; Void) <span class='token-keyword'>where</span> Request : Encodable, Response : Decodable</code></pre>
+  </div>
+</section>
+<section id="parameters" class="parameters">
+  <h2>Parameters</h2>
+  <dl>
+    
+      <dt class="param-name"><code>rpcRequest</code></dt>
+      <dd class="param-content">
+        <div class="content"><p><code>RpcRequest</code> that takes a generic codable params</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>completion</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>Completion with either the request’s optional result or <code>RpcError</code></p></div>
+      </dd>
+    
+  </dl>
+</section>
+
+  </div>
+</div>
+
+  
+  
+  
+</main>
+
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

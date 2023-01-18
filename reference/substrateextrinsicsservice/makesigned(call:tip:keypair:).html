@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>makeSigned(call:tip:keyPair:)| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../../index.html" class="item">SubstrateClientSwift</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SubstrateExtrinsicsService</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">SubstrateExtrinsics Implementations</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">makeSigned(call:tip:keyPair:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Instance Method</span>
+  <h1 class="title">makeSigned(call:tip:keyPair:)</h1>
+</div>
+
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Makes a signed payload
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>func</span> <span class='token-identifier'>makeSigned</span>&lt;<span class='token-genericParameter'>T</span>&gt;(<span class='token-externalParam'>call</span>: <a class='type-identifier-link' href='../call/index.html'><span>Call</span></a>&lt;T&gt;, <span class='token-externalParam'>tip</span>: <a class='type-identifier-link' href='../balance/index.html'><span>Balance</span></a>, <span class='token-externalParam'>keyPair</span>: KeyPair) <span class='token-keyword'>async</span> <span class='token-keyword'>throws</span> -&gt; <a class='type-identifier-link' href='../payload/index.html'><span>Payload</span></a>? <span class='token-keyword'>where</span> T : Decodable, T : Encodable</code></pre>
+  </div>
+</section>
+<div class='content'><h2 id='return-value'>Return Value</h2><p>An optional signed payload</p></div><section id="parameters" class="parameters">
+  <h2>Parameters</h2>
+  <dl>
+    
+      <dt class="param-name"><code>call</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>A generic call</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>tip</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>Tip conforming to <code>DynamicType</code></p></div>
+      </dd>
+    
+      <dt class="param-name"><code>keyPair</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>A keypair with private and public keys</p></div>
+      </dd>
+    
+  </dl>
+</section>
+
+  </div>
+</div>
+
+  
+  
+  
+</main>
+
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>

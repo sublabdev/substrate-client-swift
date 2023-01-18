@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    
+    <title>fetch(item:keys:storage:)| Documentation</title>
+    
+    <link rel="icon"       href="../../../favicon.ico" />
+    <link rel="mask-icon"  href="../../../favicon.svg" color="#333333" />
+    <link rel='stylesheet' href='../css/site.css' />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/styles/default.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.0.1/highlight.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="doc-topic">
+        <nav role="navigation" class="nav documentation-nav">
+  <div class="nav__wrapper">
+    <div class="nav__background"></div>
+    <div class="nav-content">
+      <div class="nav-title">
+        <span class="nav-title-link inactive">Documentation</span>
+      </div>
+      <div class="nav-menu">
+        <div class="nav-menu-tray">
+          <ul class="nav-menu-items hierarchy">
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="../index.html" class="item">SubstrateClientSwift</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                
+                  <a href="index.html" class="item">SubstrateStorage</a>
+                
+              </li>
+            
+              <li class="nav-menu-item hierarchy-item">
+                
+                  <span class="current item">fetch(item:keys:storage:)</span>
+                
+                
+              </li>
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main id="main" role="main" class="main">
+  <div class="topictitle">
+  <span class="eyebrow">Instance Method</span>
+  <h1 class="title">fetch(item:keys:storage:)</h1>
+</div>
+
+  <div class="container content-grid">
+  <div class="description">
+    <div class="abstract content">
+      Fetches storage item from a specified storage
+    </div>
+  </div>
+  
+  <!-- The sidebar once we have one: <div class="summary"></div> -->
+  
+  <div class="primary-content">
+    <section id='declaration' class='declaration'>
+  <h2>Declaration</h2>
+  <div class='declaration-group'>
+    <pre class='source indented'><code><span class='token-keyword'>func</span> <span class='token-identifier'>fetch</span>&lt;<span class='token-genericParameter'>T</span>&gt;(<span class='token-externalParam'>item</span>: <a class='type-identifier-link' href='../runtimemodulestorageitem/index.html'><span>RuntimeModuleStorageItem</span></a>, <span class='token-externalParam'>keys</span>: [<a class='type-identifier-link' href='https://developer.apple.com/documentation/foundation/Data'><span>Data</span></a>], <span class='token-externalParam'>storage</span>: <a class='type-identifier-link' href='../runtimemodulestorage/index.html'><span>RuntimeModuleStorage</span></a>) <span class='token-keyword'>async</span> <span class='token-keyword'>throws</span> -&gt; T? <span class='token-keyword'>where</span> T : Decodable</code></pre>
+  </div>
+</section>
+<div class='content'><h2 id='return-value'>Return Value</h2><p>A generic storage item of type <code>T</code></p></div><section id="parameters" class="parameters">
+  <h2>Parameters</h2>
+  <dl>
+    
+      <dt class="param-name"><code>item</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>An item to be hashed</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>keys</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>Keys to be used when hashing in a storage hasher</p></div>
+      </dd>
+    
+      <dt class="param-name"><code>storage</code></dt>
+      <dd class="param-content">
+        <div class="content"><p>Storage for which a storage hasher is created, which hashes the item</p></div>
+      </dd>
+    
+  </dl>
+</section>
+
+  </div>
+</div>
+
+  
+  
+  
+</main>
+
+      </div>
+    </div>
+    <footer class="footer"></footer>
+    <script>hljs.highlightAll();</script>
+  </body>
+</html>
