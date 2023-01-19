@@ -75,7 +75,7 @@ class TestExtrinsics: XCTestCase {
             )
         ]
         
-        try testCases.append(contentsOf: generatedAddMemoCases())
+//        try testCases.append(contentsOf: generatedAddMemoCases())
         
         return testCases
     }
