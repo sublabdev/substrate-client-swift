@@ -39,11 +39,11 @@ PODS:
     - Sr25519/CSr25519
     - Sr25519/Helpers
   - SubstrateClientSwift (1.0.0):
-    - BigInt (~> 5.0.0)
-    - CommonSwift (~> 1.0.0)
-    - EncryptingSwift (~> 1.0.0)
-    - HashingSwift (~> 1.0.0)
-    - ScaleCodecSwift (~> 1.0.0)
+    - BigInt (= 5.0.0)
+    - CommonSwift (= 1.0.0)
+    - EncryptingSwift (= 1.0.0)
+    - HashingSwift (= 1.0.0)
+    - ScaleCodecSwift (= 1.0.0)
   - UncommonCrypto (0.1.3)
   - xxHash-Swift (1.1.1)
 
@@ -113,10 +113,10 @@ SPEC CHECKSUMS:
   ScaleCodecSwift: 2fa35cbc70c5634fdc0960cc6c712e917b2c688c
   secp256k1.swift: a7e7a214f6db6ce5db32cc6b2b45e5c4dd633634
   Sr25519: 87a974e2d714113af55e1d7e5cef1b82864a57bd
-  SubstrateClientSwift: af132c82e31d514a0623a3011c12344b972cd7bb
+  SubstrateClientSwift: 6f33ae8aa9cd225576cc1fbd6bdbc3e92cbfab4a
   UncommonCrypto: 8e6276bd3def28cdbd55966926c38c37ea1c9af5
   xxHash-Swift: 13ebcbfc48658a5acf3777751e64b18c0f110d25
 
 PODFILE CHECKSUM: d310bb1702686e171f710a34c73db16dc8901246
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1
